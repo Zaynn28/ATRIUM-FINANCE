@@ -1,0 +1,6 @@
+{
+  "name": "Atrium Finance",
+  "description": "Comprehensive hotel accounting system with USALI 12th Revised Edition operating statements, financial statements (Balance Sheet & P&L), 5-level universal drill-down, continuous controls audit, and double-entry ledger backed by Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

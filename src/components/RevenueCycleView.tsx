@@ -1,0 +1,470 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import {
+  ArrowDownLeft,
+  Plus,
+  AlertTriangle,
+  CheckCircle2,
+  FileText,
+  Clock,
+  Settings2,
+  ArrowRight,
+} from 'lucide-react';
+import {
+  RevenueTransaction,
+  Account,
+  Department,
+  MappingConfig,
+} from '../types';
+import { api } from '../services/api';
+
+interface RevenueCycleViewProps {
+  transactions: RevenueTransaction[];
+  accounts: Account[];
+  departments: Department[];
+  mappingConfig?: MappingConfig;
+  onRefresh: () => void;
+  onOpenMappingModal: () => void;
+  onViewJournal: (journalId: string) => void;
+}
+
+export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
+  transactions,
+  accounts,
+  departments,
+  mappingConfig,
+  onRefresh,
+  onOpenMappingModal,
+  onViewJournal,
+}) => {
+  const defaultDebit = mappingConfig?.revenue_default_debit_account || '';
+
+  const [formData, setFormData] = useState({
+    date: new Date().toISOString().split('T')[0],
+    source: 'Manual' as 'Manual' | 'PMS',
+    department_code: '',
+    account_code: '',
+    amount: '',
+    description: '',
+    debit_account_code: defaultDebit,
+  });
+
+  // Update default debit if mappingConfig loads or updates later
+  React.useEffect(() => {
+    if (mappingConfig?.revenue_default_debit_account && !formData.debit_account_code) {
+      setFormData((prev) => ({
+        ...prev,
+        debit_account_code: prev.debit_account_code || mappingConfig.revenue_default_debit_account || '',
+      }));
+    }
+  }, [mappingConfig?.revenue_default_debit_account]);
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successInfo, setSuccessInfo] = useState<{
+    txId: string;
+    journalId: string;
+  } | null>(null);
+
+  // Active Revenue accounts
+  const revenueAccounts = accounts.filter(
+    (a) => a.account_type === 'Revenue' && a.active === 'Y'
+  );
+
+  // Active Asset/Counterpart accounts
+  const assetAccounts = accounts.filter(
+    (a) => a.account_type === 'Asset' && a.active === 'Y'
+  );
+
+  const activeDepartments = departments.filter((d) => d.active === 'Y');
+
+  // Submit Revenue Entry
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessInfo(null);
+
+    const counterpart =
+      formData.debit_account_code || mappingConfig?.revenue_default_debit_account || '';
+
+    if (!counterpart) {
+      setErrorMessage(
+        'Counterpart Debit account (e.g. Guest Ledger / Cash in Transit) is not selected. Please select one or configure default mapping.'
+      );
+      return;
+    }
+
+    const numericAmount = parseFloat(formData.amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      setErrorMessage('Amount must be a positive number.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await api.recordRevenue({
+        date: formData.date,
+        source: formData.source,
+        department_code: formData.department_code,
+        account_code: formData.account_code,
+        amount: numericAmount,
+        description: formData.description,
+        debit_account_code: counterpart,
+      });
+
+      setSuccessInfo({
+        txId: res.transaction.transaction_id,
+        journalId: res.draftJournal.journal_id,
+      });
+
+      // Reset form fields
+      setFormData({
+        ...formData,
+        amount: '',
+        description: '',
+      });
+
+      onRefresh();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to record revenue transaction');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isMappingConfigured = Boolean(
+    formData.debit_account_code || mappingConfig?.revenue_default_debit_account
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div>
+          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
+            <ArrowDownLeft className="w-5 h-5 text-emerald-400" />
+            <span>Revenue Cycle (Guest Folio &amp; Hotel Outlets)</span>
+          </h1>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Record rooms, banqueting, and F&amp;B revenue transactions and auto-generate draft double-entry journals
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onOpenMappingModal}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
+          >
+            <Settings2 className="w-3.5 h-3.5 text-slate-400" />
+            <span>Counterpart Mapping</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Unmapped Exception Banner */}
+      {!isMappingConfigured && (
+        <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <h4 className="text-xs font-semibold text-amber-200">
+                Accounting Exception: Revenue Counterpart Asset Account Missing
+              </h4>
+              <p className="text-xs text-amber-300/80 leading-relaxed">
+                Before revenue journals can be generated, you must confirm which asset account (e.g. Guest Ledger or Cash Clearing) receives the debit.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenMappingModal}
+            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs rounded-lg shrink-0 transition-colors"
+          >
+            Configure Mapping
+          </button>
+        </div>
+      )}
+
+      {/* Notification Messages */}
+      {errorMessage && (
+        <div className="p-3 bg-red-950/40 border border-red-800/50 rounded-lg flex items-center justify-between text-xs text-red-200">
+          <span>{errorMessage}</span>
+          <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-red-300">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {successInfo && (
+        <div className="p-4 bg-emerald-950/40 border border-emerald-800/50 rounded-xl flex items-center justify-between text-xs text-emerald-200">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <div>
+              <p className="font-semibold">
+                Transaction recorded: <span className="font-mono">{successInfo.txId}</span>
+              </p>
+              <p className="text-emerald-300/80">
+                Auto-generated Draft Journal: <span className="font-mono font-medium">{successInfo.journalId}</span> (Pending validation and approval)
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onViewJournal(successInfo.journalId)}
+            className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
+          >
+            <span>Review Journal</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Main Form & Summary Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Entry Form */}
+        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
+              <Plus className="w-4 h-4 text-emerald-400" />
+              <span>Record Revenue Transaction</span>
+            </h2>
+            <span className="text-[11px] font-mono uppercase text-slate-500 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+              Manual Form
+            </span>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            {/* Transaction Date */}
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Transaction Date *</label>
+              <input
+                type="date"
+                required
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+              />
+            </div>
+
+            {/* Source */}
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Source System</label>
+              <select
+                value={formData.source}
+                onChange={(e) => setFormData({ ...formData, source: e.target.value as any })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+              >
+                <option value="Manual">Manual Entry</option>
+                <option value="PMS">PMS / Folio Batch</option>
+              </select>
+              {formData.source === 'PMS' && (
+                <p className="text-[11px] text-amber-400/90 mt-1 flex items-center gap-1 font-mono">
+                  <AlertTriangle className="w-3 h-3" /> Yanolja integration — not yet connected (manual entry mode)
+                </p>
+              )}
+            </div>
+
+            {/* Department */}
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Operating Department *</label>
+              <select
+                required
+                value={formData.department_code}
+                onChange={(e) => setFormData({ ...formData, department_code: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+              >
+                <option value="">-- Select Department --</option>
+                {activeDepartments.map((dept) => (
+                  <option key={dept.department_code} value={dept.department_code}>
+                    [{dept.department_code}] {dept.department_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Revenue Account (Credit) */}
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Revenue Account (Credit) *</label>
+              <select
+                required
+                value={formData.account_code}
+                onChange={(e) => setFormData({ ...formData, account_code: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-mono"
+              >
+                <option value="">-- Select Revenue Account --</option>
+                {revenueAccounts.map((acc) => (
+                  <option key={acc.account_code} value={acc.account_code}>
+                    [{acc.account_code}] {acc.account_name}
+                  </option>
+                ))}
+              </select>
+              {revenueAccounts.length === 0 && (
+                <p className="text-[11px] text-amber-400 mt-1">
+                  No Revenue accounts found. Please add or seed accounts in Chart of Accounts first.
+                </p>
+              )}
+            </div>
+
+            {/* Counterpart Asset Account (Debit) */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-slate-300 font-medium">Counterpart Asset Account (Debit) *</label>
+                <span className="text-[10px] text-slate-500">Confirmed by Controller</span>
+              </div>
+              <select
+                required
+                value={formData.debit_account_code || mappingConfig?.revenue_default_debit_account || ''}
+                onChange={(e) => setFormData({ ...formData, debit_account_code: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-mono"
+              >
+                <option value="">-- Select Settlement / Asset Account --</option>
+                {assetAccounts.map((acc) => (
+                  <option key={acc.account_code} value={acc.account_code}>
+                    [{acc.account_code}] {acc.account_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Transaction Amount ($) *</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                required
+                placeholder="0.00"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono text-sm focus:border-emerald-500 outline-none"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Description / Guest Reference</label>
+              <textarea
+                rows={2}
+                placeholder="e.g. Daily night audit rooms revenue, Banquet hall deposit"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-emerald-500"
+              />
+            </div>
+
+            {/* Double-entry preview hint */}
+            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 space-y-1 font-mono text-[11px]">
+              <div className="text-slate-400 font-sans font-medium">Double-Entry Preview:</div>
+              <div className="text-emerald-400">
+                DR: [{formData.debit_account_code || mappingConfig?.revenue_default_debit_account || 'Asset Pending'}] $
+                {formData.amount || '0.00'}
+              </div>
+              <div className="text-blue-400">
+                CR: [{formData.account_code || 'Revenue Pending'}] $
+                {formData.amount || '0.00'}
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{loading ? 'Generating Draft Journal...' : 'Record & Draft Journal'}</span>
+            </button>
+          </form>
+        </div>
+
+        {/* Transactions History Table */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-slate-400" />
+              <span>Revenue Transactions Log ({transactions.length})</span>
+            </h2>
+            <span className="text-xs text-slate-500">
+              Only POSTED journals appear in financial reporting
+            </span>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-mono">
+                <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                  <tr>
+                    <th className="py-3 px-3">Date</th>
+                    <th className="py-3 px-3">ID</th>
+                    <th className="py-3 px-3">Dept</th>
+                    <th className="py-3 px-3">Account</th>
+                    <th className="py-3 px-3 text-right">Amount</th>
+                    <th className="py-3 px-3">Description</th>
+                    <th className="py-3 px-3 text-center">Linked Journal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {transactions.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-12 text-center text-slate-500 font-sans">
+                        <ArrowDownLeft className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
+                        <p className="font-medium text-slate-400">No revenue transactions recorded</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Record hotel revenues using the form on the left to generate draft journals.
+                        </p>
+                      </td>
+                    </tr>
+                  ) : (
+                    transactions.map((tx) => {
+                      const acc = accounts.find((a) => a.account_code === tx.account_code);
+                      return (
+                        <tr key={tx.transaction_id} className="hover:bg-slate-800/40">
+                          <td className="py-3 px-3 text-slate-300 whitespace-nowrap">{tx.date}</td>
+                          <td className="py-3 px-3 font-semibold text-slate-200 whitespace-nowrap">
+                            {tx.transaction_id}
+                          </td>
+                          <td className="py-3 px-3 text-slate-400">{tx.department_code}</td>
+                          <td className="py-3 px-3">
+                            <span className="text-slate-200 font-medium">{tx.account_code}</span>
+                            {acc && (
+                              <span className="block text-[10px] text-slate-400 font-sans truncate max-w-[140px]">
+                                {acc.account_name}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-3 text-right font-semibold text-emerald-400">
+                            ${tx.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                          <td className="py-3 px-3 font-sans text-slate-300 truncate max-w-[180px]">
+                            {tx.description || '—'}
+                          </td>
+                          <td className="py-3 px-3 text-center font-sans">
+                            {tx.journal_id ? (
+                              <button
+                                onClick={() => onViewJournal(tx.journal_id)}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-[11px] font-mono transition-colors"
+                                title="Click to view journal in Workbench"
+                              >
+                                <Clock className="w-3 h-3" />
+                                <span>{tx.journal_id}</span>
+                              </button>
+                            ) : (
+                              <span className="text-slate-500 text-[11px]">Unlinked</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
