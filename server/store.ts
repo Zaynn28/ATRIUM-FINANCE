@@ -26,6 +26,9 @@ import {
   DEFAULT_MASTER_REPORT_CONFIG,
   ConfigurableReportLine,
   ConfigurableReportSection,
+  SystemUser,
+  UserRoleDefinition,
+  AccessControlState,
 } from '../src/types';
 import { GoogleSheetsClient, REQUIRED_TABS } from './sheets';
 
@@ -62,8 +65,171 @@ export class AccountingStore {
     controller_name: 'Financial Controller',
   };
 
+  // User Access & RBAC Storage
+  public roles: Map<string, UserRoleDefinition> = new Map();
+  public users: Map<string, SystemUser> = new Map();
+  public currentUserId: string = 'usr-controller-1';
+
   constructor() {
     this.sheetsClient = new GoogleSheetsClient();
+    this.initDefaultAccessControl();
+  }
+
+  // Seed standard hotel roles and initial users
+  public initDefaultAccessControl(): void {
+    const roles: UserRoleDefinition[] = [
+      {
+        id: 'role-financial-controller',
+        name: 'Financial Controller (Full Admin)',
+        description: 'Complete system control: period closes, full chart of accounts, posting approvals, journal reversals, and user permission management.',
+        isSystemRole: true,
+        permissions: {
+          'command-centre': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'operations': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'accounting-core': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'reports': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'configuration': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'controls-audit': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'integrations': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'administration': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+        },
+      },
+      {
+        id: 'role-general-accountant',
+        name: 'General Accountant',
+        description: 'Enters operational transactions, prepares drafts, validates journals, and analyzes general ledger. Cannot approve or alter system configuration.',
+        isSystemRole: true,
+        permissions: {
+          'command-centre': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'operations': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
+          'accounting-core': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
+          'reports': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'configuration': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'integrations': { canView: true, canCreate: true, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'administration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+        },
+      },
+      {
+        id: 'role-front-office-cashier',
+        name: 'Front Office / Night Auditor',
+        description: 'Enters daily revenue batches, guest folio settlements, and night audit balancing feeds. Restricted from accounting core, reports, and admin.',
+        isSystemRole: true,
+        permissions: {
+          'command-centre': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'operations': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: false },
+          'accounting-core': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'reports': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'configuration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'controls-audit': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'integrations': { canView: true, canCreate: true, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'administration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+        },
+      },
+      {
+        id: 'role-ap-purchasing',
+        name: 'Accounts Payable & Purchasing Clerk',
+        description: 'Records procurement vouchers, invoices, and supplier bills. Generates spending lines but cannot approve payment journals or view executive reports.',
+        isSystemRole: true,
+        permissions: {
+          'command-centre': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'operations': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
+          'accounting-core': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'reports': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'configuration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'integrations': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'administration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+        },
+      },
+      {
+        id: 'role-general-manager-owner',
+        name: 'General Manager / Hotel Owner (Executive)',
+        description: 'High-level executive access: Full visibility into Command Centre, USALI P&L, balance sheets, departmental audits. Read & export only; no edits or posting.',
+        isSystemRole: true,
+        permissions: {
+          'command-centre': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'operations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'accounting-core': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'reports': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'configuration': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'integrations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'administration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+        },
+      },
+      {
+        id: 'role-external-auditor',
+        name: 'Internal & External Auditor',
+        description: 'Read-only access across all financial ledgers, audit trails, and journals for compliance verification. Zero modification rights.',
+        isSystemRole: true,
+        permissions: {
+          'command-centre': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'operations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'accounting-core': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'reports': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'configuration': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'integrations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'administration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+        },
+      },
+    ];
+
+    roles.forEach((r) => this.roles.set(r.id, r));
+
+    const users: SystemUser[] = [
+      {
+        id: 'usr-controller-1',
+        name: 'Zayen Lalu',
+        email: 'laluzayen@gmail.com',
+        roleId: 'role-financial-controller',
+        password: 'AdminPassword2026!',
+        status: 'active',
+        lastLogin: 'Just now',
+      },
+      {
+        id: 'usr-accountant-1',
+        name: 'Dewi Sartika',
+        email: 'dewi.sartika@atriumhotel.com',
+        roleId: 'role-general-accountant',
+        departmentCode: '700',
+        password: 'AtriumAccountant123!',
+        status: 'active',
+        lastLogin: 'Today at 08:30 AM',
+      },
+      {
+        id: 'usr-front-desk-1',
+        name: 'Budi Santoso',
+        email: 'budi.santoso@atriumhotel.com',
+        roleId: 'role-front-office-cashier',
+        departmentCode: '100',
+        password: 'FrontDeskPass123!',
+        status: 'active',
+        lastLogin: 'Yesterday at 11:45 PM',
+      },
+      {
+        id: 'usr-ap-buyer-1',
+        name: 'Rian Hidayat',
+        email: 'rian.purchasing@atriumhotel.com',
+        roleId: 'role-ap-purchasing',
+        departmentCode: '700',
+        password: 'PurchasingPass123!',
+        status: 'active',
+        lastLogin: '2 days ago',
+      },
+      {
+        id: 'usr-gm-1',
+        name: 'Alexander Ward',
+        email: 'gm@atriumhotel.com',
+        roleId: 'role-general-manager-owner',
+        password: 'ExecutivePass123!',
+        status: 'active',
+        lastLogin: '3 days ago',
+      },
+    ];
+
+    users.forEach((u) => this.users.set(u.id, u));
   }
 
   public async init(): Promise<void> {
@@ -1979,6 +2145,87 @@ export class AccountingStore {
 
     await this.syncTabToSheets('departments');
     await this.syncTabToSheets('chart_of_accounts');
+  }
+
+  // --- ACCESS CONTROL & USER ROLE MANAGEMENT METHODS ---
+
+  public getAccessControlState(): AccessControlState {
+    return {
+      users: Array.from(this.users.values()),
+      roles: Array.from(this.roles.values()),
+      currentUserId: this.currentUserId,
+    };
+  }
+
+  public setCurrentUser(userId: string): AccessControlState {
+    if (!this.users.has(userId)) {
+      throw new Error(`User ID ${userId} not found`);
+    }
+    this.currentUserId = userId;
+    return this.getAccessControlState();
+  }
+
+  public saveUser(userData: Partial<SystemUser> & { name: string; email: string; roleId: string; password?: string }): SystemUser {
+    const userId = userData.id || `usr-${Date.now().toString(36)}`;
+    const existing = this.users.get(userId);
+
+    const user: SystemUser = {
+      id: userId,
+      name: userData.name.trim(),
+      email: userData.email.trim().toLowerCase(),
+      roleId: userData.roleId,
+      password: userData.password ? userData.password.trim() : (existing?.password || 'AtriumHotel2026!'),
+      mustChangePassword: userData.mustChangePassword ?? existing?.mustChangePassword ?? false,
+      departmentCode: userData.departmentCode || '',
+      status: userData.status || existing?.status || 'active',
+      lastLogin: existing?.lastLogin || 'Never',
+      customPermissionsOverride: userData.customPermissionsOverride || existing?.customPermissionsOverride,
+    };
+
+    this.users.set(userId, user);
+    return user;
+  }
+
+  public deleteUser(userId: string): { success: boolean } {
+    if (userId === this.currentUserId) {
+      throw new Error('Cannot delete currently authenticated session user');
+    }
+    if (!this.users.has(userId)) {
+      throw new Error(`User ID ${userId} not found`);
+    }
+    this.users.delete(userId);
+    return { success: true };
+  }
+
+  public saveRole(roleData: UserRoleDefinition): UserRoleDefinition {
+    if (!roleData.id) {
+      roleData.id = `role-${roleData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now().toString(36).slice(-4)}`;
+    }
+    this.roles.set(roleData.id, roleData);
+    return roleData;
+  }
+
+  public deleteRole(roleId: string): { success: boolean } {
+    const role = this.roles.get(roleId);
+    if (!role) throw new Error(`Role ID ${roleId} not found`);
+    if (role.isSystemRole) {
+      throw new Error('System-defined default roles cannot be deleted. You can customize permissions or create new roles.');
+    }
+    // Check if any user assigned to this role
+    const assignedUsers = Array.from(this.users.values()).filter((u) => u.roleId === roleId);
+    if (assignedUsers.length > 0) {
+      throw new Error(`Cannot delete role: ${assignedUsers.length} user(s) currently assigned. Reassign them first.`);
+    }
+    this.roles.delete(roleId);
+    return { success: true };
+  }
+
+  public resetAccessControlToDefaults(): AccessControlState {
+    this.roles.clear();
+    this.users.clear();
+    this.currentUserId = 'usr-controller-1';
+    this.initDefaultAccessControl();
+    return this.getAccessControlState();
   }
 }
 

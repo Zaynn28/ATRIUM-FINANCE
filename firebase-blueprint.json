@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and role assignment for access control",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth user ID" },
+        "email": { "type": "string", "format": "email", "description": "Corporate email address" },
+        "displayName": { "type": "string", "description": "Full name of the user" },
+        "roleId": { "type": "string", "description": "Assigned RBAC role" },
+        "status": { "type": "string", "enum": ["active", "suspended", "invited"], "description": "Account status" },
+        "departmentCode": { "type": "string", "description": "Assigned hotel department" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp created" },
+        "lastLoginAt": { "type": "string", "format": "date-time", "description": "Timestamp of latest sign-in" }
+      },
+      "required": ["uid", "email", "roleId", "status"]
+    },
+    "RoleDefinition": {
+      "title": "RoleDefinition",
+      "description": "Custom role definition with module-level permissions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "isSystemRole": { "type": "boolean" },
+        "permissions": { "type": "object" }
+      },
+      "required": ["id", "name", "permissions"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with role entitlement"
+    },
+    "/roles/{roleId}": {
+      "schema": "RoleDefinition",
+      "description": "System and custom role definitions"
+    }
+  }
+}

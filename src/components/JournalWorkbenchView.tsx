@@ -523,13 +523,13 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                                   {dept ? `[${dept.department_code}] ${dept.department_name}` : line.department_code || '—'}
                                 </td>
                                 <td className="py-2 px-3 text-right font-semibold text-emerald-400">
-                                  {line.debit > 0
-                                    ? line.debit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                  {(line.debit ?? 0) > 0
+                                    ? (line.debit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                                     : '—'}
                                 </td>
                                 <td className="py-2 px-3 text-right font-semibold text-blue-400">
-                                  {line.credit > 0
-                                    ? line.credit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                  {(line.credit ?? 0) > 0
+                                    ? (line.credit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                                     : '—'}
                                 </td>
                                 <td className="py-2 px-3 font-sans text-slate-300">

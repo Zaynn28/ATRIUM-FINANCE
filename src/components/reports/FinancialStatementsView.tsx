@@ -12,11 +12,13 @@ import {
   AlertTriangle,
   ChevronRight,
   ShieldCheck,
+  Sliders,
 } from 'lucide-react';
 import { FinancialStatementsReport, ReportLineItem } from '../../types';
 import { api } from '../../services/api';
 import { UniversalReportToolbar } from './UniversalReportToolbar';
 import { UniversalDrilldownModal } from './UniversalDrilldownModal';
+import { formatAmount, getThemeClasses, getDensityClasses } from '../../utils/reportFormatter';
 
 interface FinancialStatementsViewProps {
   onOpenJournalInWorkbench?: (journalId: string) => void;
@@ -204,7 +206,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                       <div className="flex items-center gap-2 text-red-300">
                         <AlertTriangle className="w-4 h-4 text-red-400" />
                         <span className="font-semibold">
-                          Balance Sheet Out of Balance by Rp{report.balance_sheet.imbalance.toLocaleString()}
+                          Balance Sheet Out of Balance by {formatAmount(report.balance_sheet.variance ?? 0, report.formatting)}
                         </span>
                       </div>
                     )}
@@ -214,19 +216,19 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <div>
                       <span className="text-slate-500">Total Assets: </span>
                       <span className="font-bold text-slate-200">
-                        Rp{report.balance_sheet.total_assets.toLocaleString()}
+                        {formatAmount(report.balance_sheet.total_assets, report.formatting)}
                       </span>
                     </div>
                     <div>
                       <span className="text-slate-500">Liabilities + Equity: </span>
                       <span className="font-bold text-slate-200">
-                        Rp{report.balance_sheet.total_liabilities_and_equity.toLocaleString()}
+                        {formatAmount(report.balance_sheet.total_liabilities_and_equity, report.formatting)}
                       </span>
                     </div>
                     <div>
                       <span className="text-slate-500">Variance: </span>
                       <span className={report.balance_sheet.is_balanced ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
-                        Rp{report.balance_sheet.imbalance.toLocaleString()}
+                        {formatAmount(report.balance_sheet.variance ?? 0, report.formatting)}
                       </span>
                     </div>
                   </div>
@@ -236,7 +238,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                   <thead className="bg-slate-950/60 text-slate-400 uppercase tracking-wider border-b border-slate-800">
                     <tr>
                       <th className="py-2.5 px-4 text-left">Line Item</th>
-                      <th className="py-2.5 px-4 text-right">Amount (IDR)</th>
+                      <th className="py-2.5 px-4 text-right">Amount ({report.formatting?.currency_symbol || 'IDR'})</th>
                       <th className="py-2.5 px-4 text-center">Accounts</th>
                       <th className="py-2.5 px-4 text-center">Drill-Down</th>
                     </tr>
@@ -258,7 +260,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                           {row.label}
                         </td>
                         <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                          Rp{row.amount.toLocaleString()}
+                          {formatAmount(row.amount, report.formatting)}
                         </td>
                         <td className="py-2.5 px-4 text-center text-slate-400">
                           {row.account_codes.join(', ')}
@@ -274,7 +276,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <tr className="bg-slate-900 font-bold border-t-2 border-slate-700 text-slate-100">
                       <td className="py-3 px-4 pl-4 uppercase">Total Assets</td>
                       <td className="py-3 px-4 text-right text-emerald-400 text-sm">
-                        Rp{report.balance_sheet.total_assets.toLocaleString()}
+                        {formatAmount(report.balance_sheet.total_assets, report.formatting)}
                       </td>
                       <td colSpan={2}></td>
                     </tr>
@@ -295,7 +297,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                           {row.label}
                         </td>
                         <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                          Rp{row.amount.toLocaleString()}
+                          {formatAmount(row.amount, report.formatting)}
                         </td>
                         <td className="py-2.5 px-4 text-center text-slate-400">
                           {row.account_codes.join(', ')}
@@ -311,7 +313,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
                       <td className="py-2.5 px-4 pl-4 uppercase">Total Liabilities</td>
                       <td className="py-2.5 px-4 text-right text-amber-300">
-                        Rp{report.balance_sheet.total_liabilities.toLocaleString()}
+                        {formatAmount(report.balance_sheet.total_liabilities, report.formatting)}
                       </td>
                       <td colSpan={2}></td>
                     </tr>
@@ -332,7 +334,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                           {row.label}
                         </td>
                         <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                          Rp{row.amount.toLocaleString()}
+                          {formatAmount(row.amount, report.formatting)}
                         </td>
                         <td className="py-2.5 px-4 text-center text-slate-400">
                           {row.account_codes.join(', ')}
@@ -348,7 +350,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
                       <td className="py-2.5 px-4 pl-4 uppercase">Total Equity</td>
                       <td className="py-2.5 px-4 text-right text-indigo-300">
-                        Rp{report.balance_sheet.total_equity.toLocaleString()}
+                        {formatAmount(report.balance_sheet.total_equity, report.formatting)}
                       </td>
                       <td colSpan={2}></td>
                     </tr>
@@ -357,7 +359,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <tr className="bg-emerald-950/60 font-bold border-t-2 border-b-2 border-emerald-500/50 text-emerald-200 text-sm">
                       <td className="py-3.5 px-4 pl-4 uppercase">Total Liabilities & Equity</td>
                       <td className="py-3.5 px-4 text-right text-emerald-300 font-mono text-base">
-                        Rp{report.balance_sheet.total_liabilities_and_equity.toLocaleString()}
+                        {formatAmount(report.balance_sheet.total_liabilities_and_equity, report.formatting)}
                       </td>
                       <td colSpan={2} className="py-3.5 px-4 text-center text-xs text-emerald-400">
                         {report.balance_sheet.is_balanced ? 'BALANCED' : 'OUT OF BALANCE'}
@@ -374,7 +376,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                 <thead className="bg-slate-950/60 text-slate-400 uppercase tracking-wider border-b border-slate-800">
                   <tr>
                     <th className="py-2.5 px-4 text-left">Line Item</th>
-                    <th className="py-2.5 px-4 text-right">Amount (IDR)</th>
+                    <th className="py-2.5 px-4 text-right">Amount ({report.formatting?.currency_symbol || 'IDR'})</th>
                     <th className="py-2.5 px-4 text-center">Accounts</th>
                     <th className="py-2.5 px-4 text-center">Drill-Down</th>
                   </tr>
@@ -396,7 +398,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                         {row.label}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                        Rp{row.amount.toLocaleString()}
+                        {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-center text-slate-400">
                         {row.account_codes.join(', ')}
@@ -412,10 +414,60 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                   <tr className="bg-slate-900 font-bold border-t-2 border-slate-700 text-slate-100">
                     <td className="py-3 px-4 pl-4 uppercase">Total Operating Revenues</td>
                     <td className="py-3 px-4 text-right text-emerald-400 text-sm">
-                      Rp{report.income_statement.total_revenue.toLocaleString()}
+                      {formatAmount(report.income_statement.total_operating_revenue ?? 0, report.formatting)}
                     </td>
                     <td colSpan={2}></td>
                   </tr>
+
+                  {/* COST OF SALES (if configured) */}
+                  {report.income_statement.cost_of_sales && report.income_statement.cost_of_sales.length > 0 && (
+                    <>
+                      <tr className="bg-slate-950/40 text-amber-400 font-bold uppercase tracking-wider">
+                        <td colSpan={4} className="py-2.5 px-4 pt-4">
+                          Cost of Sales
+                        </td>
+                      </tr>
+                      {report.income_statement.cost_of_sales.map((row) => (
+                        <tr
+                          key={row.line_id}
+                          onClick={() => handleDrilldown(row.line_id)}
+                          className="hover:bg-slate-800/60 cursor-pointer transition-colors"
+                        >
+                          <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
+                            {row.label}
+                          </td>
+                          <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
+                            {formatAmount(row.amount, report.formatting)}
+                          </td>
+                          <td className="py-2.5 px-4 text-center text-slate-400">
+                            {row.account_codes.join(', ')}
+                          </td>
+                          <td className="py-2.5 px-4 text-center">
+                            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                              <span>Inspect</span>
+                              <ChevronRight className="w-3 h-3" />
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                      <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
+                        <td className="py-2.5 px-4 pl-4 uppercase">Total Cost of Sales</td>
+                        <td className="py-2.5 px-4 text-right text-amber-300">
+                          {formatAmount(report.income_statement.total_cost_of_sales ?? 0, report.formatting)}
+                        </td>
+                        <td colSpan={2}></td>
+                      </tr>
+
+                      {/* GROSS PROFIT */}
+                      <tr className="bg-slate-900/80 font-bold border-t border-slate-700 text-emerald-300">
+                        <td className="py-2.5 px-4 pl-4 uppercase">Gross Profit</td>
+                        <td className="py-2.5 px-4 text-right text-emerald-300">
+                          {formatAmount(report.income_statement.gross_profit ?? 0, report.formatting)}
+                        </td>
+                        <td colSpan={2}></td>
+                      </tr>
+                    </>
+                  )}
 
                   {/* OPERATING EXPENSES */}
                   <tr className="bg-slate-950/40 text-rose-400 font-bold uppercase tracking-wider">
@@ -433,7 +485,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                         {row.label}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                        Rp{row.amount.toLocaleString()}
+                        {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-center text-slate-400">
                         {row.account_codes.join(', ')}
@@ -449,7 +501,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                   <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
                     <td className="py-2.5 px-4 pl-4 uppercase">Total Operating Expenses</td>
                     <td className="py-2.5 px-4 text-right text-rose-300">
-                      Rp{report.income_statement.total_expenses.toLocaleString()}
+                      {formatAmount(report.income_statement.total_operating_expenses ?? 0, report.formatting)}
                     </td>
                     <td colSpan={2}></td>
                   </tr>
@@ -458,7 +510,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                   <tr className="bg-emerald-950/60 font-bold border-t-2 border-b-2 border-emerald-500/50 text-emerald-200 text-sm">
                     <td className="py-3.5 px-4 pl-4 uppercase">Net Operating Income</td>
                     <td className="py-3.5 px-4 text-right text-emerald-300 font-mono text-base">
-                      Rp{report.income_statement.net_income.toLocaleString()}
+                      {formatAmount(report.income_statement.net_operating_income ?? 0, report.formatting)}
                     </td>
                     <td colSpan={2}></td>
                   </tr>

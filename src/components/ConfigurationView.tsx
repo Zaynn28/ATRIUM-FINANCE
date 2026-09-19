@@ -32,6 +32,7 @@ interface ConfigurationViewProps {
   departments: Department[];
   mappingConfig: MappingConfig;
   onRefresh: () => void;
+  initialTab?: 'coa' | 'departments' | 'mappings' | 'reports';
 }
 
 export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
@@ -39,8 +40,16 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
   departments,
   mappingConfig,
   onRefresh,
+  initialTab = 'coa',
 }) => {
-  const [activeConfigTab, setActiveConfigTab] = useState<'coa' | 'departments' | 'mappings' | 'reports'>('coa');
+  const [activeConfigTab, setActiveConfigTab] = useState<'coa' | 'departments' | 'mappings' | 'reports'>(initialTab);
+
+  React.useEffect(() => {
+    if (initialTab) {
+      setActiveConfigTab(initialTab);
+    }
+  }, [initialTab]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
 
@@ -662,6 +671,16 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
             </div>
           </div>
         </form>
+      )}
+
+      {/* TAB 4: REPORT FORMATS & STRUCTURE */}
+      {activeConfigTab === 'reports' && (
+        <ReportConfigDesigner
+          accounts={accounts}
+          onConfigSaved={() => {
+            onRefresh();
+          }}
+        />
       )}
 
       {/* Account Add/Edit Modal */}

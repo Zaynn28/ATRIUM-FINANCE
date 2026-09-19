@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { DrilldownDetail, DrilldownJournalLine, DrilldownAccountSummary } from '../../types';
 import { api } from '../../services/api';
+import { formatAmount } from '../../utils/reportFormatter';
 
 interface UniversalDrilldownModalProps {
   isOpen: boolean;
@@ -181,7 +182,7 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                   <div>
                     <div className="text-xs text-slate-400">Total Report Line Balance</div>
                     <div className="text-lg font-bold font-mono text-slate-100">
-                      Rp{data.line_total.toLocaleString()}
+                      {formatAmount(data.line_total ?? 0)}
                     </div>
                   </div>
                 </div>
@@ -258,7 +259,7 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                                 {acc.lines_count}
                               </td>
                               <td className="py-3 px-4 text-right font-mono font-semibold text-slate-100">
-                                Rp{acc.balance.toLocaleString()}
+                                {formatAmount(acc.balance ?? 0)}
                               </td>
                               <td className="py-3 px-4 text-center">
                                 <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300 font-medium">
@@ -344,10 +345,10 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                                 {line.description}
                               </td>
                               <td className="py-3 px-4 text-right font-mono text-slate-300">
-                                {line.debit > 0 ? `Rp${line.debit.toLocaleString()}` : '—'}
+                                {(line.debit ?? 0) > 0 ? formatAmount(line.debit) : '—'}
                               </td>
                               <td className="py-3 px-4 text-right font-mono text-slate-300">
-                                {line.credit > 0 ? `Rp${line.credit.toLocaleString()}` : '—'}
+                                {(line.credit ?? 0) > 0 ? formatAmount(line.credit) : '—'}
                               </td>
                               <td className="py-3 px-4">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300">
@@ -427,7 +428,7 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                           Account {selectedJournalLine.account_code} — {selectedJournalLine.description}
                         </div>
                         <div className="font-mono text-emerald-400 font-bold">
-                          Debit: Rp{selectedJournalLine.debit.toLocaleString()} | Credit: Rp{selectedJournalLine.credit.toLocaleString()}
+                          Debit: {formatAmount(selectedJournalLine.debit ?? 0)} | Credit: {formatAmount(selectedJournalLine.credit ?? 0)}
                         </div>
                       </div>
                     </div>
@@ -475,7 +476,7 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                             <div className="flex justify-between">
                               <span className="text-slate-500">Transaction Amount:</span>
                               <span className="font-mono font-bold text-emerald-400">
-                                Rp{selectedJournalLine.source_transaction.amount.toLocaleString()}
+                                {formatAmount(selectedJournalLine.source_transaction.amount ?? 0)}
                               </span>
                             </div>
                           </div>

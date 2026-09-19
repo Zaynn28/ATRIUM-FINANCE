@@ -160,7 +160,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
             <span className="text-xs text-slate-400 block font-medium">Total Debits</span>
             <span className="text-base font-bold text-emerald-400 font-mono mt-1 block">
-              ${ledgerData.total_debit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${(ledgerData.total_debit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <span className="text-[11px] text-slate-500 font-sans">Debited lines</span>
           </div>
@@ -168,7 +168,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
             <span className="text-xs text-slate-400 block font-medium">Total Credits</span>
             <span className="text-base font-bold text-blue-400 font-mono mt-1 block">
-              ${ledgerData.total_credit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${(ledgerData.total_credit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <span className="text-[11px] text-slate-500 font-sans">Credited lines</span>
           </div>
@@ -177,10 +177,10 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
             <span className="text-xs text-slate-400 block font-medium">Ending Balance</span>
             <span
               className={`text-base font-bold font-mono mt-1 block ${
-                ledgerData.ending_balance >= 0 ? 'text-slate-100' : 'text-rose-400'
+                (ledgerData.ending_balance ?? 0) >= 0 ? 'text-slate-100' : 'text-rose-400'
               }`}
             >
-              ${ledgerData.ending_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${(ledgerData.ending_balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <span className="text-[11px] text-slate-500 font-sans">Net ledger balance</span>
           </div>
@@ -253,17 +253,17 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
                       {entry.description || '—'}
                     </td>
                     <td className="py-2.5 px-3 text-right font-semibold text-emerald-400">
-                      {entry.debit > 0
-                        ? entry.debit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      {(entry.debit ?? 0) > 0
+                        ? (entry.debit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                         : '—'}
                     </td>
                     <td className="py-2.5 px-3 text-right font-semibold text-blue-400">
-                      {entry.credit > 0
-                        ? entry.credit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      {(entry.credit ?? 0) > 0
+                        ? (entry.credit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                         : '—'}
                     </td>
                     <td className="py-2.5 px-3 text-right font-bold text-slate-100 bg-slate-950/40">
-                      ${entry.running_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ${(entry.running_balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                   </tr>
                 ))

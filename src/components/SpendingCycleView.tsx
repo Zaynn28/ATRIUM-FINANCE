@@ -463,7 +463,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                             )}
                           </td>
                           <td className="py-3 px-3 text-right font-semibold text-rose-400">
-                            ${tx.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${(tx.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td className="py-3 px-3 text-center font-sans">
                             {tx.journal_id ? (

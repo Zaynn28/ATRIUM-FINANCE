@@ -122,7 +122,7 @@ export const TrialBalanceView: React.FC = () => {
           <div className="text-right font-mono hidden sm:block">
             <div className="text-xs opacity-75">Net Sum:</div>
             <div className="text-sm font-bold">
-              ${report.total_debits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${(report.total_debits ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
         </div>
@@ -174,23 +174,23 @@ export const TrialBalanceView: React.FC = () => {
                       <td className="py-2.5 px-4 font-sans text-slate-400">{item.account_type}</td>
                       <td className="py-2.5 px-4 text-slate-400">{item.normal_balance}</td>
                       <td className="py-2.5 px-4 text-right text-slate-300">
-                        {item.debit_sum > 0
-                          ? item.debit_sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        {(item.debit_sum ?? 0) > 0
+                          ? (item.debit_sum ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : '—'}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-300">
-                        {item.credit_sum > 0
-                          ? item.credit_sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        {(item.credit_sum ?? 0) > 0
+                          ? (item.credit_sum ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : '—'}
                       </td>
                       <td className="py-2.5 px-4 text-right font-semibold text-emerald-400 bg-slate-950/30">
-                        {item.net_debit > 0
-                          ? item.net_debit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        {(item.net_debit ?? 0) > 0
+                          ? (item.net_debit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : '—'}
                       </td>
                       <td className="py-2.5 px-4 text-right font-semibold text-blue-400 bg-slate-950/30">
-                        {item.net_credit > 0
-                          ? item.net_credit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        {(item.net_credit ?? 0) > 0
+                          ? (item.net_credit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : '—'}
                       </td>
                     </tr>
@@ -206,10 +206,10 @@ export const TrialBalanceView: React.FC = () => {
                     Grand Totals:
                   </td>
                   <td className="py-3 px-4 text-right text-emerald-400 text-sm">
-                    ${report.total_debits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${(report.total_debits ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="py-3 px-4 text-right text-blue-400 text-sm">
-                    ${report.total_credits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${(report.total_credits ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>
               </tfoot>

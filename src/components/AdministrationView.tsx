@@ -16,20 +16,51 @@ import {
   AlertCircle,
   RotateCw,
   Sparkles,
+  Users,
 } from 'lucide-react';
 import { api } from '../services/api';
-import { Account, MappingConfig, SystemSettings } from '../types';
+import {
+  Account,
+  Department,
+  MappingConfig,
+  SystemSettings,
+  AccessControlState,
+  SystemUser,
+  UserRoleDefinition,
+} from '../types';
+import { UserAccessManager } from './administration/UserAccessManager';
 
 interface AdministrationViewProps {
   accounts?: Account[];
+  departments?: Department[];
   onRefresh?: () => void;
+  accessControl?: AccessControlState | null;
+  onSwitchUser?: (userId: string) => Promise<void>;
+  onRefreshAccessControl?: () => Promise<void>;
 }
 
-export const AdministrationView: React.FC<AdministrationViewProps> = ({ accounts = [], onRefresh }) => {
+export const AdministrationView: React.FC<AdministrationViewProps> = ({
+  accounts = [],
+  departments = [],
+  onRefresh,
+  accessControl: propAccessControl,
+  onSwitchUser: propSwitchUser,
+  onRefreshAccessControl,
+}) => {
+  const [activeTab, setActiveTab] = useState<'access-control' | 'policies-profile'>('access-control');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Local Access Control State (fallback or direct)
+  const [localAccessControl, setLocalAccessControl] = useState<AccessControlState>({
+    users: [],
+    roles: [],
+    currentUserId: '',
+  });
+
+  const accessState = propAccessControl || localAccessControl;
 
   // System Settings State
   const [settings, setSettings] = useState<SystemSettings>({
@@ -59,13 +90,15 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({ accounts
     async function loadConfig() {
       try {
         setLoading(true);
-        const [settingsRes, mappingRes] = await Promise.all([
+        const [settingsRes, mappingRes, accessRes] = await Promise.all([
           api.getAdminSettings().catch(() => null),
           api.getMapping().catch(() => null),
+          api.getAccessControl().catch(() => null),
         ]);
         if (isMounted) {
           if (settingsRes) setSettings(settingsRes);
           if (mappingRes && !mappingRes.error) setMapping(mappingRes);
+          if (accessRes) setLocalAccessControl(accessRes);
         }
       } catch (err: any) {
         if (isMounted) setErrorMessage(err.message || 'Failed to load configuration');
@@ -78,6 +111,49 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({ accounts
       isMounted = false;
     };
   }, []);
+
+  const handleSwitchUser = async (userId: string) => {
+    if (propSwitchUser) {
+      await propSwitchUser(userId);
+    } else {
+      const state = await api.switchActiveUser(userId);
+      setLocalAccessControl(state);
+    }
+    if (onRefreshAccessControl) await onRefreshAccessControl();
+  };
+
+  const handleSaveUser = async (userData: Partial<SystemUser> & { name: string; email: string; roleId: string }) => {
+    const res = await api.saveUser(userData);
+    setLocalAccessControl(res.state);
+    if (onRefreshAccessControl) await onRefreshAccessControl();
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    const res = await api.deleteUser(userId);
+    setLocalAccessControl(res.state);
+    if (onRefreshAccessControl) await onRefreshAccessControl();
+  };
+
+  const handleSaveRole = async (roleData: UserRoleDefinition) => {
+    const res = await api.saveRole(roleData);
+    setLocalAccessControl(res.state);
+    if (onRefreshAccessControl) await onRefreshAccessControl();
+  };
+
+  const handleDeleteRole = async (roleId: string) => {
+    const res = await api.deleteRole(roleId);
+    setLocalAccessControl(res.state);
+    if (onRefreshAccessControl) await onRefreshAccessControl();
+  };
+
+  const handleResetAccessDefaults = async () => {
+    if (!window.confirm('Reset all user accounts and roles back to standard hotel defaults? Custom changes will be overwritten.')) {
+      return;
+    }
+    const state = await api.resetAccessControl();
+    setLocalAccessControl(state);
+    if (onRefreshAccessControl) await onRefreshAccessControl();
+  };
 
   const handleSaveAll = async () => {
     setSaving(true);
@@ -139,24 +215,58 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({ accounts
           </div>
 
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={handleSeedUsali}
-              disabled={saving}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700 transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>Seed USALI COA</span>
-            </button>
+            {activeTab === 'policies-profile' && (
+              <>
+                <button
+                  onClick={handleSeedUsali}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700 transition-colors"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Seed USALI COA</span>
+                </button>
 
-            <button
-              onClick={handleSaveAll}
-              disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors"
-            >
-              {saving ? <RotateCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{saving ? 'Saving...' : 'Save Configuration'}</span>
-            </button>
+                <button
+                  onClick={handleSaveAll}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors"
+                >
+                  {saving ? <RotateCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{saving ? 'Saving...' : 'Save Configuration'}</span>
+                </button>
+              </>
+            )}
           </div>
+        </div>
+
+        {/* Administration Top-Level Tabs */}
+        <div className="flex items-center gap-2 pt-4 mt-4 border-t border-slate-800/80 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => setActiveTab('access-control')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'access-control'
+                ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <Shield className="w-4 h-4 text-emerald-400" />
+            <span>User Access & Role Entitlements (RBAC)</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-900/60 text-emerald-300 border border-emerald-700/40">
+              {accessState.users.length} Users
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('policies-profile')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'policies-profile'
+                ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <Lock className="w-4 h-4 text-amber-400" />
+            <span>Period Closing Locks & Hotel Master Profile</span>
+          </button>
         </div>
       </div>
 
@@ -184,8 +294,25 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({ accounts
         </div>
       )}
 
-      {/* Grid of Admin Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* 1. USER ACCESS & RBAC SUBMODULE */}
+      {activeTab === 'access-control' && (
+        <UserAccessManager
+          users={accessState.users}
+          roles={accessState.roles}
+          currentUserId={accessState.currentUserId}
+          departments={departments}
+          onSwitchUser={handleSwitchUser}
+          onSaveUser={handleSaveUser}
+          onDeleteUser={handleDeleteUser}
+          onSaveRole={handleSaveRole}
+          onDeleteRole={handleDeleteRole}
+          onResetDefaults={handleResetAccessDefaults}
+        />
+      )}
+
+      {/* 2. POLICIES & PROFILE SUBMODULE */}
+      {activeTab === 'policies-profile' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Period Lock & Controls */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -404,6 +531,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({ accounts
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

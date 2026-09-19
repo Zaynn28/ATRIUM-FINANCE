@@ -19,6 +19,7 @@ import { UsaliStatementReport, ReportLineItem } from '../../types';
 import { api } from '../../services/api';
 import { UniversalReportToolbar } from './UniversalReportToolbar';
 import { UniversalDrilldownModal } from './UniversalDrilldownModal';
+import { formatAmount } from '../../utils/reportFormatter';
 
 interface UsaliStatementsViewProps {
   onOpenJournalInWorkbench?: (journalId: string) => void;
@@ -212,7 +213,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
               <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
             </div>
             <div className="text-xl font-bold font-mono text-slate-100 mt-1">
-              Rp{report.gross_operating_profit.toLocaleString()}
+              {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
             </div>
             <div className="text-[11px] font-mono text-emerald-400 mt-1">
               GOP Margin: {gopMargin}%
@@ -225,10 +226,10 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
               <FileSpreadsheet className="w-3.5 h-3.5 text-blue-400" />
             </div>
             <div className="text-xl font-bold font-mono text-slate-100 mt-1">
-              Rp{report.total_operating_revenue.toLocaleString()}
+              {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
             </div>
             <div className="text-[11px] font-mono text-slate-400 mt-1">
-              Rooms: Rp{report.schedules_summary.rooms_revenue.toLocaleString()}
+              Rooms: {formatAmount(report.schedules_summary?.rooms_revenue ?? 0, report.formatting)}
             </div>
           </div>
 
@@ -238,7 +239,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
               <Percent className="w-3.5 h-3.5 text-indigo-400" />
             </div>
             <div className="text-xl font-bold font-mono text-slate-100 mt-1">
-              Rp{report.schedules_summary.rooms_profit.toLocaleString()}
+              {formatAmount(report.schedules_summary?.rooms_profit ?? 0, report.formatting)}
             </div>
             <div className="text-[11px] font-mono text-indigo-400 mt-1">
               Rooms Margin: {roomsMargin}%
@@ -251,7 +252,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
               <Percent className="w-3.5 h-3.5 text-amber-400" />
             </div>
             <div className="text-xl font-bold font-mono text-slate-100 mt-1">
-              Rp{report.schedules_summary.fb_profit.toLocaleString()}
+              {formatAmount(report.schedules_summary?.fb_profit ?? 0, report.formatting)}
             </div>
             <div className="text-[11px] font-mono text-amber-400 mt-1">
               F&B Margin: {fbMargin}%
@@ -310,11 +311,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         {row.label}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                        Rp{row.amount.toLocaleString()}
+                        {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-400">
-                        {report.total_operating_revenue > 0
-                          ? `${((row.amount / report.total_operating_revenue) * 100).toFixed(1)}%`
+                        {(report.total_operating_revenue ?? 0) > 0
+                          ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                       <td className="py-2.5 px-4 text-center">
@@ -328,7 +329,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <tr className="bg-slate-900 font-bold border-t-2 border-slate-700 text-slate-100">
                     <td className="py-3 px-4 pl-4 uppercase">Total Operating Revenue</td>
                     <td className="py-3 px-4 text-right text-emerald-400 text-sm">
-                      Rp{report.total_operating_revenue.toLocaleString()}
+                      {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">100.0%</td>
                     <td className="py-3 px-4 text-center">—</td>
@@ -350,11 +351,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         {row.label}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                        Rp{row.amount.toLocaleString()}
+                        {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-400">
-                        {report.total_operating_revenue > 0
-                          ? `${((row.amount / report.total_operating_revenue) * 100).toFixed(1)}%`
+                        {(report.total_operating_revenue ?? 0) > 0
+                          ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                       <td className="py-2.5 px-4 text-center">
@@ -368,11 +369,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
                     <td className="py-2.5 px-4 pl-4 uppercase">Total Departmental Expenses</td>
                     <td className="py-2.5 px-4 text-right text-rose-300">
-                      Rp{report.total_departmental_expenses.toLocaleString()}
+                      {formatAmount(report.total_departmental_expenses ?? 0, report.formatting)}
                     </td>
                     <td className="py-2.5 px-4 text-right">
-                      {report.total_operating_revenue > 0
-                        ? `${((report.total_departmental_expenses / report.total_operating_revenue) * 100).toFixed(1)}%`
+                      {(report.total_operating_revenue ?? 0) > 0
+                        ? `${(((report.total_departmental_expenses ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
                     <td className="py-2.5 px-4 text-center">—</td>
@@ -380,11 +381,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <tr className="bg-emerald-950/30 font-bold border-t border-b border-emerald-800/50 text-emerald-300">
                     <td className="py-3 px-4 pl-4 uppercase">Total Departmental Profit</td>
                     <td className="py-3 px-4 text-right text-sm font-bold text-emerald-300">
-                      Rp{report.total_departmental_profit.toLocaleString()}
+                      {formatAmount(report.total_departmental_profit ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      {report.total_operating_revenue > 0
-                        ? `${((report.total_departmental_profit / report.total_operating_revenue) * 100).toFixed(1)}%`
+                      {(report.total_operating_revenue ?? 0) > 0
+                        ? `${(((report.total_departmental_profit ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
                     <td className="py-3 px-4 text-center">—</td>
@@ -406,11 +407,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         {row.label}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
-                        Rp{row.amount.toLocaleString()}
+                        {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-400">
-                        {report.total_operating_revenue > 0
-                          ? `${((row.amount / report.total_operating_revenue) * 100).toFixed(1)}%`
+                        {(report.total_operating_revenue ?? 0) > 0
+                          ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                       <td className="py-2.5 px-4 text-center">
@@ -424,11 +425,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
                     <td className="py-2.5 px-4 pl-4 uppercase">Total Undistributed Expenses</td>
                     <td className="py-2.5 px-4 text-right text-amber-300">
-                      Rp{report.total_undistributed_expenses.toLocaleString()}
+                      {formatAmount(report.total_undistributed_expenses ?? 0, report.formatting)}
                     </td>
                     <td className="py-2.5 px-4 text-right">
-                      {report.total_operating_revenue > 0
-                        ? `${((report.total_undistributed_expenses / report.total_operating_revenue) * 100).toFixed(1)}%`
+                      {(report.total_operating_revenue ?? 0) > 0
+                        ? `${(((report.total_undistributed_expenses ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
                     <td className="py-2.5 px-4 text-center">—</td>
@@ -438,7 +439,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <tr className="bg-emerald-950/60 font-bold border-t-2 border-b-2 border-emerald-500/50 text-emerald-200 text-sm">
                     <td className="py-3.5 px-4 pl-4 uppercase">Gross Operating Profit (GOP)</td>
                     <td className="py-3.5 px-4 text-right text-emerald-300 font-mono text-base">
-                      Rp{report.gross_operating_profit.toLocaleString()}
+                      {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
                     </td>
                     <td className="py-3.5 px-4 text-right">{gopMargin}%</td>
                     <td className="py-3.5 px-4 text-center">—</td>
@@ -455,7 +456,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         {row.label}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-300">
-                        Rp{row.amount.toLocaleString()}
+                        {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-400">—</td>
                       <td className="py-2.5 px-4 text-center">
@@ -469,11 +470,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <tr className="bg-slate-900 font-bold border-t border-b border-slate-800 text-slate-200">
                     <td className="py-3 px-4 pl-4 uppercase">EBITDA</td>
                     <td className="py-3 px-4 text-right text-sm font-bold text-slate-100">
-                      Rp{report.ebitda.toLocaleString()}
+                      {formatAmount(report.ebitda ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      {report.total_operating_revenue > 0
-                        ? `${((report.ebitda / report.total_operating_revenue) * 100).toFixed(1)}%`
+                      {(report.total_operating_revenue ?? 0) > 0
+                        ? `${(((report.ebitda ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
                     <td className="py-3 px-4 text-center">—</td>
@@ -497,7 +498,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
                     <tr>
                       <th className="py-2.5 px-4 text-left">Line Item</th>
-                      <th className="py-2.5 px-4 text-right">Amount (IDR)</th>
+                      <th className="py-2.5 px-4 text-right">Amount ({report.formatting?.currency_symbol || 'IDR'})</th>
                       <th className="py-2.5 px-4 text-right">% Total Revenue</th>
                     </tr>
                   </thead>
@@ -505,50 +506,50 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     <tr>
                       <td className="py-3 px-4 text-slate-200">Total Operating Revenue</td>
                       <td className="py-3 px-4 text-right font-bold text-slate-100">
-                        Rp{report.total_operating_revenue.toLocaleString()}
+                        {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">100.0%</td>
                     </tr>
                     <tr>
                       <td className="py-3 px-4 text-slate-200">Total Operating Expenses (Dept + Undistributed)</td>
                       <td className="py-3 px-4 text-right text-rose-300">
-                        Rp{(report.total_departmental_expenses + report.total_undistributed_expenses).toLocaleString()}
+                        {formatAmount(((report.total_departmental_expenses ?? 0) + (report.total_undistributed_expenses ?? 0)), report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">
-                        {report.total_operating_revenue > 0
-                          ? `${(((report.total_departmental_expenses + report.total_undistributed_expenses) / report.total_operating_revenue) * 100).toFixed(1)}%`
+                        {(report.total_operating_revenue ?? 0) > 0
+                          ? `${((((report.total_departmental_expenses ?? 0) + (report.total_undistributed_expenses ?? 0)) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                     </tr>
                     <tr className="bg-emerald-950/40 font-bold text-emerald-300">
                       <td className="py-3 px-4 uppercase">Gross Operating Profit (GOP)</td>
                       <td className="py-3 px-4 text-right text-sm">
-                        Rp{report.gross_operating_profit.toLocaleString()}
+                        {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">{gopMargin}%</td>
                     </tr>
                     <tr>
                       <td className="py-3 px-4 text-slate-400 pl-8">Less: Operator Management Fees</td>
                       <td className="py-3 px-4 text-right text-slate-300">
-                        Rp{report.total_management_fees.toLocaleString()}
+                        {formatAmount(report.total_management_fees ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">—</td>
                     </tr>
                     <tr>
                       <td className="py-3 px-4 text-slate-400 pl-8">Less: Non-Operating Income & Expenses</td>
                       <td className="py-3 px-4 text-right text-slate-300">
-                        Rp{report.total_non_operating_expenses.toLocaleString()}
+                        {formatAmount(report.total_non_operating_expenses ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">—</td>
                     </tr>
                     <tr className="bg-slate-900 font-bold text-base text-slate-100 border-t-2 border-slate-700">
                       <td className="py-3.5 px-4 uppercase">Net Operating Profit for Owner (EBITDA)</td>
                       <td className="py-3.5 px-4 text-right text-emerald-400 font-mono">
-                        Rp{report.ebitda.toLocaleString()}
+                        {formatAmount(report.ebitda ?? 0, report.formatting)}
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        {report.total_operating_revenue > 0
-                          ? `${((report.ebitda / report.total_operating_revenue) * 100).toFixed(1)}%`
+                        {(report.total_operating_revenue ?? 0) > 0
+                          ? `${(((report.ebitda ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                     </tr>
@@ -573,19 +574,19 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Total Rooms Revenue</div>
                     <div className="text-lg font-bold text-emerald-400 mt-1">
-                      Rp{report.schedules_summary.rooms_revenue.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.rooms_revenue ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Total Rooms Expenses</div>
                     <div className="text-lg font-bold text-rose-400 mt-1">
-                      Rp{report.schedules_summary.rooms_expense.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.rooms_expense ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Rooms Departmental Profit</div>
                     <div className="text-lg font-bold text-indigo-400 mt-1">
-                      Rp{report.schedules_summary.rooms_profit.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.rooms_profit ?? 0, report.formatting)}
                     </div>
                     <div className="text-[11px] text-slate-400 mt-0.5">
                       Margin: {roomsMargin}%
@@ -611,19 +612,19 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">F&B Total Revenue</div>
                     <div className="text-lg font-bold text-emerald-400 mt-1">
-                      Rp{report.schedules_summary.fb_revenue.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.fb_revenue ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">F&B Departmental Expenses</div>
                     <div className="text-lg font-bold text-rose-400 mt-1">
-                      Rp{report.schedules_summary.fb_expense.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.fb_expense ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">F&B Departmental Profit</div>
                     <div className="text-lg font-bold text-amber-400 mt-1">
-                      Rp{report.schedules_summary.fb_profit.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.fb_profit ?? 0, report.formatting)}
                     </div>
                     <div className="text-[11px] text-slate-400 mt-0.5">
                       Margin: {fbMargin}%
@@ -642,25 +643,25 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Administrative & General (A&G)</div>
                     <div className="text-base font-bold text-slate-100 mt-1">
-                      Rp{report.schedules_summary.ag_expense.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.ag_expense ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Property Maintenance (POM)</div>
                     <div className="text-base font-bold text-slate-100 mt-1">
-                      Rp{report.schedules_summary.pom_expense.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.pom_expense ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Sales & Marketing</div>
                     <div className="text-base font-bold text-slate-100 mt-1">
-                      Rp{report.schedules_summary.sm_expense.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.sm_expense ?? 0, report.formatting)}
                     </div>
                   </div>
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                     <div className="text-slate-400">Energy, Water & Waste</div>
                     <div className="text-base font-bold text-slate-100 mt-1">
-                      Rp{report.schedules_summary.energy_expense.toLocaleString()}
+                      {formatAmount(report.schedules_summary?.energy_expense ?? 0, report.formatting)}
                     </div>
                   </div>
                 </div>
@@ -687,8 +688,8 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     <div>
                       <span className="text-slate-500 block">Operating Ratio:</span>
                       <span className="text-slate-200 font-bold text-sm">
-                        {report.total_operating_revenue > 0
-                          ? `${(((report.total_departmental_expenses + report.total_undistributed_expenses) / report.total_operating_revenue) * 100).toFixed(1)}%`
+                        {(report.total_operating_revenue ?? 0) > 0
+                          ? `${((((report.total_departmental_expenses ?? 0) + (report.total_undistributed_expenses ?? 0)) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </span>
                     </div>
@@ -701,7 +702,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           {/* Section 32: Drill-Down Reconciliation Banner */}
           <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
             <div className="flex items-center gap-3">
-              {report.reconciliation.is_reconciled ? (
+              {report.reconciliation?.is_reconciled ? (
                 <div className="flex items-center gap-2 text-emerald-300">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Report 100% Reconciled with Posted Ledger Entries</span>
@@ -709,7 +710,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
               ) : (
                 <div className="flex items-center gap-2 text-amber-300">
                   <AlertTriangle className="w-4 h-4 text-amber-400" />
-                  <span>Reconciliation Exception: Variance of Rp{report.reconciliation.variance.toLocaleString()} detected</span>
+                  <span>Reconciliation Exception: Variance of {formatAmount(report.reconciliation?.variance ?? 0, report.formatting)} detected</span>
                 </div>
               )}
             </div>
@@ -718,19 +719,19 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
               <div>
                 <span>Posted Revenue: </span>
                 <strong className="text-slate-200">
-                  Rp{report.reconciliation.posted_revenue_total.toLocaleString()}
+                  {formatAmount(report.reconciliation?.posted_revenue_total ?? 0, report.formatting)}
                 </strong>
               </div>
               <div>
                 <span>Posted Expense: </span>
                 <strong className="text-slate-200">
-                  Rp{report.reconciliation.posted_expense_total.toLocaleString()}
+                  {formatAmount(report.reconciliation?.posted_expense_total ?? 0, report.formatting)}
                 </strong>
               </div>
               <div>
                 <span>Variance: </span>
-                <strong className={report.reconciliation.is_reconciled ? 'text-emerald-400' : 'text-red-400'}>
-                  Rp{report.reconciliation.variance.toLocaleString()}
+                <strong className={report.reconciliation?.is_reconciled ? 'text-emerald-400' : 'text-red-400'}>
+                  {formatAmount(report.reconciliation?.variance ?? 0, report.formatting)}
                 </strong>
               </div>
             </div>

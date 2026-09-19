@@ -78,6 +78,129 @@ async function startServer() {
     }
   });
 
+  // --- USER ACCESS CONTROL & RBAC MODULE ---
+
+  app.get('/api/admin/access-control', (req, res) => {
+    res.json(store.getAccessControlState());
+  });
+
+  // Verify and link logged in email/password to registered SystemUser
+  app.post('/api/auth/verify-user', (req, res) => {
+    try {
+      const email = String(req.body.email || '').trim().toLowerCase();
+      const password = req.body.password ? String(req.body.password) : undefined;
+      const isGoogleOAuth = Boolean(req.body.isGoogleOAuth);
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const users = Array.from(store.users.values());
+      const matched = users.find((u) => u.email.toLowerCase() === email);
+
+      if (!matched) {
+        return res.status(403).json({
+          authorized: false,
+          error: `Akses Ditolak: Email "${email}" belum didaftarkan oleh Financial Controller / Administrator. Silakan hubungi laluzayen@gmail.com.`,
+        });
+      }
+
+      if (matched.status === 'suspended') {
+        return res.status(403).json({
+          authorized: false,
+          error: `Akun Dinonaktifkan: Akses untuk "${email}" sedang dibekukan. Hubungi Administrator.`,
+        });
+      }
+
+      // If user logs in via email & password (not Google OAuth popup), verify password
+      if (!isGoogleOAuth) {
+        if (!password) {
+          return res.status(400).json({
+            authorized: false,
+            error: 'Kata sandi (password) diperlukan untuk akun ini.',
+          });
+        }
+        if (matched.password && matched.password !== password) {
+          return res.status(401).json({
+            authorized: false,
+            error: 'Kata sandi (password) salah. Silakan periksa kembali atau hubungi Administrator.',
+          });
+        }
+      }
+
+      // Update user login timestamp and switch active user context
+      matched.lastLogin = 'Online now';
+      store.users.set(matched.id, matched);
+      store.setCurrentUser(matched.id);
+
+      const state = store.getAccessControlState();
+      const role = store.roles.get(matched.roleId);
+
+      res.json({
+        authorized: true,
+        user: matched,
+        role: role,
+        state,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/admin/access-control/switch-user', (req, res) => {
+    try {
+      const state = store.setCurrentUser(req.body.userId);
+      res.json(state);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/admin/access-control/users', (req, res) => {
+    try {
+      const savedUser = store.saveUser(req.body);
+      res.json({ user: savedUser, state: store.getAccessControlState() });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/admin/access-control/users/:id', (req, res) => {
+    try {
+      store.deleteUser(req.params.id);
+      res.json({ success: true, state: store.getAccessControlState() });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/admin/access-control/roles', (req, res) => {
+    try {
+      const savedRole = store.saveRole(req.body);
+      res.json({ role: savedRole, state: store.getAccessControlState() });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/admin/access-control/roles/:id', (req, res) => {
+    try {
+      store.deleteRole(req.params.id);
+      res.json({ success: true, state: store.getAccessControlState() });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/admin/access-control/reset', (req, res) => {
+    try {
+      const state = store.resetAccessControlToDefaults();
+      res.json(state);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   // PMS Night Audit Ingestion
   app.post('/api/integrations/pms-audit', async (req, res) => {
     try {

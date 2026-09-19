@@ -17,6 +17,9 @@ import {
   DrilldownDetail,
   ControlException,
   MasterReportConfig,
+  AccessControlState,
+  SystemUser,
+  UserRoleDefinition,
 } from '../types';
 
 export const api = {
@@ -398,6 +401,102 @@ export const api = {
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Failed to reset report configuration');
+    }
+    return res.json();
+  },
+
+  // --- ACCESS CONTROL & USER ROLE APIS ---
+  async verifyUser(params: { email: string; password?: string; isGoogleOAuth?: boolean } | string): Promise<{ authorized: boolean; user: SystemUser; role: UserRoleDefinition; state: AccessControlState }> {
+    const payload = typeof params === 'string' ? { email: params } : params;
+    const res = await fetch('/api/auth/verify-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to authenticate user');
+    }
+    return res.json();
+  },
+
+  async getAccessControl(): Promise<AccessControlState> {
+    const res = await fetch('/api/admin/access-control');
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to fetch access control state');
+    }
+    return res.json();
+  },
+
+  async switchActiveUser(userId: string): Promise<AccessControlState> {
+    const res = await fetch('/api/admin/access-control/switch-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to switch active user');
+    }
+    return res.json();
+  },
+
+  async saveUser(user: Partial<SystemUser> & { name: string; email: string; roleId: string }): Promise<{ user: SystemUser; state: AccessControlState }> {
+    const res = await fetch('/api/admin/access-control/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to save user');
+    }
+    return res.json();
+  },
+
+  async deleteUser(userId: string): Promise<{ success: boolean; state: AccessControlState }> {
+    const res = await fetch(`/api/admin/access-control/users/${encodeURIComponent(userId)}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete user');
+    }
+    return res.json();
+  },
+
+  async saveRole(role: UserRoleDefinition): Promise<{ role: UserRoleDefinition; state: AccessControlState }> {
+    const res = await fetch('/api/admin/access-control/roles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(role),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to save role');
+    }
+    return res.json();
+  },
+
+  async deleteRole(roleId: string): Promise<{ success: boolean; state: AccessControlState }> {
+    const res = await fetch(`/api/admin/access-control/roles/${encodeURIComponent(roleId)}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete role');
+    }
+    return res.json();
+  },
+
+  async resetAccessControl(): Promise<AccessControlState> {
+    const res = await fetch('/api/admin/access-control/reset', {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to reset access control');
     }
     return res.json();
   },

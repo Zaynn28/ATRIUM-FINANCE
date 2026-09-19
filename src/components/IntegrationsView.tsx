@@ -367,7 +367,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({ onViewJourna
             <div className="p-2.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-400 flex justify-between items-center">
               <span>Total Batch Impact:</span>
               <span className="font-mono text-emerald-400 font-bold text-xs">
-                Rp {(roomRev + fbRev + eventsRev).toLocaleString()}
+                Rp {(((roomRev || 0) + (fbRev || 0) + (eventsRev || 0)) || 0).toLocaleString()}
               </span>
             </div>
 

@@ -543,4 +543,59 @@ export type PrimaryNavPillar =
   | 'integrations'
   | 'administration';
 
+// --- USER ACCESS & ROLE-BASED ACCESS CONTROL (RBAC) ---
+
+export type AccessAction = 'view' | 'create' | 'edit' | 'approve' | 'delete' | 'export';
+
+export interface ModulePermission {
+  module: PrimaryNavPillar;
+  canView: boolean;
+  canCreate: boolean;
+  canEdit: boolean;
+  canApprove: boolean;
+  canDelete: boolean;
+  canExport: boolean;
+}
+
+export interface UserRoleDefinition {
+  id: string;
+  name: string;
+  description: string;
+  isSystemRole?: boolean;
+  permissions: Record<PrimaryNavPillar, {
+    canView: boolean;
+    canCreate: boolean;
+    canEdit: boolean;
+    canApprove: boolean;
+    canDelete: boolean;
+    canExport: boolean;
+  }>;
+}
+
+export interface SystemUser {
+  id: string;
+  name: string;
+  email: string;
+  roleId: string;
+  password?: string;
+  mustChangePassword?: boolean;
+  departmentCode?: string;
+  status: 'active' | 'suspended' | 'invited';
+  lastLogin?: string;
+  customPermissionsOverride?: Partial<Record<PrimaryNavPillar, {
+    canView?: boolean;
+    canCreate?: boolean;
+    canEdit?: boolean;
+    canApprove?: boolean;
+    canDelete?: boolean;
+    canExport?: boolean;
+  }>>;
+}
+
+export interface AccessControlState {
+  users: SystemUser[];
+  roles: UserRoleDefinition[];
+  currentUserId: string;
+}
+
 

@@ -21,8 +21,12 @@ import {
   Scale,
   ArrowDownLeft,
   ArrowUpRight,
+  UserCheck,
+  ChevronDown,
+  Lock,
+  LogOut,
 } from 'lucide-react';
-import { PrimaryNavPillar } from '../types';
+import { PrimaryNavPillar, SystemUser, UserRoleDefinition } from '../types';
 
 export type NavTab =
   | 'dashboard'
@@ -46,6 +50,12 @@ interface NavbarProps {
   onSelectOperationsSubTab?: (tab: 'revenue' | 'spending') => void;
   accountingCoreSubTab?: 'workbench' | 'ledger' | 'trial-balance';
   onSelectAccountingCoreSubTab?: (tab: 'workbench' | 'ledger' | 'trial-balance') => void;
+  // RBAC Current User & Roles
+  currentUser?: SystemUser;
+  currentRole?: UserRoleDefinition;
+  allUsers?: SystemUser[];
+  onSwitchUser?: (userId: string) => void;
+  onSignOut?: () => void;
   // Legacy / Direct navigations
   pendingJournalsCount: number;
   exceptionsCount?: number;
@@ -67,6 +77,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectOperationsSubTab,
   accountingCoreSubTab = 'workbench',
   onSelectAccountingCoreSubTab,
+  currentUser,
+  currentRole,
+  allUsers = [],
+  onSwitchUser,
+  onSignOut,
   pendingJournalsCount,
   exceptionsCount = 0,
   dbStatus,
@@ -74,6 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenDbStatusModal,
 }) => {
   const isConnected = Boolean(dbStatus?.connected ?? isDbConnected);
+  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
 
   const pillars: {
     id: PrimaryNavPillar;
@@ -112,18 +128,18 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Primary Brand & Status Utility Bar */}
       <div className="border-b border-slate-800/80 px-4 lg:px-6">
         <div className="flex items-center justify-between h-14 max-w-7xl mx-auto">
-          {/* Brand: ATRIUM FINANCE / WOLF COMMAND */}
+          {/* Brand: AMG ATRIUM FINANCE / WOLF COMMAND */}
           <div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => onSelectPillar('command-centre')}
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold tracking-wider font-mono text-xs shadow-inner">
-              AF
+            <div className="w-9 h-9 rounded-lg bg-emerald-950 border border-emerald-500/50 flex items-center justify-center text-emerald-400 font-extrabold tracking-wider font-mono text-xs shadow-inner shadow-emerald-950">
+              AMG
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-slate-100 tracking-tight text-sm uppercase">
-                  Atrium Finance <span className="text-slate-500 font-normal">/</span>{' '}
+                  AMG <span className="text-slate-500 font-normal">/</span> Atrium Finance <span className="text-slate-500 font-normal">/</span>{' '}
                   <span className="text-emerald-400">Wolf Command</span>
                 </span>
                 <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700 font-semibold">
@@ -161,15 +177,106 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* Controller User Profile Badge */}
-            <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-slate-800">
-              <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-semibold text-slate-300">
-                Z
-              </div>
-              <div className="text-left leading-tight">
-                <span className="block text-xs font-medium text-slate-200">Zayen</span>
-                <span className="block text-[10px] text-emerald-400 font-mono">Financial Controller</span>
-              </div>
+            {/* Dynamic RBAC User Profile Badge & Quick Persona Switcher */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 pl-2.5 pr-2 py-1 rounded-lg border border-slate-800 hover:border-slate-700 bg-slate-950/60 hover:bg-slate-850 transition-colors"
+                title="Current authenticated user session"
+              >
+                <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold ring-1 ring-emerald-500/40">
+                  {currentUser?.name?.charAt(0) || 'U'}
+                </div>
+                <div className="text-left leading-tight hidden sm:block">
+                  <span className="block text-xs font-semibold text-slate-100 max-w-[110px] truncate">
+                    {currentUser?.name || 'Authorized User'}
+                  </span>
+                  <span className="block text-[10px] text-emerald-400 font-mono max-w-[120px] truncate">
+                    {currentRole?.name?.split('(')[0]?.trim() || 'Staff'}
+                  </span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+              </button>
+
+              {/* Quick Persona Switcher Dropdown */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50 text-xs">
+                  <div className="p-2 border-b border-slate-800 pb-2 mb-1.5">
+                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+                      Active User Session
+                    </span>
+                    <span className="font-bold text-slate-100 text-sm block">
+                      {currentUser?.name}
+                    </span>
+                    <span className="text-[11px] text-emerald-400 font-mono block">
+                      {currentRole?.name}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider px-2 block">
+                      Switch Role Persona (Simulator):
+                    </span>
+                    {allUsers.map((user) => {
+                      const isCurrent = user.id === currentUser?.id;
+                      return (
+                        <button
+                          key={user.id}
+                          type="button"
+                          onClick={() => {
+                            if (onSwitchUser) onSwitchUser(user.id);
+                            setIsUserMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                            isCurrent
+                              ? 'bg-emerald-950/70 border border-emerald-800/60 text-emerald-300 font-semibold'
+                              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                          }`}
+                        >
+                          <div className="truncate">
+                            <span className="block text-xs">{user.name}</span>
+                            <span className="block text-[10px] text-slate-400 font-mono truncate">
+                              {user.email}
+                            </span>
+                          </div>
+                          {isCurrent && (
+                            <span className="text-[10px] font-mono text-emerald-400 font-bold ml-1">
+                              ACTIVE
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="pt-2 mt-2 border-t border-slate-800 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSelectPillar('administration');
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full text-center py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors"
+                    >
+                      Manage Access in Administration →
+                    </button>
+                    {onSignOut && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          onSignOut();
+                        }}
+                        className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded hover:bg-rose-950/60 text-rose-400 hover:text-rose-300 text-xs font-medium transition-colors border border-transparent hover:border-rose-900/50"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span>Keluar / Kunci Sesi</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -182,6 +289,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {pillars.map((pillar) => {
               const Icon = pillar.icon;
               const isActive = activePillar === pillar.id;
+              // Check if current user has permission to view this pillar
+              const hasViewAccess = currentRole
+                ? Boolean(currentRole.permissions?.[pillar.id]?.canView)
+                : true;
 
               return (
                 <button
@@ -191,12 +302,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all relative ${
                     isActive
                       ? 'bg-slate-800 text-emerald-300 border border-emerald-500/40 shadow-sm font-semibold'
+                      : !hasViewAccess
+                      ? 'text-slate-500 hover:text-slate-400 hover:bg-slate-900/60 opacity-70'
                       : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900'
                   }`}
+                  title={!hasViewAccess ? `Access to ${pillar.label} is restricted for your role (${currentRole?.name})` : undefined}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : !hasViewAccess ? 'text-slate-600' : 'text-slate-400'}`} />
                   <span className="font-mono text-[11px] text-slate-500 mr-0.5">{pillar.num}.</span>
                   <span>{pillar.label}</span>
+                  {!hasViewAccess && (
+                    <Lock className="w-3 h-3 text-amber-500/70 ml-0.5" />
+                  )}
                   {pillar.badge ? (
                     <span
                       className={`ml-1 px-1.5 py-0.2 text-[10px] rounded-full font-mono border ${

@@ -19,6 +19,7 @@ import { AdministrationView } from './components/AdministrationView';
 import { MappingModal } from './components/MappingModal';
 import { DbStatusModal } from './components/DbStatusModal';
 import { ManualJournalModal } from './components/ManualJournalModal';
+import { LoginScreen } from './components/auth/LoginScreen';
 import {
   Account,
   Department,
@@ -28,10 +29,18 @@ import {
   MappingConfig,
   DEFAULT_MAPPING_CONFIG,
   PrimaryNavPillar,
+  AccessControlState,
+  SystemUser,
+  UserRoleDefinition,
 } from './types';
 import { api } from './services/api';
 
 export default function App() {
+  // Session Authentication Gate State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('amg_auth_session') === 'active';
+  });
+
   // Primary 8-Pillar Navigation State
   const [activePillar, setActivePillar] = useState<PrimaryNavPillar>('command-centre');
 
@@ -48,6 +57,9 @@ export default function App() {
   const [mappingConfig, setMappingConfig] = useState<MappingConfig>(DEFAULT_MAPPING_CONFIG);
   const [dbStatus, setDbStatus] = useState<any>(null);
   const [exceptionsCount, setExceptionsCount] = useState<number>(0);
+
+  // RBAC Access Control State
+  const [accessControl, setAccessControl] = useState<AccessControlState | null>(null);
 
   // Modals state
   const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
@@ -69,6 +81,7 @@ export default function App() {
         mappingRes,
         dbStatusRes,
         exceptionsRes,
+        accessRes,
       ] = await Promise.all([
         api.getAccounts(),
         api.getDepartments(),
@@ -78,6 +91,7 @@ export default function App() {
         api.getMapping(),
         api.getStatus(),
         api.getExceptions().catch(() => []),
+        api.getAccessControl().catch(() => null),
       ]);
 
       setAccounts(accsRes || []);
@@ -90,12 +104,39 @@ export default function App() {
       );
       setDbStatus(dbStatusRes);
       setExceptionsCount(Array.isArray(exceptionsRes) ? exceptionsRes.length : 0);
+      if (accessRes) setAccessControl(accessRes);
     } catch (err) {
       console.error('Failed to load application data:', err);
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const refreshAccessControl = useCallback(async () => {
+    try {
+      const accessRes = await api.getAccessControl();
+      setAccessControl(accessRes);
+    } catch (err) {
+      console.error('Failed to refresh access control:', err);
+    }
+  }, []);
+
+  const handleSwitchUser = async (userId: string) => {
+    try {
+      const updatedState = await api.switchActiveUser(userId);
+      setAccessControl(updatedState);
+    } catch (err) {
+      console.error('Failed to switch user:', err);
+    }
+  };
+
+  const currentUser = accessControl?.users.find((u) => u.id === accessControl.currentUserId);
+  const currentRole = accessControl?.roles.find((r) => r.id === currentUser?.roleId);
+
+  // Enforce Pillar View Access
+  const canViewActivePillar = currentRole
+    ? Boolean(currentRole.permissions?.[activePillar]?.canView)
+    : true;
 
   useEffect(() => {
     refreshAll();
@@ -149,6 +190,28 @@ export default function App() {
     handleViewJournal(journalId);
   };
 
+  const handleLoginSuccess = (user: SystemUser, role: UserRoleDefinition, state: AccessControlState) => {
+    localStorage.setItem('amg_auth_session', 'active');
+    localStorage.setItem('amg_auth_email', user.email);
+    setAccessControl(state);
+    setIsAuthenticated(true);
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('amg_auth_session');
+    localStorage.removeItem('amg_auth_email');
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <LoginScreen
+        onLoginSuccess={handleLoginSuccess}
+        registeredUsers={accessControl?.users || []}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500/30 selection:text-emerald-200">
       {/* Primary Top Navigation - 8 Pillars */}
@@ -159,6 +222,11 @@ export default function App() {
         onSelectOperationsSubTab={setOperationsSubTab}
         accountingCoreSubTab={accountingCoreSubTab}
         onSelectAccountingCoreSubTab={setAccountingCoreSubTab}
+        currentUser={currentUser}
+        currentRole={currentRole}
+        allUsers={accessControl?.users || []}
+        onSwitchUser={handleSwitchUser}
+        onSignOut={handleSignOut}
         onOpenMappingModal={() => setIsMappingModalOpen(true)}
         onOpenDbStatusModal={() => setIsDbStatusModalOpen(true)}
         dbStatus={dbStatus}
@@ -175,6 +243,32 @@ export default function App() {
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-slate-400 space-y-3">
             <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-xs font-mono">Initializing Atrium Finance ledger...</p>
+          </div>
+        ) : !canViewActivePillar ? (
+          <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center max-w-xl mx-auto my-12 space-y-4 shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-amber-950/60 border border-amber-800/40 text-amber-400 mx-auto flex items-center justify-center font-mono text-xl font-bold">
+              403
+            </div>
+            <h2 className="text-lg font-bold text-slate-100">
+              Module Access Restricted
+            </h2>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Your active role <span className="text-emerald-400 font-semibold">{currentRole?.name || 'Assigned Role'}</span> does not have viewing permissions for <span className="font-mono text-slate-300 font-bold">{activePillar.toUpperCase()}</span>.
+            </p>
+            <div className="pt-2 flex items-center justify-center gap-3">
+              <button
+                onClick={() => setActivePillar('command-centre')}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition-colors"
+              >
+                Return to Command Centre
+              </button>
+              <button
+                onClick={() => setActivePillar('administration')}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors"
+              >
+                Review RBAC Roles
+              </button>
+            </div>
           </div>
         ) : (
           <>
@@ -265,11 +359,15 @@ export default function App() {
               />
             )}
 
-            {/* 8. ADMINISTRATION (Period close locks, property profile, controller governance) */}
+            {/* 8. ADMINISTRATION (Period close locks, property profile, controller governance, RBAC) */}
             {activePillar === 'administration' && (
               <AdministrationView
                 accounts={accounts}
+                departments={departments}
                 onRefresh={refreshAll}
+                accessControl={accessControl}
+                onSwitchUser={handleSwitchUser}
+                onRefreshAccessControl={refreshAccessControl}
               />
             )}
           </>

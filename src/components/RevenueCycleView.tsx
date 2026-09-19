@@ -436,7 +436,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                             )}
                           </td>
                           <td className="py-3 px-3 text-right font-semibold text-emerald-400">
-                            ${tx.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${(tx.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td className="py-3 px-3 font-sans text-slate-300 truncate max-w-[180px]">
                             {tx.description || '—'}
