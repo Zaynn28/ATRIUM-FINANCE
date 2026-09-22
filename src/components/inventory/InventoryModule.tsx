@@ -1,0 +1,221 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import {
+  LayoutDashboard,
+  Package,
+  Layers,
+  Warehouse,
+  ArrowDownLeft,
+  ClipboardList,
+  ArrowUpRight,
+  RefreshCw,
+  TrendingUp,
+  AlertTriangle,
+  FileSpreadsheet,
+  BarChart3,
+  Scan,
+} from 'lucide-react';
+import { Department, Account } from '../../types';
+import { InventoryDashboard } from './InventoryDashboard';
+import { ItemMasterView } from './ItemMasterView';
+import { CategoriesView } from './CategoriesView';
+import { StoreroomsView } from './StoreroomsView';
+import { ReceivingView } from './ReceivingView';
+import { RequisitionsView } from './RequisitionsView';
+import { StockIssueView } from './StockIssueView';
+import { StockTransferView } from './StockTransferView';
+import { StockCountView } from './StockCountView';
+import { StockAdjustmentView } from './StockAdjustmentView';
+import { StockCardView } from './StockCardView';
+import { InventoryReportsView } from './InventoryReportsView';
+import { BarcodeScannerModal } from './BarcodeScannerModal';
+
+export type InventorySubTab =
+  | 'DASHBOARD'
+  | 'ITEMS'
+  | 'CATEGORIES'
+  | 'STOREROOMS'
+  | 'RECEIVING'
+  | 'REQUISITIONS'
+  | 'ISSUE'
+  | 'TRANSFER'
+  | 'STOCK_COUNT'
+  | 'ADJUSTMENT'
+  | 'STOCK_CARD'
+  | 'REPORTS';
+
+interface InventoryModuleProps {
+  departments: Department[];
+  accounts?: Account[];
+  onViewJournal?: (journalId: string) => void;
+  initialTab?: InventorySubTab;
+}
+
+export const InventoryModule: React.FC<InventoryModuleProps> = ({
+  departments,
+  accounts = [],
+  onViewJournal,
+  initialTab = 'DASHBOARD',
+}) => {
+  const [activeTab, setActiveTab] = useState<InventorySubTab>(initialTab);
+  const [stockCardItemId, setStockCardItemId] = useState<string | undefined>();
+  const [selectedStoreroomId, setSelectedStoreroomId] = useState<string | undefined>();
+  const [scannerOpen, setScannerOpen] = useState(false);
+
+  const handleOpenStockCard = (itemId: string) => {
+    setStockCardItemId(itemId);
+    setActiveTab('STOCK_CARD');
+  };
+
+  const handleOpenStoreroom = (storeroomId: string) => {
+    setSelectedStoreroomId(storeroomId);
+    setActiveTab('STOREROOMS');
+  };
+
+  const handleBarcodeDetected = (code: string) => {
+    // When a barcode is detected, open the item master or stock card
+    setScannerOpen(false);
+    setActiveTab('ITEMS');
+  };
+
+  const subTabs: { id: InventorySubTab; label: string; icon: React.ReactNode; group: string }[] = [
+    { id: 'DASHBOARD', label: 'Overview', icon: <LayoutDashboard className="w-4 h-4" />, group: 'Main' },
+    { id: 'ITEMS', label: 'Item Master', icon: <Package className="w-4 h-4" />, group: 'Master Data' },
+    { id: 'CATEGORIES', label: 'Categories & GL', icon: <Layers className="w-4 h-4" />, group: 'Master Data' },
+    { id: 'STOREROOMS', label: 'Storerooms', icon: <Warehouse className="w-4 h-4" />, group: 'Master Data' },
+    { id: 'RECEIVING', label: 'Goods Receiving', icon: <ArrowDownLeft className="w-4 h-4" />, group: 'Stock In' },
+    { id: 'REQUISITIONS', label: 'Requisitions', icon: <ClipboardList className="w-4 h-4" />, group: 'Issuance' },
+    { id: 'ISSUE', label: 'Direct Issue', icon: <ArrowUpRight className="w-4 h-4" />, group: 'Issuance' },
+    { id: 'TRANSFER', label: 'Inter-Store Transfer', icon: <RefreshCw className="w-4 h-4" />, group: 'Operations' },
+    { id: 'STOCK_COUNT', label: 'Stock Count', icon: <TrendingUp className="w-4 h-4" />, group: 'Control' },
+    { id: 'ADJUSTMENT', label: 'Adjust & Spoilage', icon: <AlertTriangle className="w-4 h-4" />, group: 'Control' },
+    { id: 'STOCK_CARD', label: 'Stock Card Ledger', icon: <FileSpreadsheet className="w-4 h-4" />, group: 'Audit' },
+    { id: 'REPORTS', label: 'Cost Reports', icon: <BarChart3 className="w-4 h-4" />, group: 'Audit' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Sub-Navigation Bar */}
+      <div className="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-xl p-2 sticky top-16 z-30 shadow-xl">
+        <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          <div className="flex items-center gap-1.5 min-w-max">
+            {subTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-950 font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 border-l border-slate-800 pl-2">
+            <button
+              onClick={() => setScannerOpen(true)}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700/80 transition-colors"
+              title="Open Barcode & QR Code Scanner"
+            >
+              <Scan className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">Scan SKU</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Tab Render */}
+      <div>
+        {activeTab === 'DASHBOARD' && (
+          <InventoryDashboard
+            onNavigate={(tab) => setActiveTab(tab)}
+            onOpenStockCard={handleOpenStockCard}
+            onOpenStoreroom={handleOpenStoreroom}
+          />
+        )}
+
+        {activeTab === 'ITEMS' && (
+          <ItemMasterView
+            departments={departments}
+            onOpenStockCard={handleOpenStockCard}
+            onOpenScanner={() => setScannerOpen(true)}
+          />
+        )}
+
+        {activeTab === 'CATEGORIES' && <CategoriesView accounts={accounts} />}
+
+        {activeTab === 'STOREROOMS' && (
+          <StoreroomsView
+            departments={departments}
+            selectedStoreroomId={selectedStoreroomId}
+            onOpenStockCard={handleOpenStockCard}
+          />
+        )}
+
+        {activeTab === 'RECEIVING' && (
+          <ReceivingView
+            onViewJournal={onViewJournal}
+            onOpenScanner={() => setScannerOpen(true)}
+          />
+        )}
+
+        {activeTab === 'REQUISITIONS' && (
+          <RequisitionsView
+            departments={departments}
+            onViewJournal={onViewJournal}
+          />
+        )}
+
+        {activeTab === 'ISSUE' && (
+          <StockIssueView
+            departments={departments}
+            onViewJournal={onViewJournal}
+            onOpenScanner={() => setScannerOpen(true)}
+          />
+        )}
+
+        {activeTab === 'TRANSFER' && (
+          <StockTransferView onOpenScanner={() => setScannerOpen(true)} />
+        )}
+
+        {activeTab === 'STOCK_COUNT' && (
+          <StockCountView
+            onViewJournal={onViewJournal}
+            onOpenScanner={() => setScannerOpen(true)}
+          />
+        )}
+
+        {activeTab === 'ADJUSTMENT' && (
+          <StockAdjustmentView
+            onViewJournal={onViewJournal}
+            onOpenScanner={() => setScannerOpen(true)}
+          />
+        )}
+
+        {activeTab === 'STOCK_CARD' && (
+          <StockCardView initialItemId={stockCardItemId} />
+        )}
+
+        {activeTab === 'REPORTS' && <InventoryReportsView />}
+      </div>
+
+      {/* Global Barcode Scanner Modal */}
+      <BarcodeScannerModal
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onDetected={handleBarcodeDetected}
+      />
+    </div>
+  );
+};

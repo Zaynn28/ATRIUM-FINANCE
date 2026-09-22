@@ -138,8 +138,16 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
     }
   };
 
+  const safeConfirm = (msg: string): boolean => {
+    try {
+      return window.confirm(msg);
+    } catch {
+      return true;
+    }
+  };
+
   const handleResetDefaults = async () => {
-    if (!window.confirm('Reset all report formats and structures to default USALI 12th Edition and statutory standards?')) return;
+    if (!safeConfirm('Reset all report formats and structures to default USALI 12th Edition and statutory standards?')) return;
     try {
       setSaving(true);
       setMessage(null);

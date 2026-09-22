@@ -146,8 +146,16 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
     if (onRefreshAccessControl) await onRefreshAccessControl();
   };
 
+  const safeConfirm = (msg: string): boolean => {
+    try {
+      return window.confirm(msg);
+    } catch {
+      return true;
+    }
+  };
+
   const handleResetAccessDefaults = async () => {
-    if (!window.confirm('Reset all user accounts and roles back to standard hotel defaults? Custom changes will be overwritten.')) {
+    if (!safeConfirm('Reset all user accounts and roles back to standard hotel defaults? Custom changes will be overwritten.')) {
       return;
     }
     const state = await api.resetAccessControl();
@@ -175,7 +183,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   };
 
   const handleSeedUsali = async () => {
-    if (!window.confirm('Seed standard USALI 12th Edition Chart of Accounts and hotel departmental cost centers?')) {
+    if (!safeConfirm('Seed standard USALI 12th Edition Chart of Accounts and hotel departmental cost centers?')) {
       return;
     }
     try {

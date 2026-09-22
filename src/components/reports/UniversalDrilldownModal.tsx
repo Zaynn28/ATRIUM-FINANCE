@@ -71,7 +71,7 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
       })
       .then((res) => {
         setData(res);
-        if (accountCode && res.accounts.length > 0) {
+        if (accountCode && res?.accounts && res.accounts.length > 0) {
           const match = res.accounts.find((a) => a.account_code === accountCode);
           if (match) setSelectedAccount(match);
         }

@@ -8,6 +8,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import { store } from './server/store';
+import { inventoryStore } from './server/inventoryStore';
+import { serviceChargeStore } from './server/serviceChargeStore';
+import { ownerPoolStore } from './server/ownerPoolStore';
 
 dotenv.config();
 
@@ -408,7 +411,8 @@ async function startServer() {
   // Post step (locks journal)
   app.post('/api/journals/:id/post', async (req, res) => {
     try {
-      const posted = await store.postJournal(req.params.id);
+      const { autoApprove, approver } = req.body || {};
+      const posted = await store.postJournal(req.params.id, { autoApprove, approver });
       res.json(posted);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -498,6 +502,610 @@ async function startServer() {
     const { period } = req.query;
     const exceptions = store.getControlExceptions(period ? String(period) : undefined);
     res.json(exceptions);
+  });
+
+  // ==========================================
+  // HOTEL INVENTORY MANAGEMENT MODULE APIS
+  // ==========================================
+
+  // Dashboard KPIs
+  app.get('/api/inventory/dashboard', (req, res) => {
+    try {
+      res.json(inventoryStore.getDashboardKPIs());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Categories
+  app.get('/api/inventory/categories', (req, res) => {
+    try {
+      res.json(inventoryStore.getCategories());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/categories', (req, res) => {
+    try {
+      const cat = inventoryStore.saveCategory(req.body);
+      res.json(cat);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Storerooms
+  app.get('/api/inventory/storerooms', (req, res) => {
+    try {
+      res.json(inventoryStore.getStorerooms());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/storerooms', (req, res) => {
+    try {
+      const room = inventoryStore.saveStoreroom(req.body);
+      res.json(room);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Item Master Catalog
+  app.get('/api/inventory/items', (req, res) => {
+    try {
+      res.json(inventoryStore.getItems());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/inventory/items/:id', (req, res) => {
+    try {
+      const item = inventoryStore.getItem(req.params.id);
+      if (!item) return res.status(404).json({ error: 'Item not found' });
+      res.json(item);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/items', (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Admin');
+      const saved = inventoryStore.saveItem(req.body, userId, userName);
+      res.json(saved);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/inventory/items/:id', (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Admin');
+      const saved = inventoryStore.saveItem({ ...req.body, item_id: req.params.id }, userId, userName);
+      res.json(saved);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Stock Card (Item Movement Ledger)
+  app.get('/api/inventory/items/:id/stock-card', (req, res) => {
+    try {
+      const card = inventoryStore.getItemStockCard(req.params.id);
+      res.json(card);
+    } catch (err: any) {
+      res.status(404).json({ error: err.message });
+    }
+  });
+
+  // Barcode Lookup
+  app.get('/api/inventory/barcode/:barcode', (req, res) => {
+    try {
+      const item = inventoryStore.getItemByBarcode(req.params.barcode);
+      if (!item) {
+        return res.status(404).json({ error: `No item found matching barcode "${req.params.barcode}"` });
+      }
+      res.json(item);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Stock Movements
+  app.get('/api/inventory/movements', (req, res) => {
+    try {
+      const { item_id, storeroom_id, movement_type, start_date, end_date } = req.query;
+      const list = inventoryStore.getMovements({
+        item_id: item_id ? String(item_id) : undefined,
+        storeroom_id: storeroom_id ? String(storeroom_id) : undefined,
+        movement_type: movement_type ? String(movement_type) : undefined,
+        start_date: start_date ? String(start_date) : undefined,
+        end_date: end_date ? String(end_date) : undefined,
+      });
+      res.json(list);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Receiving (Goods Receipt)
+  app.post('/api/inventory/receiving', async (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Bambang Soediro (Purchasing)');
+      const result = await inventoryStore.processGoodsReceipt(req.body, userId, userName);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/inventory/receipts', (req, res) => {
+    try {
+      res.json(Array.from(inventoryStore.receipts.values()).reverse());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Department Requisitions
+  app.get('/api/inventory/requisitions', (req, res) => {
+    try {
+      res.json(Array.from(inventoryStore.requisitions.values()).reverse());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/requisitions', (req, res) => {
+    try {
+      const reqDoc = inventoryStore.createRequisition(req.body);
+      res.json(reqDoc);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/requisitions/:id/approve', (req, res) => {
+    try {
+      const approverName = String(req.body.approver_name || 'Department Head');
+      const approved = inventoryStore.approveRequisition(req.params.id, approverName, req.body.itemApprovals);
+      res.json(approved);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/requisitions/:id/issue', async (req, res) => {
+    try {
+      const issuerName = String(req.body.issuer_name || 'Storekeeper');
+      const issuerId = String(req.body.issuer_id || 'usr-controller-1');
+      const result = await inventoryStore.issueRequisition(req.params.id, issuerName, issuerId);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Direct Department Issue
+  app.post('/api/inventory/issues/direct', async (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Storekeeper');
+      const result = await inventoryStore.directStockIssue({
+        ...req.body,
+        userId,
+        userName,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Stock Transfers
+  app.post('/api/inventory/transfers', (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Storekeeper');
+      const moves = inventoryStore.processStockTransfer({
+        ...req.body,
+        userId,
+        userName,
+      });
+      res.json({ success: true, movements: moves });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Physical Stock Count Sessions
+  app.get('/api/inventory/counts', (req, res) => {
+    try {
+      res.json(Array.from(inventoryStore.countSessions.values()).reverse());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/inventory/counts/:id', (req, res) => {
+    try {
+      const session = inventoryStore.countSessions.get(req.params.id);
+      if (!session) return res.status(404).json({ error: 'Count session not found' });
+      res.json(session);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/counts', (req, res) => {
+    try {
+      const countedBy = String(req.body.counted_by || 'Inventory Auditor');
+      const session = inventoryStore.startStockCount({
+        title: req.body.title,
+        storeroom_id: req.body.storeroom_id,
+        counted_by: countedBy,
+      });
+      res.json(session);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/inventory/counts/:id', (req, res) => {
+    try {
+      const session = inventoryStore.updateStockCountItems(req.params.id, req.body.updates || []);
+      res.json(session);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/counts/:id/submit', (req, res) => {
+    try {
+      const session = inventoryStore.submitStockCount(req.params.id);
+      res.json(session);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/counts/:id/approve', async (req, res) => {
+    try {
+      const approverName = String(req.body.approver_name || 'Financial Controller');
+      const approverId = String(req.body.approver_id || 'usr-controller-1');
+      const result = await inventoryStore.approveStockCount(req.params.id, approverName, approverId);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Manual Stock Adjustments
+  app.get('/api/inventory/adjustments', (req, res) => {
+    try {
+      res.json(Array.from(inventoryStore.adjustments.values()).reverse());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/adjustments', async (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Financial Controller');
+      const result = await inventoryStore.createStockAdjustment({
+        ...req.body,
+        userId,
+        userName,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Inventory Reports
+  app.get('/api/inventory/reports', (req, res) => {
+    try {
+      const reports = inventoryStore.getInventoryReports({
+        period: req.query.period ? String(req.query.period) : undefined,
+        storeroom_id: req.query.storeroom_id ? String(req.query.storeroom_id) : undefined,
+        category_id: req.query.category_id ? String(req.query.category_id) : undefined,
+      });
+      res.json(reports);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // --- STAFF SERVICE CHARGE & GRATUITIES DISTRIBUTION POOL ---
+
+  app.get('/api/service-charge/kpis', (req, res) => {
+    try {
+      const kpis = serviceChargeStore.getKPIs();
+      res.json(kpis);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/service-charge/employees', (req, res) => {
+    try {
+      const employees = serviceChargeStore.getEmployees();
+      res.json(employees);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/service-charge/employees', (req, res) => {
+    try {
+      const employee = serviceChargeStore.saveEmployee(req.body);
+      res.json(employee);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/service-charge/employees/:id', (req, res) => {
+    try {
+      const result = serviceChargeStore.deleteEmployee(req.params.id);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/service-charge/collections', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : undefined;
+      const collections = serviceChargeStore.getCollections(period);
+      res.json(collections);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/service-charge/collections', async (req, res) => {
+    try {
+      const result = await serviceChargeStore.recordCollection(req.body);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/service-charge/cycles', (req, res) => {
+    try {
+      const cycles = serviceChargeStore.getCycles();
+      res.json(cycles);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/service-charge/cycles/:id', (req, res) => {
+    try {
+      const cycle = serviceChargeStore.getCycle(req.params.id);
+      if (!cycle) return res.status(404).json({ error: 'Distribution cycle not found' });
+      res.json(cycle);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/service-charge/cycles/calculate', (req, res) => {
+    try {
+      const cycle = serviceChargeStore.calculateDistribution(req.body);
+      res.json(cycle);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/service-charge/cycles/:id/approve', async (req, res) => {
+    try {
+      const approverName = String(req.body.approver_name || req.headers['x-user-name'] || 'Financial Controller');
+      const result = await serviceChargeStore.approveAndPostDistribution(req.params.id, approverName);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/service-charge/seed-defaults', (req, res) => {
+    try {
+      serviceChargeStore.seedDefaults();
+      res.json({ success: true, message: 'Reset and seeded service charge defaults' });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // --- APARTMENT OWNER POOL & RETURN DISTRIBUTION API ROUTES ---
+
+  // Dashboard KPIs
+  app.get('/api/owner-pool/kpis', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : '2026-09';
+      const kpis = ownerPoolStore.getDashboardKPIs(period);
+      res.json(kpis);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Posted Room Revenue query with transaction breakdown
+  app.get('/api/owner-pool/room-revenue', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : undefined;
+      const rev = store.getPostedRoomRevenue(period);
+      res.json(rev);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Units Master Data CRUD & Summary
+  app.get('/api/owner-pool/units', (req, res) => {
+    try {
+      const units = ownerPoolStore.getUnits();
+      const summary = ownerPoolStore.getDynamicUnitsSummary();
+      res.json({ units, summary });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/owner-pool/units/:id', (req, res) => {
+    try {
+      const unit = ownerPoolStore.getUnit(req.params.id);
+      if (!unit) return res.status(404).json({ error: 'Unit not found' });
+      res.json(unit);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/units', (req, res) => {
+    try {
+      const unit = ownerPoolStore.saveUnit(req.body);
+      res.json(unit);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/owner-pool/units/:id', (req, res) => {
+    try {
+      const result = ownerPoolStore.deleteUnit(req.params.id);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Policy & Configuration
+  app.get('/api/owner-pool/config', (req, res) => {
+    try {
+      res.json({
+        config: ownerPoolStore.getRuleConfig(),
+        history: ownerPoolStore.getRuleHistory(),
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/config', (req, res) => {
+    try {
+      const updatedBy = String(req.body.updated_by || req.headers['x-user-name'] || 'Financial Controller');
+      const updated = ownerPoolStore.updateRuleConfig(req.body, updatedBy);
+      res.json({
+        success: true,
+        config: updated,
+        history: ownerPoolStore.getRuleHistory(),
+      });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Distribution Batches
+  app.get('/api/owner-pool/batches', (req, res) => {
+    try {
+      const batches = ownerPoolStore.getBatches();
+      res.json(batches);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/owner-pool/batches/:id', (req, res) => {
+    try {
+      const batch = ownerPoolStore.getBatch(req.params.id);
+      if (!batch) return res.status(404).json({ error: 'Distribution batch not found' });
+      res.json(batch);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post(['/api/owner-pool/batches/calculate', '/api/owner-pool/calculate'], (req, res) => {
+    try {
+      const createdBy = String(req.body.created_by || req.headers['x-user-name'] || 'Financial Controller');
+      const batch = ownerPoolStore.calculateMonthlyDistribution({
+        period: req.body.period,
+        custom_room_revenue: req.body.custom_room_revenue !== undefined ? parseFloat(req.body.custom_room_revenue) : undefined,
+        title: req.body.title,
+        created_by: createdBy,
+      });
+      res.json(batch);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/batches/:id/review', (req, res) => {
+    try {
+      const batch = ownerPoolStore.markBatchInReview(req.params.id);
+      res.json(batch);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/batches/:id/approve', (req, res) => {
+    try {
+      const approver = String(req.body.approver_name || req.headers['x-user-name'] || 'Director of Finance');
+      const batch = ownerPoolStore.approveBatch(req.params.id, approver);
+      res.json(batch);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/batches/:id/post', async (req, res) => {
+    try {
+      const postedBy = String(req.body.posted_by || req.headers['x-user-name'] || 'Financial Controller');
+      const batch = await ownerPoolStore.postBatch(req.params.id, postedBy);
+      res.json(batch);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/batches/:id/reverse', async (req, res) => {
+    try {
+      const reversedBy = String(req.body.reversed_by || req.headers['x-user-name'] || 'Financial Controller');
+      const reason = String(req.body.reason || 'Manual reversal / correction');
+      const batch = await ownerPoolStore.reverseBatch(req.params.id, reversedBy, reason);
+      res.json(batch);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Owner Statement
+  app.get('/api/owner-pool/statement', (req, res) => {
+    try {
+      const unitId = String(req.query.unit_id || '');
+      const period = req.query.period ? String(req.query.period) : undefined;
+      if (!unitId) {
+        return res.status(400).json({ error: 'unit_id query parameter is required' });
+      }
+      const stmt = ownerPoolStore.getOwnerStatement(unitId, period);
+      res.json(stmt);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
 

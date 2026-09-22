@@ -77,7 +77,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
     };
   }, [selectedAccountCode, periodFilter]);
 
-  const currentAccount = accounts.find((a) => a.account_code === selectedAccountCode) || ledgerData.account;
+  const currentAccount = (accounts || []).find((a) => a.account_code === selectedAccountCode) || ledgerData.account;
 
   return (
     <div className="space-y-6">

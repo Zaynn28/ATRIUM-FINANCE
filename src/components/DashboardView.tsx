@@ -19,6 +19,9 @@ import {
   BookOpen,
   Scale,
   DollarSign,
+  Package,
+  Coins,
+  Building2,
 } from 'lucide-react';
 import { PrimaryNavPillar } from '../types';
 import { api } from '../services/api';
@@ -338,6 +341,50 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <div>
                     <span className="font-medium text-slate-200 block">2. Operations: Spending Cycle</span>
                     <span className="text-[11px] text-slate-500">Procurement, Vendor AP &amp; Staff Payroll</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+              </button>
+
+              <button
+                onClick={() => goTo('operations', 'inventory')}
+                className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left transition-colors text-xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Package className="w-4 h-4 text-blue-400" />
+                  <div>
+                    <span className="font-medium text-slate-200 block">2. Operations: Hotel Inventory &amp; Storerooms</span>
+                    <span className="text-[11px] text-slate-500">Items, Storerooms, Receiving, Issuance &amp; Stocktake</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+              </button>
+
+              <button
+                id="btn-quick-service-charge"
+                onClick={() => goTo('operations', 'service-charge')}
+                className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left transition-colors text-xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Coins className="w-4 h-4 text-amber-400" />
+                  <div>
+                    <span className="font-medium text-slate-200 block">2. Operations: Service Charge &amp; Gratuities Pool</span>
+                    <span className="text-[11px] text-slate-500">10% Tranche, Points Matrix &amp; Month-End Payroll Close</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+              </button>
+
+              <button
+                id="btn-quick-owner-pool"
+                onClick={() => goTo('operations', 'owner-pool')}
+                className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left transition-colors text-xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Building2 className="w-4 h-4 text-indigo-400" />
+                  <div>
+                    <span className="font-medium text-slate-200 block">2. Operations: Owner Pool &amp; Return Distribution</span>
+                    <span className="text-[11px] text-slate-500">65/35 Allocation, SQM Distribution &amp; 10% Guarantee Audit</span>
                   </div>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-500" />

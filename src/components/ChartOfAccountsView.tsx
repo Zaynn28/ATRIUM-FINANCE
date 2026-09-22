@@ -110,9 +110,17 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
     }
   };
 
+  const safeConfirm = (msg: string): boolean => {
+    try {
+      return window.confirm(msg);
+    } catch {
+      return true;
+    }
+  };
+
   // Deactivate Account
   const handleDeactivate = async (code: string) => {
-    if (!confirm(`Are you sure you want to deactivate Account ${code}? It will remain in historical journals but cannot be used in new entries.`)) {
+    if (!safeConfirm(`Are you sure you want to deactivate Account ${code}? It will remain in historical journals but cannot be used in new entries.`)) {
       return;
     }
     try {
@@ -126,7 +134,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
 
   // Delete Account (only if no posted history)
   const handleDelete = async (code: string) => {
-    if (!confirm(`Attempt delete of Account ${code}? (Rule: Deletion is rejected if any posted journal history exists).`)) {
+    if (!safeConfirm(`Attempt delete of Account ${code}? (Rule: Deletion is rejected if any posted journal history exists).`)) {
       return;
     }
     try {
@@ -140,7 +148,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
 
   // Seed USALI Standard Accounts
   const handleSeedUSALI = async () => {
-    if (!confirm('Load standard USALI hotel chart of accounts and operating departments (Rooms, F&B, Cash, AP, Payroll)? This initializes standard baseline accounts.')) {
+    if (!safeConfirm('Load standard USALI hotel chart of accounts and operating departments (Rooms, F&B, Cash, AP, Payroll)? This initializes standard baseline accounts.')) {
       return;
     }
     setLoading(true);

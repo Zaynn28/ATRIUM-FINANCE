@@ -104,10 +104,10 @@ const ACTION_METADATA: { key: keyof UserRoleDefinition['permissions'][PrimaryNav
 ];
 
 export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
-  users,
-  roles,
+  users = [],
+  roles = [],
   currentUserId,
-  departments,
+  departments = [],
   onSwitchUser,
   onSaveUser,
   onDeleteUser,
@@ -159,8 +159,8 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
   const [saving, setSaving] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const currentUser = users.find((u) => u.id === currentUserId) || users[0];
-  const activeRole = roles.find((r) => r.id === selectedRoleId) || roles[0];
+  const currentUser = users?.find((u) => u.id === currentUserId) || users?.[0];
+  const activeRole = roles?.find((r) => r.id === selectedRoleId) || roles?.[0];
 
   // Open modal to add or edit user
   const handleOpenUserModal = (user?: SystemUser) => {
@@ -262,8 +262,16 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
     }
   };
 
+  const safeConfirm = (msg: string): boolean => {
+    try {
+      return window.confirm(msg);
+    } catch {
+      return true;
+    }
+  };
+
   const handleDeleteUserClick = async (userId: string, userName: string) => {
-    if (!window.confirm(`Are you sure you want to remove user access for "${userName}"?`)) {
+    if (!safeConfirm(`Are you sure you want to remove user access for "${userName}"?`)) {
       return;
     }
     try {
@@ -278,7 +286,7 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
   };
 
   const handleDeleteRoleClick = async (roleId: string, roleName: string) => {
-    if (!window.confirm(`Are you sure you want to delete custom role "${roleName}"?`)) {
+    if (!safeConfirm(`Are you sure you want to delete custom role "${roleName}"?`)) {
       return;
     }
     try {
@@ -298,7 +306,7 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
     pillar: PrimaryNavPillar,
     actionKey: keyof UserRoleDefinition['permissions'][PrimaryNavPillar]
   ) => {
-    const role = roles.find((r) => r.id === roleId);
+    const role = (roles || []).find((r) => r.id === roleId);
     if (!role) return;
 
     const updatedRole: UserRoleDefinition = JSON.parse(JSON.stringify(role));
@@ -488,10 +496,10 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800 text-slate-300">
-                {users.map((user) => {
-                  const role = roles.find((r) => r.id === user.roleId);
+                {(users || []).map((user) => {
+                  const role = (roles || []).find((r) => r.id === user.roleId);
                   const isCurrent = user.id === currentUserId;
-                  const dept = departments.find((d) => d.department_code === user.departmentCode);
+                  const dept = (departments || []).find((d) => d.department_code === user.departmentCode);
 
                   return (
                     <tr
@@ -914,9 +922,9 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {users.map((user) => {
+            {(users || []).map((user) => {
               const isSelected = user.id === currentUserId;
-              const role = roles.find((r) => r.id === user.roleId);
+              const role = (roles || []).find((r) => r.id === user.roleId);
 
               return (
                 <div

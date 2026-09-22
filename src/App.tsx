@@ -8,6 +8,9 @@ import { Navbar } from './components/Navbar';
 import { DashboardView } from './components/DashboardView';
 import { RevenueCycleView } from './components/RevenueCycleView';
 import { SpendingCycleView } from './components/SpendingCycleView';
+import { InventoryModule } from './components/inventory/InventoryModule';
+import { ServiceChargeModule } from './components/operations/service-charge/ServiceChargeModule';
+import { OwnerPoolModule } from './components/operations/owner-pool/OwnerPoolModule';
 import { JournalWorkbenchView } from './components/JournalWorkbenchView';
 import { GeneralLedgerView } from './components/GeneralLedgerView';
 import { TrialBalanceView } from './components/TrialBalanceView';
@@ -45,7 +48,7 @@ export default function App() {
   const [activePillar, setActivePillar] = useState<PrimaryNavPillar>('command-centre');
 
   // Sub-navigation within multi-view pillars
-  const [operationsSubTab, setOperationsSubTab] = useState<'revenue' | 'spending'>('revenue');
+  const [operationsSubTab, setOperationsSubTab] = useState<'revenue' | 'spending' | 'inventory' | 'service-charge' | 'owner-pool'>('revenue');
   const [accountingCoreSubTab, setAccountingCoreSubTab] = useState<'workbench' | 'ledger' | 'trial-balance'>('workbench');
 
   // Master and Transactional Ledger State
@@ -130,8 +133,8 @@ export default function App() {
     }
   };
 
-  const currentUser = accessControl?.users.find((u) => u.id === accessControl.currentUserId);
-  const currentRole = accessControl?.roles.find((r) => r.id === currentUser?.roleId);
+  const currentUser = accessControl?.users?.find((u) => u.id === accessControl?.currentUserId);
+  const currentRole = accessControl?.roles?.find((r) => r.id === currentUser?.roleId);
 
   // Enforce Pillar View Access
   const canViewActivePillar = currentRole
@@ -145,7 +148,10 @@ export default function App() {
   // Direct Pillar Navigation Handler
   const handleNavigateToPillar = (pillar: PrimaryNavPillar, subView?: string) => {
     setActivePillar(pillar);
-    if (pillar === 'operations' && (subView === 'revenue' || subView === 'spending')) {
+    if (
+      pillar === 'operations' &&
+      (subView === 'revenue' || subView === 'spending' || subView === 'inventory' || subView === 'service-charge' || subView === 'owner-pool')
+    ) {
       setOperationsSubTab(subView);
     } else if (
       pillar === 'accounting-core' &&
@@ -157,9 +163,9 @@ export default function App() {
 
   // Cross-Tab Navigation Handler for backward compatibility
   const handleCrossTabNavigate = (tab: string) => {
-    if (tab === 'revenue' || tab === 'spending') {
+    if (tab === 'revenue' || tab === 'spending' || tab === 'inventory' || tab === 'service-charge' || tab === 'owner-pool') {
       setActivePillar('operations');
-      setOperationsSubTab(tab);
+      setOperationsSubTab(tab as any);
     } else if (tab === 'workbench' || tab === 'ledger' || tab === 'trial-balance') {
       setActivePillar('accounting-core');
       setAccountingCoreSubTab(tab as any);
@@ -308,6 +314,27 @@ export default function App() {
               />
             )}
 
+            {activePillar === 'operations' && operationsSubTab === 'inventory' && (
+              <InventoryModule
+                departments={departments}
+                accounts={accounts}
+                onViewJournal={handleViewJournal}
+              />
+            )}
+
+            {activePillar === 'operations' && operationsSubTab === 'service-charge' && (
+              <ServiceChargeModule
+                departments={departments}
+                accounts={accounts}
+                onViewJournal={handleViewJournal}
+                onRefreshStore={refreshAll}
+              />
+            )}
+
+            {activePillar === 'operations' && operationsSubTab === 'owner-pool' && (
+              <OwnerPoolModule />
+            )}
+
             {/* 3. ACCOUNTING CORE (Actual independent double-entry accounting module) */}
             {activePillar === 'accounting-core' && accountingCoreSubTab === 'workbench' && (
               <JournalWorkbenchView
@@ -317,6 +344,10 @@ export default function App() {
                 selectedJournalId={selectedJournalId}
                 onRefresh={refreshAll}
                 onOpenManualJournalModal={() => setIsManualJournalOpen(true)}
+                onNavigateToLedger={() => {
+                  setActivePillar('accounting-core');
+                  setAccountingCoreSubTab('ledger');
+                }}
               />
             )}
 

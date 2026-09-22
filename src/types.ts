@@ -598,4 +598,570 @@ export interface AccessControlState {
   currentUserId: string;
 }
 
+// ==========================================
+// HOTEL INVENTORY MANAGEMENT MODULE TYPES
+// ==========================================
+
+export interface InventoryCategory {
+  category_id: string;
+  name: string;
+  subcategories: string[];
+  default_inventory_account: string; // e.g. '1080' Operating Supplies & Inventories
+  default_expense_account: string; // e.g. '5010' Food Cost, '7010' Guest Supplies
+  is_fixed_asset: boolean; // Must be false - fixed assets are excluded
+  active: ActiveStatus;
+}
+
+export interface InventoryStoreroom {
+  storeroom_id: string;
+  name: string;
+  department_code: string;
+  manager_name: string;
+  bins: string[];
+  active: ActiveStatus;
+}
+
+export interface ItemStoreroomStock {
+  item_id: string;
+  storeroom_id: string;
+  bin_location: string;
+  quantity: number;
+  last_counted_at?: string;
+}
+
+export interface InventoryItem {
+  item_id: string;
+  item_code: string; // Unique
+  item_name: string;
+  category_id: string;
+  subcategory: string;
+  uom: string; // KG, L, BTL, PCS, BOX, PACK, ROLL, SET
+  barcode: string; // Unique where assigned (Manufacturer or Internal ATRIUM)
+  supplier: string;
+  default_storeroom_id: string;
+  default_bin_location: string;
+  min_stock: number;
+  reorder_point: number;
+  max_stock: number;
+  current_stock: number; // Aggregated total hotel stock
+  last_purchase_cost: number;
+  average_cost: number;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  storeroom_stocks?: ItemStoreroomStock[];
+}
+
+export type StockMovementType =
+  | 'RECEIPT'
+  | 'DEPARTMENT_ISSUE'
+  | 'TRANSFER_IN'
+  | 'TRANSFER_OUT'
+  | 'ADJUSTMENT_IN'
+  | 'ADJUSTMENT_OUT'
+  | 'SUPPLIER_RETURN'
+  | 'DEPARTMENT_RETURN';
+
+export type MovementReferenceType =
+  | 'PURCHASE_RECEIPT'
+  | 'GOODS_RECEIPT'
+  | 'DEPARTMENT_REQUISITION'
+  | 'DIRECT_ISSUE'
+  | 'STOCK_TRANSFER'
+  | 'PHYSICAL_COUNT_ADJUSTMENT'
+  | 'MANUAL_ADJUSTMENT'
+  | 'INITIAL_BALANCE';
+
+export interface StockMovement {
+  movement_id: string;
+  timestamp: string; // ISO String
+  date: string; // YYYY-MM-DD
+  movement_type: StockMovementType;
+  reference_type: MovementReferenceType;
+  reference_id: string;
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  storeroom_id: string;
+  storeroom_name: string;
+  to_storeroom_id?: string;
+  to_storeroom_name?: string;
+  bin_location?: string;
+  quantity: number; // Always positive magnitude
+  before_quantity: number;
+  after_quantity: number;
+  unit_cost: number;
+  total_cost: number;
+  department_code?: string;
+  department_name?: string;
+  user_id: string;
+  user_name: string;
+  notes?: string;
+  journal_id?: string; // Linked accounting double-entry voucher
+}
+
+export interface RequisitionItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  uom: string;
+  requested_quantity: number;
+  approved_quantity: number;
+  issued_quantity: number;
+  unit_cost: number;
+  total_cost: number;
+}
+
+export type RequisitionStatus = 'PENDING' | 'APPROVED' | 'ISSUED' | 'REJECTED';
+
+export interface DepartmentRequisition {
+  requisition_id: string;
+  date: string;
+  department_code: string;
+  department_name: string;
+  requester_name: string;
+  storeroom_id: string;
+  storeroom_name: string;
+  status: RequisitionStatus;
+  items: RequisitionItem[];
+  notes?: string;
+  approver_name?: string;
+  approved_at?: string;
+  issuer_name?: string;
+  issued_at?: string;
+  journal_id?: string;
+  created_at: string;
+}
+
+export interface GoodsReceiptItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  uom: string;
+  received_quantity: number;
+  unit_cost: number;
+  total_cost: number;
+  bin_location?: string;
+  batch_or_lot?: string;
+  expiry_date?: string;
+}
+
+export interface GoodsReceipt {
+  receipt_id: string;
+  date: string;
+  po_reference: string;
+  vendor_name: string;
+  storeroom_id: string;
+  storeroom_name: string;
+  items: GoodsReceiptItem[];
+  total_amount: number;
+  received_by: string;
+  notes?: string;
+  journal_id?: string;
+  created_at: string;
+}
+
+export interface StockCountItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  barcode: string;
+  uom: string;
+  bin_location: string;
+  system_quantity: number;
+  physical_quantity: number;
+  variance_quantity: number; // physical_quantity - system_quantity
+  unit_cost: number;
+  variance_value: number; // variance_quantity * unit_cost
+  notes?: string;
+}
+
+export type StockCountStatus = 'IN_PROGRESS' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+
+export interface StockCountSession {
+  count_id: string;
+  title: string;
+  date: string;
+  storeroom_id: string;
+  storeroom_name: string;
+  counted_by: string;
+  status: StockCountStatus;
+  items: StockCountItem[];
+  total_system_value: number;
+  total_physical_value: number;
+  total_variance_value: number;
+  approved_by?: string;
+  approved_at?: string;
+  adjustment_journal_id?: string;
+  created_at: string;
+}
+
+export type AdjustmentReasonCode =
+  | 'DAMAGE'
+  | 'EXPIRY'
+  | 'BREAKAGE'
+  | 'SHRINKAGE'
+  | 'COUNT_VARIANCE'
+  | 'INITIAL_SEED'
+  | 'OTHER';
+
+export interface StockAdjustmentRecord {
+  adjustment_id: string;
+  date: string;
+  type: 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT';
+  storeroom_id: string;
+  storeroom_name: string;
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  quantity: number;
+  unit_cost: number;
+  total_cost: number;
+  reason_code: AdjustmentReasonCode;
+  reason_notes: string;
+  approved_by: string;
+  journal_id?: string;
+  timestamp: string;
+}
+
+export interface InventoryDashboardKPIs {
+  total_valuation: number;
+  total_inventory_value_idr?: number;
+  total_inventory_value_usd?: number;
+  total_skus: number;
+  total_items_count?: number;
+  low_stock_count: number;
+  low_stock_items_count?: number;
+  out_of_stock_count: number;
+  pending_requisitions_count: number;
+  open_stock_counts_count?: number;
+  monthly_receipts_value: number;
+  monthly_issues_value: number;
+  recent_movements: StockMovement[];
+  top_consumed_items: {
+    item_code: string;
+    item_name: string;
+    quantity: number;
+    uom: string;
+    total_cost: number;
+  }[];
+  category_breakdown?: {
+    category_id: string;
+    category_name: string;
+    total_value_idr: number;
+    items_count: number;
+  }[];
+  storeroom_breakdown?: {
+    storeroom_id: string;
+    storeroom_name: string;
+    total_value_idr: number;
+    items_count: number;
+  }[];
+}
+
+// ==========================================
+// 7. STAFF SERVICE CHARGE & GRATUITIES POOL
+// ==========================================
+
+export type StaffGradeLevel = 'Grade 1' | 'Grade 2' | 'Grade 3' | 'Grade 4' | 'Grade 5';
+export type EmploymentStatus = 'Permanent' | 'Contract' | 'Probation' | 'Casual';
+export type ServiceChargeSource = 'PMS_ROOMS' | 'POS_FB' | 'POS_SPA' | 'BANQUETS_MICE' | 'MANUAL_GRATUITY';
+export type DistributionCycleStatus = 'DRAFT' | 'CALCULATED' | 'APPROVED' | 'POSTED_TO_PAYROLL';
+
+export interface StaffEmployee {
+  employee_id: string;
+  employee_name: string;
+  department_code: string; // e.g. 100 Rooms, 200 F&B, 300 Spa, 800 Engineering
+  job_title: string;
+  grade_level: StaffGradeLevel;
+  base_points: number; // e.g. 1.0, 1.2, 1.5, 1.8, 2.2
+  hire_date: string; // YYYY-MM-DD
+  employment_status: EmploymentStatus;
+  bank_account_number: string;
+  bank_name: string;
+  is_eligible: boolean; // ExCom/GM excluded by law, operational staff included
+  active: 'Y' | 'N';
+  notes?: string;
+}
+
+export interface ServiceChargeCollection {
+  collection_id: string;
+  date: string; // YYYY-MM-DD
+  period: string; // YYYY-MM
+  source: ServiceChargeSource;
+  department_code: string;
+  gross_sales_amount: number;
+  service_charge_rate_pct: number; // default 10.0%
+  service_charge_amount: number; // 10% of gross
+  reference_no: string; // Folio / Check / Banquet contract no.
+  status: 'ACCRUED' | 'DISTRIBUTED';
+  journal_id?: string;
+  notes?: string;
+}
+
+export interface ServiceChargeStaffAllocationLine {
+  employee_id: string;
+  employee_name: string;
+  department_code: string;
+  job_title: string;
+  grade_level: StaffGradeLevel;
+  base_points: number;
+  years_of_service: number;
+  seniority_bonus_pct: number; // +5% per full year, capped at 25%
+  standard_calendar_days: number; // e.g. 31 days in Aug
+  days_worked: number; // e.g. 31 days
+  attendance_ratio: number; // days_worked / standard_calendar_days
+  effective_points: number; // base_points * (1 + seniority_bonus_pct/100) * attendance_ratio
+  point_value_rate: number; // Rp per point
+  gross_payout: number; // effective_points * point_value_rate
+  tax_withholding_pct: number; // e.g. 5% PPh 21
+  tax_withheld_amount: number;
+  net_payout: number;
+  payout_status: 'PENDING' | 'DISBURSED';
+}
+
+export interface ServiceChargeDistributionCycle {
+  cycle_id: string; // e.g. SC-2026-08
+  period: string; // YYYY-MM
+  title: string;
+  status: DistributionCycleStatus;
+  total_collected_amount: number;
+  company_retention_pct: number; // 0% or up to 5% legal breakage reserve
+  company_retention_amount: number;
+  prior_reserve_carryover: number;
+  distributable_pool_amount: number;
+  total_staff_count: number;
+  total_weighted_points: number;
+  point_value_rate: number; // Distributable Pool / Total Points
+  total_gross_payout: number;
+  total_tax_withheld: number;
+  total_net_payout: number;
+  reserve_balance_retained: number; // Remaining rounding or reserve
+  journal_id?: string;
+  created_by: string;
+  approved_by?: string;
+  posted_at?: string;
+  reconciliation_notes?: string;
+  lines: ServiceChargeStaffAllocationLine[];
+}
+
+export interface ServiceChargeKPIs {
+  trust_liability_balance: number; // In Account 2030 (Trust Liability)
+  current_period_collections: number;
+  active_eligible_staff: number;
+  estimated_point_value: number;
+  last_distributed_amount: number;
+  last_distributed_point_value: number;
+  total_all_time_distributed: number;
+  department_breakdown: {
+    department_code: string;
+    department_name: string;
+    staff_count: number;
+    allocated_amount: number;
+  }[];
+}
+
+// ==========================================
+// APARTMENT OWNER POOL & RETURN DISTRIBUTION
+// ==========================================
+
+export type OwnershipStatus = 'Active' | 'Inactive' | 'Pending';
+export type OwnerDistributionEligibility = 'Eligible' | 'Suspended' | 'Ineligible';
+
+export type OwnerTaxTreatment = 
+  | 'WHT_FINAL_10_PCT'          // PPh Final Pasal 4(2) Sewa Tanah/Bangunan 10%
+  | 'WHT_PPh23_2_PCT'           // PPh 23 Badan (2%)
+  | 'WHT_PPh23_NON_NPWP_4_PCT'  // PPh 23 Non-NPWP (4%)
+  | 'TAX_EXEMPT'                // Tax Exempt (0%)
+  | 'NOT_CONFIGURED';           // Requires Configuration
+
+export interface OwnerUnit {
+  unit_id: string;              // e.g. "UNIT-0301"
+  unit_number: string;          // e.g. "301"
+  floor_number: number;         // e.g. 3
+  unit_type: 'Studio' | '1-Bedroom' | '2-Bedroom' | 'Penthouse Suite';
+  owner_id: string;             // e.g. "OWN-001"
+  owner_name: string;           // e.g. "Ir. Hendra Gunawan"
+  owner_email?: string;
+  owner_phone?: string;
+  unit_sqm: number;             // Required: e.g. 45.50 SQM
+  purchase_price: number;       // Required: Purchase price in IDR
+  vat_amount: number;           // Required: VAT amount in IDR (Purchase Price - VAT = Return Basis)
+  contract_start_date: string;  // Required: YYYY-MM-DD
+  contract_end_date: string;    // Required: YYYY-MM-DD
+  ownership_status: OwnershipStatus;
+  distribution_status: OwnerDistributionEligibility;
+  tax_treatment: OwnerTaxTreatment;
+  tax_rate_pct?: number;        // e.g. 10.0 or 2.0 (undefined if NOT_CONFIGURED)
+  bank_name: string;            // e.g. "BCA"
+  bank_account_number: string;  // e.g. "883-0192831"
+  bank_account_name: string;    // e.g. "Hendra Gunawan"
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type GuaranteedReturnBasisType = 'PURCHASE_PRICE_LESS_VAT' | 'PURCHASE_PRICE' | 'CUSTOM';
+export type DistributionBasisType = 'UNIT_SQM';
+
+export interface OwnerDistributionRuleConfig {
+  config_id: string;
+  effective_date: string;       // YYYY-MM-DD
+  owner_pool_pct: number;       // Default: 65.0 (%)
+  amg_allocation_pct: number;   // Default: 35.0 (%)
+  guaranteed_return_rate_pct: number; // Default: 10.0 (%)
+  guaranteed_period_years: number;    // Default: 3 (years)
+  guaranteed_return_basis: GuaranteedReturnBasisType; // Default: 'PURCHASE_PRICE_LESS_VAT'
+  distribution_basis: DistributionBasisType;          // Default: 'UNIT_SQM'
+  guarantee_difference_rule: 'FLAG_FOR_REVIEW' | 'AUTO_TOP_UP' | 'NO_ADJUSTMENT'; // Default: 'FLAG_FOR_REVIEW'
+  updated_at: string;
+  updated_by: string;
+  revision_notes?: string;
+}
+
+export interface OwnerPoolAllocationLine {
+  line_id: string;
+  unit_id: string;
+  unit_number: string;
+  owner_id: string;
+  owner_name: string;
+  unit_sqm: number;
+  allocation_pct: number;       // Unit SQM / Total Eligible SQM
+
+  // Pool-Based SQM Allocation
+  pool_allocation_amount: number; // Owner Pool * allocation_pct
+
+  // Guaranteed Return Calculation
+  purchase_price: number;
+  vat_amount: number;
+  return_basis_amount: number;  // e.g. purchase_price - vat_amount
+  annual_guaranteed_return: number; // return_basis_amount * rate (10%)
+  monthly_guaranteed_return: number; // annual / 12
+  contract_start_date: string;
+  contract_end_date: string;
+  is_within_guarantee_period: boolean;
+  contract_year_number: number; // 1, 2, 3, or >3
+
+  // Comparison & Applicable Return
+  applicable_return_basis_type: 'GUARANTEED_RETURN' | 'POOL_ALLOCATION';
+  gross_return_amount: number;
+  rule_applied_description: string;
+  guarantee_pool_difference: number; // monthly_guaranteed_return - pool_allocation_amount
+  difference_flag: 'NONE' | 'SHORTFALL' | 'SURPLUS';
+  difference_note: string;
+
+  // Tax Withholding Breakdown
+  tax_treatment: OwnerTaxTreatment;
+  tax_type_label: string;
+  tax_rate_pct: number;
+  tax_base_amount: number;
+  tax_withheld_amount: number;
+  tax_status: 'CONFIGURED' | 'REQUIRES_CONFIGURATION';
+
+  // Net Payout
+  net_distribution_amount: number; // gross_return_amount - tax_withheld_amount
+
+  // Bank & Audit Snapshot
+  bank_name: string;
+  bank_account_number: string;
+  bank_account_name: string;
+  status: 'CALCULATED' | 'APPROVED' | 'POSTED';
+}
+
+export interface OwnerPoolReconciliation {
+  is_reconciled: boolean;
+  check1_pool_plus_amg_equals_revenue: boolean;
+  check1_diff: number;
+  check2_allocations_sum_equals_pool: boolean;
+  check2_diff: number;
+  check3_sqm_sum_equals_total_sqm: boolean;
+  check3_diff: number;
+  check4_gross_minus_tax_equals_net: boolean;
+  check4_diff: number;
+  check5_all_recipients_valid: boolean;
+  check6_no_duplicate_units: boolean;
+  check7_no_inactive_contracts: boolean;
+  check8_source_revenue_posted: boolean;
+  discrepancy_messages: string[];
+}
+
+export type OwnerDistributionBatchStatus = 'DRAFT' | 'CALCULATED' | 'REVIEW' | 'APPROVED' | 'POSTED' | 'REVERSED';
+
+export interface OwnerDistributionBatch {
+  batch_id: string;             // e.g. "ODB-2026-09"
+  period: string;               // e.g. "2026-09"
+  batch_title: string;
+  status: OwnerDistributionBatchStatus;
+
+  // Source Revenue
+  room_revenue_amount: number;
+  room_revenue_source_accounts: string[];
+  room_revenue_source_transactions_count: number;
+  is_source_revenue_posted: boolean;
+
+  // Rule Config Applied (Snapshot at calculation time)
+  applied_rule_config: OwnerDistributionRuleConfig;
+
+  // 65/35 Pool Split
+  owner_pool_pct: number;       // 65.0%
+  owner_pool_amount: number;
+  amg_allocation_pct: number;   // 35.0%
+  amg_allocation_amount: number;
+
+  // Master Dynamic Stats
+  total_eligible_sqm: number;
+  eligible_units_count: number;
+  active_owners_count: number;
+
+  // Aggregated Totals
+  total_pool_allocations: number;
+  total_guaranteed_returns: number;
+  total_gross_return: number;
+  total_tax_withholding: number;
+  total_net_distribution: number;
+
+  // Shortfall / Surplus Analysis
+  total_guarantee_shortfall: number;
+  units_with_shortfall_count: number;
+  units_with_surplus_count: number;
+
+  // Reconciliation
+  reconciliation: OwnerPoolReconciliation;
+
+  // Accounting Ledger Linkage
+  journal_id?: string;
+  created_by: string;
+  created_at: string;
+  approved_by?: string;
+  approved_at?: string;
+  posted_by?: string;
+  posted_at?: string;
+  reversal_of_batch_id?: string;
+  notes?: string;
+
+  lines: OwnerPoolAllocationLine[];
+}
+
+export interface OwnerPoolDashboardKPIs {
+  period: string;
+  room_revenue: number;
+  owner_pool_amount: number;
+  amg_allocation_amount: number;
+  eligible_units_count: number;
+  total_eligible_sqm: number;
+  gross_owner_return: number;
+  tax_withholding: number;
+  net_distribution: number;
+  unreconciled_amount: number;
+  reconciliation_status: 'RECONCILED' | 'REQUIRES_REVIEW';
+  has_posted_data: boolean;
+  active_batches_count: number;
+  posted_batches_count: number;
+  current_batch_id?: string;
+  current_batch_status?: OwnerDistributionBatchStatus;
+}
+
+
+
 

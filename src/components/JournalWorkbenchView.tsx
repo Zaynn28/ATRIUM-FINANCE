@@ -21,6 +21,8 @@ import {
   Check,
   Trash2,
   Info,
+  X,
+  ArrowRight,
 } from 'lucide-react';
 import { JournalWithLines, JournalStatus, Account, Department } from '../types';
 import { api } from '../services/api';
@@ -32,15 +34,17 @@ interface JournalWorkbenchViewProps {
   selectedJournalId?: string | null;
   onRefresh: () => void;
   onOpenManualJournalModal: () => void;
+  onNavigateToLedger?: (accountCode?: string) => void;
 }
 
 export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
-  journals,
-  accounts,
-  departments,
+  journals = [],
+  accounts = [],
+  departments = [],
   selectedJournalId,
   onRefresh,
   onOpenManualJournalModal,
+  onNavigateToLedger,
 }) => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,6 +54,12 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // In-app interactive confirmation modals (No iframe window.confirm or window.prompt)
+  const [postingJournal, setPostingJournal] = useState<JournalWithLines | null>(null);
+  const [reversingJournal, setReversingJournal] = useState<JournalWithLines | null>(null);
+  const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
+  const [reversalDateInput, setReversalDateInput] = useState<string>('');
 
   // Toggle accordion expand
   const toggleExpand = (id: string) => {
@@ -82,7 +92,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       setSuccessMessage(`Journal ${id} successfully validated (Debits = Credits verified).`);
       onRefresh();
     } catch (err: any) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message || 'Validation failed');
     } finally {
       setActionLoading(null);
     }
@@ -97,69 +107,63 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       setSuccessMessage(`Journal ${id} approved by Controller.`);
       onRefresh();
     } catch (err: any) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message || 'Approval failed');
     } finally {
       setActionLoading(null);
     }
   };
 
-  // Action: Post (Locks journal, permanent ledger integration)
-  const handlePost = async (id: string) => {
-    if (
-      !confirm(
-        `POST JOURNAL ${id}?\n\nCRITICAL AUDIT RULE: Once posted, this journal is permanently locked and immutable. It cannot be edited or deleted. Are you sure you want to post it to the General Ledger?`
-      )
-    ) {
-      return;
-    }
-
+  // Action: Post (Confirmed via in-app modal, auto-approving if needed)
+  const executePost = async (id: string) => {
     setActionLoading(id);
     setErrorMessage(null);
     try {
-      await api.postJournal(id);
-      setSuccessMessage(`Journal ${id} POSTED and locked. It is now active in General Ledger & Trial Balance.`);
+      await api.postJournal(id, { autoApprove: true });
+      setSuccessMessage(
+        `Journal ${id} POSTED and permanently locked. It is now active in General Ledger & Trial Balance.`
+      );
+      setPostingJournal(null);
       onRefresh();
     } catch (err: any) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message || 'Failed to post journal to ledger');
     } finally {
       setActionLoading(null);
     }
   };
 
-  // Action: Reverse (Creates offsetting journal, original marked reversed)
-  const handleReverse = async (id: string) => {
-    const revDate = prompt(
-      `REVERSE POSTED JOURNAL ${id}\n\nEnter the reversal effective date (YYYY-MM-DD):`,
-      new Date().toISOString().split('T')[0]
-    );
-    if (!revDate) return;
-
+  // Action: Reverse (Confirmed via in-app modal)
+  const executeReverse = async (id: string) => {
+    if (!reversalDateInput) {
+      setErrorMessage('Please enter an effective date for the reversal journal.');
+      return;
+    }
     setActionLoading(id);
     setErrorMessage(null);
     try {
-      const res = await api.reverseJournal(id, revDate);
+      const res = await api.reverseJournal(id, reversalDateInput);
       setSuccessMessage(
         `Journal ${id} reversed. Offsetting reversal journal ${res.reversal.journal_id} generated.`
       );
+      setReversingJournal(null);
       onRefresh();
     } catch (err: any) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message || 'Failed to reverse journal');
     } finally {
       setActionLoading(null);
     }
   };
 
-  // Action: Delete Draft
-  const handleDeleteDraft = async (id: string) => {
-    if (!confirm(`Delete draft journal ${id}?`)) return;
+  // Action: Delete Draft (Confirmed via in-app modal)
+  const executeDeleteDraft = async (id: string) => {
     setActionLoading(id);
     setErrorMessage(null);
     try {
       await api.deleteJournal(id);
       setSuccessMessage(`Draft journal ${id} deleted.`);
+      setDeletingDraftId(null);
       onRefresh();
     } catch (err: any) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message || 'Failed to delete draft');
     } finally {
       setActionLoading(null);
     }
@@ -226,26 +230,43 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
 
       {/* Notifications */}
       {errorMessage && (
-        <div className="p-3 bg-red-950/40 border border-red-800/50 rounded-lg flex items-center justify-between text-xs text-red-200">
-          <div className="flex items-center gap-2">
+        <div className="p-3.5 bg-red-950/40 border border-red-800/60 rounded-xl flex items-center justify-between text-xs text-red-200">
+          <div className="flex items-center gap-2.5">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-            <span>{errorMessage}</span>
+            <span className="font-sans">{errorMessage}</span>
           </div>
-          <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-red-300">
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="text-red-400 hover:text-red-300 text-xs px-2 py-0.5 rounded hover:bg-red-900/40"
+          >
             Dismiss
           </button>
         </div>
       )}
 
       {successMessage && (
-        <div className="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-lg flex items-center justify-between text-xs text-emerald-200">
-          <div className="flex items-center gap-2">
+        <div className="p-3.5 bg-emerald-950/40 border border-emerald-800/60 rounded-xl flex items-center justify-between text-xs text-emerald-200">
+          <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>{successMessage}</span>
+            <span className="font-sans">{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-emerald-400 hover:text-emerald-300">
-            Dismiss
-          </button>
+          <div className="flex items-center gap-3">
+            {onNavigateToLedger && (
+              <button
+                onClick={() => onNavigateToLedger()}
+                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-medium flex items-center gap-1 transition-colors"
+              >
+                <span>View in General Ledger</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+            )}
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="text-emerald-400 hover:text-emerald-300 text-xs px-2 py-0.5 rounded hover:bg-emerald-900/40"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
 
@@ -380,7 +401,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
 
                     {/* Workflow State Transition Buttons */}
                     <div className="flex items-center gap-1.5 font-sans">
-                      {/* Step 1: DRAFT -> VALIDATE */}
+                      {/* Step 1: DRAFT -> VALIDATE or DIRECT POST */}
                       {journal.status === 'DRAFT' && (
                         <>
                           <button
@@ -388,12 +409,23 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             onClick={() => handleValidate(journal.journal_id)}
                             disabled={isLoading}
                             className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm flex items-center gap-1"
+                            title="Verify Debits = Credits balance"
                           >
                             <FileCheck className="w-3.5 h-3.5" />
                             <span>Validate</span>
                           </button>
                           <button
-                            onClick={() => handleDeleteDraft(journal.journal_id)}
+                            id={`btn-post-draft-${journal.journal_id}`}
+                            onClick={() => setPostingJournal(journal)}
+                            disabled={isLoading}
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                            title="Post to General Ledger (auto-validates and approves)"
+                          >
+                            <Lock className="w-3.5 h-3.5" />
+                            <span>Post to Ledger</span>
+                          </button>
+                          <button
+                            onClick={() => setDeletingDraftId(journal.journal_id)}
                             disabled={isLoading}
                             className="p-1.5 text-slate-500 hover:text-red-400 rounded-lg hover:bg-slate-800"
                             title="Delete Draft"
@@ -403,24 +435,36 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                         </>
                       )}
 
-                      {/* Step 2: VALIDATED -> APPROVE */}
+                      {/* Step 2: VALIDATED -> APPROVE or DIRECT POST */}
                       {journal.status === 'VALIDATED' && (
-                        <button
-                          id={`btn-approve-${journal.journal_id}`}
-                          onClick={() => handleApprove(journal.journal_id)}
-                          disabled={isLoading}
-                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm flex items-center gap-1"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                          <span>Approve (Controller)</span>
-                        </button>
+                        <>
+                          <button
+                            id={`btn-approve-${journal.journal_id}`}
+                            onClick={() => handleApprove(journal.journal_id)}
+                            disabled={isLoading}
+                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm flex items-center gap-1"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Approve</span>
+                          </button>
+                          <button
+                            id={`btn-post-val-${journal.journal_id}`}
+                            onClick={() => setPostingJournal(journal)}
+                            disabled={isLoading}
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                            title="Post to General Ledger (Permanent & Immutable)"
+                          >
+                            <Lock className="w-3.5 h-3.5" />
+                            <span>Post to Ledger</span>
+                          </button>
+                        </>
                       )}
 
                       {/* Step 3: APPROVED -> POST (LOCKS PERMANENTLY) */}
                       {journal.status === 'APPROVED' && (
                         <button
                           id={`btn-post-${journal.journal_id}`}
-                          onClick={() => handlePost(journal.journal_id)}
+                          onClick={() => setPostingJournal(journal)}
                           disabled={isLoading}
                           className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
                           title="Post to General Ledger (Permanent & Immutable)"
@@ -430,18 +474,33 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                         </button>
                       )}
 
-                      {/* Step 4: POSTED -> REVERSE ONLY */}
+                      {/* Step 4: POSTED -> REVERSE & VIEW GL */}
                       {journal.status === 'POSTED' && (
-                        <button
-                          id={`btn-reverse-${journal.journal_id}`}
-                          onClick={() => handleReverse(journal.journal_id)}
-                          disabled={isLoading}
-                          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
-                          title="Post offsetting reversal journal (Original remains locked)"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                          <span>Reverse Journal</span>
-                        </button>
+                        <>
+                          {onNavigateToLedger && (
+                            <button
+                              onClick={() => onNavigateToLedger()}
+                              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+                              title="View entries in General Ledger"
+                            >
+                              <span>View in GL</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
+                          )}
+                          <button
+                            id={`btn-reverse-${journal.journal_id}`}
+                            onClick={() => {
+                              setReversingJournal(journal);
+                              setReversalDateInput(new Date().toISOString().split('T')[0]);
+                            }}
+                            disabled={isLoading}
+                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+                            title="Post offsetting reversal journal (Original remains locked)"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Reverse</span>
+                          </button>
+                        </>
                       )}
 
                       {/* Status REVERSED */}
@@ -458,61 +517,69 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                 {isExpanded && (
                   <div className="border-t border-slate-800/80 bg-slate-950/60 p-5 space-y-4">
                     {/* Audit Metadata */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-slate-900/70 p-3 rounded-lg border border-slate-800 font-mono">
                       <div>
-                        <span className="text-slate-500 block text-[10px]">Created By:</span>
-                        <span className="text-slate-200">{journal.created_by || 'System'}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block text-[10px]">Approved By:</span>
-                        <span className="text-slate-200">{journal.approved_by || 'Pending Approval'}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block text-[10px]">Posted At:</span>
-                        <span className="text-slate-200">
-                          {journal.posted_at ? new Date(journal.posted_at).toLocaleString() : 'Not Posted'}
+                        <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
+                          Created By
+                        </span>
+                        <span className="text-slate-200">{journal.created_by}</span>
+                        <span className="text-[10px] text-slate-500 block truncate">
+                          {journal.created_at ? new Date(journal.created_at).toLocaleString() : '—'}
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[10px]">Ledger Status:</span>
+                        <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
+                          Approved By
+                        </span>
+                        <span className="text-slate-200">{journal.approved_by || 'Pending'}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
+                          Posted Timestamp
+                        </span>
+                        <span className="text-slate-200">
+                          {journal.posted_at ? new Date(journal.posted_at).toLocaleString() : 'Unposted'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
+                          Status &amp; Lock
+                        </span>
                         <span
-                          className={`font-semibold ${
-                            journal.status === 'POSTED' || journal.status === 'REVERSED'
-                              ? 'text-emerald-400'
-                              : 'text-amber-400'
-                          }`}
+                          className={
+                            journal.status === 'POSTED'
+                              ? 'text-emerald-400 font-semibold'
+                              : 'text-amber-400 font-semibold'
+                          }
                         >
-                          {journal.status === 'POSTED'
-                            ? 'Active in GL (Real)'
-                            : journal.status === 'REVERSED'
-                            ? 'Reversed in GL'
-                            : 'Excluded from GL (Pending)'}
+                          {journal.status === 'POSTED' ? 'LOCKED & IMMUTABLE' : 'MUTABLE DRAFT'}
                         </span>
                       </div>
                     </div>
 
-                    {/* Double-Entry Lines Table */}
-                    <div className="border border-slate-800 rounded-lg overflow-hidden">
-                      <table className="w-full text-left text-xs font-mono">
-                        <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
+                    {/* Journal Lines Table */}
+                    <div className="overflow-x-auto rounded-lg border border-slate-800">
+                      <table className="w-full text-xs font-mono">
+                        <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 text-left">
                           <tr>
-                            <th className="py-2.5 px-3 w-10 text-center">Line</th>
-                            <th className="py-2.5 px-3">Account Code</th>
-                            <th className="py-2.5 px-3">Account Name</th>
-                            <th className="py-2.5 px-3">Dept</th>
-                            <th className="py-2.5 px-3 text-right">Debit ($)</th>
-                            <th className="py-2.5 px-3 text-right">Credit ($)</th>
-                            <th className="py-2.5 px-3">Description</th>
+                            <th className="py-2 px-3">#</th>
+                            <th className="py-2 px-3">Account Code</th>
+                            <th className="py-2 px-3">Account Name</th>
+                            <th className="py-2 px-3">Department</th>
+                            <th className="py-2 px-3 text-right">Debit ($)</th>
+                            <th className="py-2 px-3 text-right">Credit ($)</th>
+                            <th className="py-2 px-3">Description</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/60">
+                        <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
                           {journal.lines.map((line) => {
-                            const acc = accounts.find((a) => a.account_code === line.account_code);
-                            const dept = departments.find((d) => d.department_code === line.department_code);
-
+                            const acc = (accounts || []).find((a) => a.account_code === line.account_code);
+                            const dept = (departments || []).find(
+                              (d) => d.department_code === line.department_code
+                            );
                             return (
-                              <tr key={line.line_no} className="hover:bg-slate-900/40">
-                                <td className="py-2 px-3 text-center text-slate-500">{line.line_no}</td>
+                              <tr key={line.line_number} className="hover:bg-slate-900/50">
+                                <td className="py-2 px-3 text-slate-500">{line.line_number}</td>
                                 <td className="py-2 px-3 font-semibold text-slate-200">
                                   {line.account_code}
                                 </td>
@@ -568,11 +635,22 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
 
                     {/* Immutable Rule Notice for POSTED journals */}
                     {journal.status === 'POSTED' && (
-                      <div className="p-3 bg-emerald-950/20 border border-emerald-900/40 rounded-lg flex items-center gap-2 text-xs text-emerald-300/80">
-                        <Lock className="w-4 h-4 text-emerald-400 shrink-0" />
-                        <span>
-                          <strong>Immutable Record:</strong> This journal is locked. Editing or deletion is disabled per accounting standards. To correct errors, use the <strong>Reverse Journal</strong> button above to post an offsetting entry.
-                        </span>
+                      <div className="p-3 bg-emerald-950/20 border border-emerald-900/40 rounded-lg flex items-center justify-between gap-3 text-xs text-emerald-300/80">
+                        <div className="flex items-center gap-2">
+                          <Lock className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span>
+                            <strong>Immutable Record:</strong> This journal is locked. Editing or deletion is disabled per accounting standards. To correct errors, use the <strong>Reverse</strong> button to post an offsetting entry.
+                          </span>
+                        </div>
+                        {onNavigateToLedger && (
+                          <button
+                            onClick={() => onNavigateToLedger()}
+                            className="px-2.5 py-1 text-xs bg-emerald-950/80 text-emerald-300 border border-emerald-800/50 rounded-lg hover:bg-emerald-900/60 flex items-center gap-1 font-medium shrink-0 transition-colors"
+                          >
+                            <span>Open in GL</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -582,6 +660,225 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
           })
         )}
       </div>
+
+      {/* MODAL: In-app Post Confirmation (Replaces window.confirm) */}
+      {postingJournal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl space-y-4 p-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 rounded-lg">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-100">
+                    Post Journal to General Ledger
+                  </h3>
+                  <p className="text-xs text-slate-400 font-mono">
+                    {postingJournal.journal_id} &bull; Period: {postingJournal.period}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPostingJournal(null)}
+                className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-300">
+              <div className="bg-slate-950/70 border border-slate-800/80 rounded-lg p-3 space-y-1.5 font-mono">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Journal Date:</span>
+                  <span className="text-slate-200">{postingJournal.journal_date}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Source:</span>
+                  <span className="text-slate-200">{postingJournal.source_type} ({postingJournal.source_reference || 'Manual'})</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Total Debits:</span>
+                  <span className="text-emerald-400 font-semibold">${postingJournal.total_debit.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Total Credits:</span>
+                  <span className="text-blue-400 font-semibold">${postingJournal.total_credit.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between pt-1 border-t border-slate-800">
+                  <span className="text-slate-400">Double-Entry Status:</span>
+                  <span className={postingJournal.is_balanced ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>
+                    {postingJournal.is_balanced ? "Balanced (Debits = Credits)" : "Out of Balance!"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-amber-950/30 border border-amber-800/40 rounded-lg flex items-start gap-2.5 text-amber-300/90 text-xs">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-amber-200">Audit Rule (Permanent Immutable Lock)</p>
+                  <p className="mt-0.5 text-slate-300 text-[11px]">
+                    Once posted, this journal is permanently locked. It will immediately update the General Ledger balances and the Trial Balance.
+                  </p>
+                </div>
+              </div>
+
+              {postingJournal.status !== 'APPROVED' && (
+                <div className="p-2.5 bg-indigo-950/30 border border-indigo-800/40 rounded-lg text-[11px] text-indigo-300 flex items-center gap-2">
+                  <Info className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                  <span>
+                    Current status: <strong>{postingJournal.status}</strong>. Confirming will automatically validate balance and apply Financial Controller Approval before posting.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setPostingJournal(null)}
+                disabled={actionLoading === postingJournal.journal_id}
+                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executePost(postingJournal.journal_id)}
+                disabled={actionLoading === postingJournal.journal_id || !postingJournal.is_balanced}
+                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
+              >
+                {actionLoading === postingJournal.journal_id ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Posting to Ledger...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Confirm &amp; Post to Ledger</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: In-app Reversal Date Picker (Replaces window.prompt) */}
+      {reversingJournal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md overflow-hidden shadow-2xl space-y-4 p-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-amber-950/80 text-amber-400 border border-amber-800/50 rounded-lg">
+                  <RotateCcw className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-100">
+                    Reverse Posted Journal
+                  </h3>
+                  <p className="text-xs text-slate-400 font-mono">
+                    {reversingJournal.journal_id} &bull; Original: {reversingJournal.journal_date}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setReversingJournal(null)}
+                className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-300">
+              <p>
+                Reversing will create a linked offsetting journal entry with inverted debits and credits. The original journal remains locked for complete audit trail compliance.
+              </p>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-slate-300">
+                  Reversal Effective Date
+                </label>
+                <input
+                  type="date"
+                  value={reversalDateInput}
+                  onChange={(e) => setReversalDateInput(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setReversingJournal(null)}
+                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executeReverse(reversingJournal.journal_id)}
+                disabled={actionLoading === reversingJournal.journal_id || !reversalDateInput}
+                className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
+              >
+                {actionLoading === reversingJournal.journal_id ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Generating Reversal...</span>
+                  </>
+                ) : (
+                  <>
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Create Reversal Entry</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: In-app Discard Draft Confirmation (Replaces window.confirm) */}
+      {deletingDraftId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-sm overflow-hidden shadow-2xl space-y-4 p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-950/80 text-red-400 border border-red-800/50 rounded-lg">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-100">
+                  Discard Draft Voucher
+                </h3>
+                <p className="text-xs text-slate-400 font-mono">
+                  {deletingDraftId}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-300">
+              Are you sure you want to permanently discard this unposted draft journal? This action cannot be undone.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setDeletingDraftId(null)}
+                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executeDeleteDraft(deletingDraftId)}
+                disabled={actionLoading === deletingDraftId}
+                className="px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+              >
+                {actionLoading === deletingDraftId ? 'Deleting...' : 'Discard Draft'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

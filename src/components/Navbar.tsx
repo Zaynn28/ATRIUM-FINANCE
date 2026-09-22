@@ -25,6 +25,9 @@ import {
   ChevronDown,
   Lock,
   LogOut,
+  Package,
+  Coins,
+  Building2,
 } from 'lucide-react';
 import { PrimaryNavPillar, SystemUser, UserRoleDefinition } from '../types';
 
@@ -33,6 +36,9 @@ export type NavTab =
   | 'accounts'
   | 'revenue'
   | 'spending'
+  | 'inventory'
+  | 'service-charge'
+  | 'owner-pool'
   | 'workbench'
   | 'reports'
   | 'ledger'
@@ -46,8 +52,8 @@ interface NavbarProps {
   activePillar: PrimaryNavPillar;
   onSelectPillar: (pillar: PrimaryNavPillar) => void;
   // Sub-tabs for pillars that have sub-views
-  operationsSubTab?: 'revenue' | 'spending';
-  onSelectOperationsSubTab?: (tab: 'revenue' | 'spending') => void;
+  operationsSubTab?: 'revenue' | 'spending' | 'inventory' | 'service-charge' | 'owner-pool';
+  onSelectOperationsSubTab?: (tab: 'revenue' | 'spending' | 'inventory' | 'service-charge' | 'owner-pool') => void;
   accountingCoreSubTab?: 'workbench' | 'ledger' | 'trial-balance';
   onSelectAccountingCoreSubTab?: (tab: 'workbench' | 'ledger' | 'trial-balance') => void;
   // RBAC Current User & Roles
@@ -362,6 +368,45 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <ArrowUpRight className="w-3.5 h-3.5" />
                 <span>Spending Cycle (Procurement, AP &amp; Payroll)</span>
+              </button>
+
+              <button
+                id="nav-operations-inventory"
+                onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('inventory')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  operationsSubTab === 'inventory'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <Package className="w-3.5 h-3.5 text-blue-400" />
+                <span>Hotel Inventory &amp; Storerooms</span>
+              </button>
+
+              <button
+                id="nav-operations-service-charge"
+                onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('service-charge')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  operationsSubTab === 'service-charge'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <Coins className="w-3.5 h-3.5 text-amber-400" />
+                <span>Staff Service Charge &amp; Gratuities Pool</span>
+              </button>
+
+              <button
+                id="nav-operations-owner-pool"
+                onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('owner-pool')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  operationsSubTab === 'owner-pool'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Owner Pool &amp; Return Distribution</span>
               </button>
             </div>
             <span className="text-[11px] font-mono text-slate-400 hidden md:block">

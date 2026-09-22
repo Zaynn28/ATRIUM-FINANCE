@@ -441,7 +441,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                     </tr>
                   ) : (
                     transactions.map((tx) => {
-                      const acc = accounts.find((a) => a.account_code === tx.account_code);
+                      const acc = (accounts || []).find((a) => a.account_code === tx.account_code);
                       return (
                         <tr key={tx.transaction_id} className="hover:bg-slate-800/40">
                           <td className="py-3 px-3 text-slate-300 whitespace-nowrap">{tx.date}</td>

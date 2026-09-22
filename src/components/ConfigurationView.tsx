@@ -137,8 +137,16 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
     }
   };
 
+  const safeConfirm = (msg: string): boolean => {
+    try {
+      return window.confirm(msg);
+    } catch {
+      return true;
+    }
+  };
+
   const handleDeactivateAccount = async (code: string) => {
-    if (!window.confirm(`Deactivate account ${code}? It will no longer be available for new transactions.`)) return;
+    if (!safeConfirm(`Deactivate account ${code}? It will no longer be available for new transactions.`)) return;
     setLoading(true);
     setActionError(null);
     try {
@@ -152,7 +160,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
   };
 
   const handleDeleteAccount = async (code: string) => {
-    if (!window.confirm(`Permanently delete account ${code}? Only accounts with no posted journal history can be deleted.`)) return;
+    if (!safeConfirm(`Permanently delete account ${code}? Only accounts with no posted journal history can be deleted.`)) return;
     setLoading(true);
     setActionError(null);
     try {
@@ -166,7 +174,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
   };
 
   const handleSeedUsali = async () => {
-    if (!window.confirm('Populate standard USALI 12th Edition Chart of Accounts and hotel departmental schedules?')) return;
+    if (!safeConfirm('Populate standard USALI 12th Edition Chart of Accounts and hotel departmental schedules?')) return;
     setLoading(true);
     setActionError(null);
     try {
