@@ -11,6 +11,8 @@ import { store } from './server/store';
 import { inventoryStore } from './server/inventoryStore';
 import { serviceChargeStore } from './server/serviceChargeStore';
 import { ownerPoolStore } from './server/ownerPoolStore';
+import { taxStore } from './server/taxStore';
+import { arapStore } from './server/arapStore';
 
 dotenv.config();
 
@@ -693,6 +695,118 @@ async function startServer() {
     }
   });
 
+  // ==========================================
+  // PURCHASE ORDERS (PROCUREMENT) APIS
+  // ==========================================
+
+  app.get('/api/inventory/purchase-orders', (req, res) => {
+    try {
+      res.json(inventoryStore.getPurchaseOrders());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/inventory/purchase-orders/:id', (req, res) => {
+    try {
+      const po = inventoryStore.getPurchaseOrder(req.params.id);
+      if (!po) return res.status(404).json({ error: 'Purchase Order not found' });
+      res.json(po);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/purchase-orders', (req, res) => {
+    try {
+      const createdBy = String(req.headers['x-user-name'] || req.body.created_by || 'Procurement Officer');
+      const po = inventoryStore.createPurchaseOrder({
+        ...req.body,
+        created_by: createdBy,
+      });
+      res.json(po);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/inventory/purchase-orders/:id/journal', async (req, res) => {
+    try {
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Purchasing Manager');
+      const journalMode = (req.body.mode === 'ACCRUAL' ? 'ACCRUAL' : 'COMMITMENT') as 'COMMITMENT' | 'ACCRUAL';
+      const result = await inventoryStore.generatePurchaseOrderJournal(req.params.id, journalMode, userName);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.patch('/api/inventory/purchase-orders/:id/status', (req, res) => {
+    try {
+      const po = inventoryStore.updatePurchaseOrderStatus(req.params.id, req.body.status);
+      res.json(po);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/inventory/purchase-orders/:id', (req, res) => {
+    try {
+      const po = inventoryStore.updatePurchaseOrderDetails(req.params.id, req.body);
+      res.json(po);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // ==========================================
+  // ACCOUNTS RECEIVABLE (AR) & ACCOUNTS PAYABLE (AP) APIS
+  // ==========================================
+
+  // Accounts Receivable (AR) - Connected to Revenue Cycle
+  app.get('/api/ar/items', (req, res) => {
+    try {
+      res.json(arapStore.getARItems());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/ar/settlements', async (req, res) => {
+    try {
+      const userName = String(req.headers['x-user-name'] || req.body.userName || 'AR Cashier');
+      const result = await arapStore.recordARSettlement({
+        ...req.body,
+        userName,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Accounts Payable (AP) - Connected to Procurement & Spending
+  app.get('/api/ap/items', (req, res) => {
+    try {
+      res.json(arapStore.getAPItems());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/ap/payments', async (req, res) => {
+    try {
+      const userName = String(req.headers['x-user-name'] || req.body.userName || 'AP Accountant');
+      const result = await arapStore.recordAPPayment({
+        ...req.body,
+        userName,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   // Direct Department Issue
   app.post('/api/inventory/issues/direct', async (req, res) => {
     try {
@@ -1105,6 +1219,167 @@ async function startServer() {
       res.json(stmt);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  // --- TAX MODULE ENDPOINTS ---
+
+  // 1. Tax Settings / Rules
+  app.get('/api/tax/rules', (req, res) => {
+    try {
+      const rules = taxStore.getTaxRules();
+      res.json(rules);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/tax/rules/:code', (req, res) => {
+    try {
+      const taxCode = req.params.code as any;
+      const user = String(req.headers['x-user-name'] || req.body.updated_by || 'Financial Controller');
+      const updated = taxStore.updateTaxRule(taxCode, req.body, user);
+      res.json(updated);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 2. Tax Overview / Summary KPIs
+  app.get('/api/tax/summary', (req, res) => {
+    try {
+      const period = String(req.query.period || '2026-09');
+      const summary = taxStore.getPeriodSummaryKPIs(period);
+      res.json(summary);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 3. Tax Obligations
+  app.get('/api/tax/obligations', (req, res) => {
+    try {
+      const period = String(req.query.period || '2026-09');
+      const obligations = taxStore.getObligationsForPeriod(period);
+      res.json(obligations);
+    } catch (err: any) {
+      console.error('[API /api/tax/obligations error]:', err);
+      res.status(500).json({ error: err.message || 'Failed to fetch tax obligations' });
+    }
+  });
+
+  app.post('/api/tax/calculate', (req, res) => {
+    try {
+      const { period, tax_code } = req.body;
+      if (!period || !tax_code) {
+        return res.status(400).json({ error: 'period and tax_code are required' });
+      }
+      const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
+      const calculated = taxStore.calculateObligation(period, tax_code, user);
+      res.json(calculated);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 4. Tax Payment & Filing Recording
+  app.post('/api/tax/payment', (req, res) => {
+    try {
+      const { period, tax_code, payment_date, ntpn_reference, amount, payment_bank_account } = req.body;
+      const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
+      const item = taxStore.recordPayment({
+        period,
+        tax_code,
+        payment_date,
+        ntpn_reference,
+        amount: Number(amount),
+        payment_bank_account,
+        user,
+      });
+      res.json(item);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/tax/filing', (req, res) => {
+    try {
+      const { period, tax_code, filing_date, bpe_reference } = req.body;
+      const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
+      const item = taxStore.recordFiling({
+        period,
+        tax_code,
+        filing_date,
+        bpe_reference,
+        user,
+      });
+      res.json(item);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 5. Tax Supporting Documents
+  app.post('/api/tax/documents', (req, res) => {
+    try {
+      const { period, tax_code, doc_type, file_name, file_url, notes } = req.body;
+      const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
+      const doc = taxStore.attachDocument({
+        period,
+        tax_code,
+        doc_type,
+        file_name,
+        file_url,
+        notes,
+        user,
+      });
+      res.json(doc);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 6. Tax Reconciliation
+  app.get('/api/tax/reconciliation', (req, res) => {
+    try {
+      const period = String(req.query.period || '2026-09');
+      const recons = taxStore.getReconciliationForPeriod(period);
+      res.json(recons);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 7. Tax Period Close Validation & Action
+  app.get('/api/tax/period-close-check', (req, res) => {
+    try {
+      const period = String(req.query.period || '2026-09');
+      const validation = taxStore.validatePeriodClose(period);
+      res.json(validation);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/tax/period-close', (req, res) => {
+    try {
+      const { period, notes } = req.body;
+      const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
+      const result = taxStore.closePeriod(period, user, notes);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/tax/period-reopen', (req, res) => {
+    try {
+      const { period } = req.body;
+      const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
+      const result = taxStore.reopenPeriod(period, user);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
     }
   });
 

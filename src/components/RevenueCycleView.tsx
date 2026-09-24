@@ -21,6 +21,7 @@ import {
   MappingConfig,
 } from '../types';
 import { api } from '../services/api';
+import { AccountsReceivableModule } from './ar/AccountsReceivableModule';
 
 interface RevenueCycleViewProps {
   transactions: RevenueTransaction[];
@@ -41,6 +42,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
   onOpenMappingModal,
   onViewJournal,
 }) => {
+  const [activeCycleTab, setActiveCycleTab] = useState<'INGESTION' | 'AR_MODULE'>('AR_MODULE');
   const defaultDebit = mappingConfig?.revenue_default_debit_account || '';
 
   const [formData, setFormData] = useState({
@@ -145,27 +147,66 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+              Revenue Operational Cycle
+            </span>
+          </div>
           <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
             <ArrowDownLeft className="w-5 h-5 text-emerald-400" />
-            <span>Revenue Cycle (Guest Folio &amp; Hotel Outlets)</span>
+            <span>Revenue Cycle &amp; Accounts Receivable (AR)</span>
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Record rooms, banqueting, and F&amp;B revenue transactions and auto-generate draft double-entry journals
+            Monitor and control Accounts Receivable aging, guest folios, and automatic double-entry revenue ingestion
           </p>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Sub-tab pills */}
+          <div className="bg-slate-950 p-1 rounded-xl border border-slate-800 flex items-center gap-1">
+            <button
+              onClick={() => setActiveCycleTab('AR_MODULE')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeCycleTab === 'AR_MODULE'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Accounts Receivable (AR)</span>
+            </button>
+            <button
+              onClick={() => setActiveCycleTab('INGESTION')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeCycleTab === 'INGESTION'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Revenue Ingestion &amp; Feed</span>
+            </button>
+          </div>
+
           <button
             onClick={onOpenMappingModal}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
           >
             <Settings2 className="w-3.5 h-3.5 text-slate-400" />
-            <span>Counterpart Mapping</span>
+            <span>Mapping</span>
           </button>
         </div>
       </div>
 
-      {/* Unmapped Exception Banner */}
+      {activeCycleTab === 'AR_MODULE' ? (
+        <AccountsReceivableModule
+          accounts={accounts}
+          departments={departments}
+          onViewJournal={onViewJournal}
+        />
+      ) : (
+        <>
+          {/* Unmapped Exception Banner */}
       {!isMappingConfigured && (
         <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
@@ -465,6 +506,8 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };

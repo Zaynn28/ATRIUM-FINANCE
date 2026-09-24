@@ -4,3 +4,47 @@
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  /* Hide app navigation, headers, sidebars, and non-printable elements */
+  nav, header, aside, .no-print {
+    display: none !important;
+  }
+
+  /* When printing PO, hide all surrounding modal backdrop/chrome except the printable document */
+  .fixed:has(#po-printable-document) {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  .fixed:has(#po-printable-document) > div {
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide top action bar and footer in modal during print */
+  .fixed:has(#po-printable-document) .bg-slate-950 {
+    display: none !important;
+  }
+
+  #po-printable-document {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

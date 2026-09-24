@@ -42,7 +42,7 @@ export const OwnerPoolModule: React.FC = () => {
                 Apartment Owner Pool & Return Distribution
               </h1>
               <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                Hotel Operation
+                Reports &amp; Returns
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 max-w-2xl">

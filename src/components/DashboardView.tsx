@@ -377,17 +377,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <button
                 id="btn-quick-owner-pool"
-                onClick={() => goTo('operations', 'owner-pool')}
-                className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left transition-colors text-xs"
+                onClick={() => goTo('reports', 'owner-pool')}
+                className="w-full flex items-center justify-between p-3 rounded-lg bg-indigo-950/30 hover:bg-indigo-900/40 border border-indigo-800/40 text-left transition-colors text-xs"
               >
                 <div className="flex items-center gap-2.5">
                   <Building2 className="w-4 h-4 text-indigo-400" />
                   <div>
-                    <span className="font-medium text-slate-200 block">2. Operations: Owner Pool &amp; Return Distribution</span>
-                    <span className="text-[11px] text-slate-500">65/35 Allocation, SQM Distribution &amp; 10% Guarantee Audit</span>
+                    <span className="font-medium text-indigo-200 block">4. Reports: Owner Pool &amp; Return Distribution</span>
+                    <span className="text-[11px] text-indigo-400/80">65/35 Allocation, SQM Distribution &amp; 10% Guarantee Audit</span>
                   </div>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+                <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
               </button>
 
               <button

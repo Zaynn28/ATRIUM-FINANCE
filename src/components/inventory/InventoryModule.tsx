@@ -11,6 +11,7 @@ import {
   Warehouse,
   ArrowDownLeft,
   ClipboardList,
+  ShoppingCart,
   ArrowUpRight,
   RefreshCw,
   TrendingUp,
@@ -18,6 +19,7 @@ import {
   FileSpreadsheet,
   BarChart3,
   Scan,
+  CreditCard,
 } from 'lucide-react';
 import { Department, Account } from '../../types';
 import { InventoryDashboard } from './InventoryDashboard';
@@ -26,6 +28,8 @@ import { CategoriesView } from './CategoriesView';
 import { StoreroomsView } from './StoreroomsView';
 import { ReceivingView } from './ReceivingView';
 import { RequisitionsView } from './RequisitionsView';
+import { PurchaseOrdersView } from './PurchaseOrdersView';
+import { AccountsPayableModule } from '../ap/AccountsPayableModule';
 import { StockIssueView } from './StockIssueView';
 import { StockTransferView } from './StockTransferView';
 import { StockCountView } from './StockCountView';
@@ -39,6 +43,8 @@ export type InventorySubTab =
   | 'ITEMS'
   | 'CATEGORIES'
   | 'STOREROOMS'
+  | 'PURCHASE_ORDERS'
+  | 'ACCOUNTS_PAYABLE'
   | 'RECEIVING'
   | 'REQUISITIONS'
   | 'ISSUE'
@@ -65,6 +71,8 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
   const [stockCardItemId, setStockCardItemId] = useState<string | undefined>();
   const [selectedStoreroomId, setSelectedStoreroomId] = useState<string | undefined>();
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [navPoNumberForReceiving, setNavPoNumberForReceiving] = useState<string | undefined>();
+  const [navReqIdForPo, setNavReqIdForPo] = useState<string | undefined>();
 
   const handleOpenStockCard = (itemId: string) => {
     setStockCardItemId(itemId);
@@ -74,6 +82,16 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
   const handleOpenStoreroom = (storeroomId: string) => {
     setSelectedStoreroomId(storeroomId);
     setActiveTab('STOREROOMS');
+  };
+
+  const handleNavigateToReceivingFromPo = (poNumber: string) => {
+    setNavPoNumberForReceiving(poNumber);
+    setActiveTab('RECEIVING');
+  };
+
+  const handleCreatePoFromRequisition = (requisitionId: string) => {
+    setNavReqIdForPo(requisitionId);
+    setActiveTab('PURCHASE_ORDERS');
   };
 
   const handleBarcodeDetected = (code: string) => {
@@ -87,8 +105,10 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
     { id: 'ITEMS', label: 'Item Master', icon: <Package className="w-4 h-4" />, group: 'Master Data' },
     { id: 'CATEGORIES', label: 'Categories & GL', icon: <Layers className="w-4 h-4" />, group: 'Master Data' },
     { id: 'STOREROOMS', label: 'Storerooms', icon: <Warehouse className="w-4 h-4" />, group: 'Master Data' },
+    { id: 'REQUISITIONS', label: 'Requisitions', icon: <ClipboardList className="w-4 h-4" />, group: 'Procurement' },
+    { id: 'PURCHASE_ORDERS', label: 'Purchase Orders', icon: <ShoppingCart className="w-4 h-4 text-blue-400" />, group: 'Procurement' },
+    { id: 'ACCOUNTS_PAYABLE', label: 'Accounts Payable (AP)', icon: <CreditCard className="w-4 h-4 text-amber-400" />, group: 'Procurement' },
     { id: 'RECEIVING', label: 'Goods Receiving', icon: <ArrowDownLeft className="w-4 h-4" />, group: 'Stock In' },
-    { id: 'REQUISITIONS', label: 'Requisitions', icon: <ClipboardList className="w-4 h-4" />, group: 'Issuance' },
     { id: 'ISSUE', label: 'Direct Issue', icon: <ArrowUpRight className="w-4 h-4" />, group: 'Issuance' },
     { id: 'TRANSFER', label: 'Inter-Store Transfer', icon: <RefreshCw className="w-4 h-4" />, group: 'Operations' },
     { id: 'STOCK_COUNT', label: 'Stock Count', icon: <TrendingUp className="w-4 h-4" />, group: 'Control' },
@@ -163,17 +183,36 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
           />
         )}
 
-        {activeTab === 'RECEIVING' && (
-          <ReceivingView
-            onViewJournal={onViewJournal}
-            onOpenScanner={() => setScannerOpen(true)}
-          />
-        )}
-
         {activeTab === 'REQUISITIONS' && (
           <RequisitionsView
             departments={departments}
             onViewJournal={onViewJournal}
+            onCreatePo={handleCreatePoFromRequisition}
+          />
+        )}
+
+        {activeTab === 'PURCHASE_ORDERS' && (
+          <PurchaseOrdersView
+            departments={departments}
+            onViewJournal={onViewJournal}
+            onNavigateToReceiving={handleNavigateToReceivingFromPo}
+            initialRequisitionIdToOrder={navReqIdForPo}
+          />
+        )}
+
+        {activeTab === 'ACCOUNTS_PAYABLE' && (
+          <AccountsPayableModule
+            departments={departments}
+            accounts={accounts}
+            onViewJournal={onViewJournal}
+          />
+        )}
+
+        {activeTab === 'RECEIVING' && (
+          <ReceivingView
+            onViewJournal={onViewJournal}
+            onOpenScanner={() => setScannerOpen(true)}
+            initialPoReference={navPoNumberForReceiving}
           />
         )}
 

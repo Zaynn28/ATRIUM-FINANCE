@@ -25,6 +25,7 @@ import {
   InventoryItem,
   StockMovement,
   DepartmentRequisition,
+  PurchaseOrder,
   GoodsReceipt,
   StockCountSession,
   StockAdjustmentRecord,
@@ -38,6 +39,16 @@ import {
   OwnerDistributionBatch,
   OwnerPoolAllocationLine,
   OwnerPoolDashboardKPIs,
+  TaxTypeCode,
+  TaxRuleConfig,
+  TaxObligationItem,
+  TaxPeriodSummaryKPIs,
+  TaxReconciliationLine,
+  TaxPeriodCloseValidation,
+  TaxDocumentAttachment,
+  ARAgingItem,
+  APAgingItem,
+  AgingSummary,
 } from '../types';
 
 export const api = {
@@ -731,6 +742,160 @@ export const api = {
     return res.json();
   },
 
+  // ==========================================
+  // PURCHASE ORDER (PROCUREMENT) APIS
+  // ==========================================
+
+  async getPurchaseOrders(): Promise<PurchaseOrder[]> {
+    const res = await fetch('/api/inventory/purchase-orders');
+    if (!res.ok) throw new Error('Failed to load purchase orders');
+    return res.json();
+  },
+
+  async getPurchaseOrder(id: string): Promise<PurchaseOrder> {
+    const res = await fetch(`/api/inventory/purchase-orders/${encodeURIComponent(id)}`);
+    if (!res.ok) throw new Error('Failed to load purchase order');
+    return res.json();
+  },
+
+  async createPurchaseOrder(data: {
+    order_date?: string;
+    expected_delivery_date?: string;
+    supplier_name: string;
+    supplier_contact?: string;
+    supplier_email?: string;
+    supplier_address?: string;
+    storeroom_id: string;
+    department_code: string;
+    requisition_ids?: string[];
+    items: {
+      item_id: string;
+      ordered_quantity: number;
+      unit_cost?: number;
+      requisition_id?: string;
+      notes?: string;
+    }[];
+    tax_rate_pct?: number;
+    payment_terms?: string;
+    notes?: string;
+    created_by?: string;
+  }): Promise<PurchaseOrder> {
+    const res = await fetch('/api/inventory/purchase-orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to create purchase order');
+    }
+    return res.json();
+  },
+
+  async generatePurchaseOrderJournal(
+    poId: string,
+    mode: 'COMMITMENT' | 'ACCRUAL' = 'COMMITMENT'
+  ): Promise<{ po: PurchaseOrder; journal_id: string }> {
+    const res = await fetch(`/api/inventory/purchase-orders/${encodeURIComponent(poId)}/journal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to generate purchase order journal');
+    }
+    return res.json();
+  },
+
+  async updatePurchaseOrderStatus(
+    poId: string,
+    status: PurchaseOrder['status']
+  ): Promise<PurchaseOrder> {
+    const res = await fetch(`/api/inventory/purchase-orders/${encodeURIComponent(poId)}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to update purchase order status');
+    }
+    return res.json();
+  },
+
+  async updatePurchaseOrder(
+    poId: string,
+    updates: Partial<PurchaseOrder>
+  ): Promise<PurchaseOrder> {
+    const res = await fetch(`/api/inventory/purchase-orders/${encodeURIComponent(poId)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to update purchase order details');
+    }
+    return res.json();
+  },
+
+  // --- ACCOUNTS RECEIVABLE (AR) APIS ---
+  async getARItems(): Promise<{ items: ARAgingItem[]; summary: AgingSummary }> {
+    const res = await fetch('/api/ar/items');
+    if (!res.ok) throw new Error('Failed to load Accounts Receivable records');
+    return res.json();
+  },
+
+  async recordARSettlement(data: {
+    ar_id: string;
+    amount: number;
+    payment_date: string;
+    payment_method: string;
+    bank_account_code: string;
+    reference: string;
+    userName?: string;
+  }): Promise<{ settlement_id: string; journal_id: string }> {
+    const res = await fetch('/api/ar/settlements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to record AR settlement');
+    }
+    return res.json();
+  },
+
+  // --- ACCOUNTS PAYABLE (AP) APIS ---
+  async getAPItems(): Promise<{ items: APAgingItem[]; summary: AgingSummary }> {
+    const res = await fetch('/api/ap/items');
+    if (!res.ok) throw new Error('Failed to load Accounts Payable records');
+    return res.json();
+  },
+
+  async recordAPPayment(data: {
+    ap_id: string;
+    amount: number;
+    payment_date: string;
+    payment_method: string;
+    bank_account_code: string;
+    reference: string;
+    userName?: string;
+  }): Promise<{ payment_id: string; journal_id: string }> {
+    const res = await fetch('/api/ap/payments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to record AP payment');
+    }
+    return res.json();
+  },
+
   async directStockIssue(data: {
     date: string;
     storeroom_id: string;
@@ -1182,6 +1347,172 @@ export const api = {
     const url = `/api/owner-pool/statement?unit_id=${encodeURIComponent(unitId)}${period ? `&period=${encodeURIComponent(period)}` : ''}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch Owner Statement');
+    return res.json();
+  },
+
+  // --- TAX MODULE API METHODS ---
+
+  async getTaxRules(): Promise<TaxRuleConfig[]> {
+    const res = await fetch('/api/tax/rules');
+    if (!res.ok) throw new Error('Failed to fetch tax rules');
+    return res.json();
+  },
+
+  async updateTaxRule(taxCode: TaxTypeCode, data: Partial<TaxRuleConfig>, updatedBy?: string): Promise<TaxRuleConfig> {
+    const res = await fetch(`/api/tax/rules/${encodeURIComponent(taxCode)}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(updatedBy ? { 'x-user-name': updatedBy } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to update tax rule');
+    }
+    return res.json();
+  },
+
+  async getTaxSummary(period: string): Promise<TaxPeriodSummaryKPIs> {
+    const res = await fetch(`/api/tax/summary?period=${encodeURIComponent(period)}`);
+    if (!res.ok) throw new Error('Failed to fetch tax summary');
+    return res.json();
+  },
+
+  async getTaxObligations(period: string): Promise<TaxObligationItem[]> {
+    const res = await fetch(`/api/tax/obligations?period=${encodeURIComponent(period)}`);
+    if (!res.ok) throw new Error('Failed to fetch tax obligations');
+    return res.json();
+  },
+
+  async calculateTaxObligation(period: string, taxCode: TaxTypeCode, user?: string): Promise<TaxObligationItem> {
+    const res = await fetch('/api/tax/calculate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(user ? { 'x-user-name': user } : {}),
+      },
+      body: JSON.stringify({ period, tax_code: taxCode }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to calculate tax obligation');
+    }
+    return res.json();
+  },
+
+  async recordTaxPayment(params: {
+    period: string;
+    tax_code: TaxTypeCode;
+    payment_date: string;
+    ntpn_reference: string;
+    amount: number;
+    payment_bank_account?: string;
+    user?: string;
+  }): Promise<TaxObligationItem> {
+    const res = await fetch('/api/tax/payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(params.user ? { 'x-user-name': params.user } : {}),
+      },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to record tax payment');
+    }
+    return res.json();
+  },
+
+  async recordTaxFiling(params: {
+    period: string;
+    tax_code: TaxTypeCode;
+    filing_date: string;
+    bpe_reference: string;
+    user?: string;
+  }): Promise<TaxObligationItem> {
+    const res = await fetch('/api/tax/filing', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(params.user ? { 'x-user-name': params.user } : {}),
+      },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to record tax filing');
+    }
+    return res.json();
+  },
+
+  async attachTaxDocument(params: {
+    period: string;
+    tax_code: TaxTypeCode;
+    doc_type: string;
+    file_name: string;
+    file_url?: string;
+    notes?: string;
+    user?: string;
+  }): Promise<TaxDocumentAttachment> {
+    const res = await fetch('/api/tax/documents', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(params.user ? { 'x-user-name': params.user } : {}),
+      },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to attach tax document');
+    }
+    return res.json();
+  },
+
+  async getTaxReconciliation(period: string): Promise<TaxReconciliationLine[]> {
+    const res = await fetch(`/api/tax/reconciliation?period=${encodeURIComponent(period)}`);
+    if (!res.ok) throw new Error('Failed to fetch tax reconciliation');
+    return res.json();
+  },
+
+  async checkTaxPeriodClose(period: string): Promise<TaxPeriodCloseValidation> {
+    const res = await fetch(`/api/tax/period-close-check?period=${encodeURIComponent(period)}`);
+    if (!res.ok) throw new Error('Failed to validate tax period close');
+    return res.json();
+  },
+
+  async closeTaxPeriod(period: string, notes?: string, user?: string): Promise<{ success: boolean; period: string }> {
+    const res = await fetch('/api/tax/period-close', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(user ? { 'x-user-name': user } : {}),
+      },
+      body: JSON.stringify({ period, notes }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to close tax period');
+    }
+    return res.json();
+  },
+
+  async reopenTaxPeriod(period: string, user?: string): Promise<{ success: boolean; period: string }> {
+    const res = await fetch('/api/tax/period-reopen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(user ? { 'x-user-name': user } : {}),
+      },
+      body: JSON.stringify({ period }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to reopen tax period');
+    }
     return res.json();
   },
 };

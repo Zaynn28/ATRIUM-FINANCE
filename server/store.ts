@@ -88,6 +88,7 @@ export class AccountingStore {
           'operations': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
           'accounting-core': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
           'reports': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
+          'tax': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
           'configuration': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
           'controls-audit': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
           'integrations': { canView: true, canCreate: true, canEdit: true, canApprove: true, canDelete: true, canExport: true },
@@ -104,6 +105,7 @@ export class AccountingStore {
           'operations': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
           'accounting-core': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
           'reports': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'tax': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
           'configuration': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'integrations': { canView: true, canCreate: true, canEdit: false, canApprove: false, canDelete: false, canExport: false },
@@ -120,6 +122,7 @@ export class AccountingStore {
           'operations': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: false },
           'accounting-core': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'reports': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'tax': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'configuration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'controls-audit': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'integrations': { canView: true, canCreate: true, canEdit: false, canApprove: false, canDelete: false, canExport: false },
@@ -136,6 +139,7 @@ export class AccountingStore {
           'operations': { canView: true, canCreate: true, canEdit: true, canApprove: false, canDelete: false, canExport: true },
           'accounting-core': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'reports': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
+          'tax': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'configuration': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'integrations': { canView: false, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
@@ -152,6 +156,7 @@ export class AccountingStore {
           'operations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'accounting-core': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'reports': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'tax': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'configuration': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
           'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'integrations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: false },
@@ -168,6 +173,7 @@ export class AccountingStore {
           'operations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'accounting-core': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'reports': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
+          'tax': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'configuration': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'controls-audit': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
           'integrations': { canView: true, canCreate: false, canEdit: false, canApprove: false, canDelete: false, canExport: true },
@@ -246,6 +252,7 @@ export class AccountingStore {
     }
     this.ensureServiceChargeAccounts();
     this.ensureOwnerPoolAccounts();
+    this.ensureTaxAccounts();
     await this.seedInitialPostedNightAuditRevenueIfEmpty();
   }
 
@@ -307,6 +314,37 @@ export class AccountingStore {
         usali_line: 'Owner Pool Allocation',
         active: 'Y',
       });
+    }
+  }
+
+  public ensureTaxAccounts(): void {
+    const taxAccounts: { code: string; name: string; statutory: string; usali: string }[] = [
+      { code: '2040', name: 'Tax Payable - Employee Withholding (PPh 21)', statutory: 'Taxes Payable', usali: 'Payroll Taxes Payable' },
+      { code: '2070', name: 'Tax Payable - Owner Withholding (PPh Final Pasal 4(2) / PPh 23)', statutory: 'Taxes Payable', usali: 'Owner Withholding Taxes Payable' },
+      { code: '2080', name: 'Tax Payable - PBJT Hotel (Local Hospitality Tax)', statutory: 'Taxes Payable', usali: 'Local Taxes Payable' },
+      { code: '2081', name: 'Tax Payable - PPh 23 Vendor Withholding', statutory: 'Taxes Payable', usali: 'Vendor Taxes Payable' },
+      { code: '2082', name: 'Tax Payable - PPh 26 Non-Resident Withholding', statutory: 'Taxes Payable', usali: 'Withholding Taxes Payable' },
+      { code: '2083', name: 'Tax Payable - PPh Final Pasal 4(2) Rent & Services', statutory: 'Taxes Payable', usali: 'Withholding Taxes Payable' },
+      { code: '2084', name: 'Tax Payable - PPh 25 Corporate Monthly Installment', statutory: 'Taxes Payable', usali: 'Corporate Taxes Payable' },
+      { code: '2085', name: 'Tax Payable - PPh Badan Corporate Income Tax', statutory: 'Taxes Payable', usali: 'Corporate Income Taxes Payable' },
+      { code: '2086', name: 'Tax Payable - PPN Keluaran (Value Added Tax)', statutory: 'Taxes Payable', usali: 'VAT Payable' },
+      { code: '1100', name: 'Prepaid Tax & PPN Masukan (VAT In)', statutory: 'Other Current Assets', usali: 'Prepaid Expenses' },
+      { code: '9010', name: 'Purchase Order Encumbrance (Committed Expense)', statutory: 'Commitments & Contingencies', usali: 'PO Encumbrances' },
+      { code: '9020', name: 'Reserve for Encumbrances (PO Outstanding Commitments)', statutory: 'Commitments & Contingencies', usali: 'Reserve for PO Commitments' },
+    ];
+
+    for (const t of taxAccounts) {
+      if (!this.accounts.has(t.code)) {
+        this.accounts.set(t.code, {
+          account_code: t.code,
+          account_name: t.name,
+          account_type: 'Liability',
+          normal_balance: 'Credit',
+          statutory_line: t.statutory,
+          usali_line: t.usali,
+          active: 'Y',
+        });
+      }
     }
   }
 
@@ -1646,7 +1684,7 @@ export class AccountingStore {
   // --- REUSABLE REPORT ENGINE (POSTED LEDGER ONLY) ---
 
   // Helper: compute net posted balances per account for a given period
-  private getPostedAccountBalances(period?: string): Map<string, { debit: number; credit: number; net: number }> {
+  public getPostedAccountBalances(period?: string): Map<string, { debit: number; credit: number; net: number }> {
     const postedJournalIds = new Set<string>();
     for (const h of this.journalHeaders.values()) {
       if (h.status === 'POSTED' || h.status === 'REVERSED') {
@@ -2330,6 +2368,34 @@ export class AccountingStore {
         action_label: 'Confirm Mapping',
         action_target: 'configuration',
       });
+    }
+
+    // 5. Tax Reconciliation & Unpaid Statutory Obligations Check
+    const taxCheckPeriod = period || '2026-09';
+    try {
+      // Dynamic import / require or safe inline check on tax liabilities
+      for (const [code, accName] of [
+        ['2080', 'PBJT Hotel Local Tax'],
+        ['2040', 'PPh 21 Payroll Withholding'],
+        ['2070', 'Owner Distribution Tax Withholding'],
+      ]) {
+        const bal = balances.get(code)?.credit || 0;
+        if (bal > 0) {
+          exceptions.push({
+            id: `EXC-TAX-LIABILITY-${code}-${taxCheckPeriod}`,
+            category: 'TAX_RECONCILIATION',
+            severity: 'info',
+            title: `Statutory Tax Liability Active: ${accName}`,
+            description: `Account ${code} has an outstanding credit balance of Rp${bal.toLocaleString('id-ID')} requiring filing & NTPN settlement.`,
+            account_code: code,
+            posted_amount: bal,
+            action_label: 'Open Tax Module',
+            action_target: 'tax',
+          });
+        }
+      }
+    } catch (e) {
+      // safe fallback
     }
 
     return exceptions;

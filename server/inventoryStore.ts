@@ -13,6 +13,8 @@ import {
   StockMovement,
   DepartmentRequisition,
   RequisitionItem,
+  PurchaseOrder,
+  PurchaseOrderItem,
   GoodsReceipt,
   StockCountSession,
   StockAdjustmentRecord,
@@ -31,6 +33,7 @@ export class InventoryStore {
   public receipts: Map<string, GoodsReceipt> = new Map();
   public countSessions: Map<string, StockCountSession> = new Map();
   public adjustments: Map<string, StockAdjustmentRecord> = new Map();
+  public purchaseOrders: Map<string, PurchaseOrder> = new Map();
 
   constructor() {
     this.init();
@@ -56,6 +59,9 @@ export class InventoryStore {
         }
         if (Array.isArray(data.requisitions)) {
           data.requisitions.forEach((r: DepartmentRequisition) => this.requisitions.set(r.requisition_id, r));
+        }
+        if (Array.isArray(data.purchaseOrders)) {
+          data.purchaseOrders.forEach((po: PurchaseOrder) => this.purchaseOrders.set(po.po_id, po));
         }
         if (Array.isArray(data.receipts)) {
           data.receipts.forEach((rc: GoodsReceipt) => this.receipts.set(rc.receipt_id, rc));
@@ -83,6 +89,7 @@ export class InventoryStore {
         items: Array.from(this.items.values()),
         movements: this.movements,
         requisitions: Array.from(this.requisitions.values()),
+        purchaseOrders: Array.from(this.purchaseOrders.values()),
         receipts: Array.from(this.receipts.values()),
         countSessions: Array.from(this.countSessions.values()),
         adjustments: Array.from(this.adjustments.values()),
@@ -1305,6 +1312,405 @@ export class InventoryStore {
 
     this.saveToDisk();
     return { requisition: req, journal_id: journalId };
+  }
+
+  // --- 2B. PURCHASE ORDER (PROCUREMENT) WORKFLOW & MULTI-SUPPLIER REQUISITION LINKAGE ---
+
+  public getPurchaseOrders(): PurchaseOrder[] {
+    return Array.from(this.purchaseOrders.values()).reverse();
+  }
+
+  public getPurchaseOrder(id: string): PurchaseOrder | undefined {
+    return this.purchaseOrders.get(id);
+  }
+
+  public createPurchaseOrder(data: {
+    order_date?: string;
+    expected_delivery_date?: string;
+    supplier_name: string;
+    supplier_contact?: string;
+    supplier_email?: string;
+    supplier_address?: string;
+    storeroom_id: string;
+    department_code: string;
+    requisition_ids?: string[];
+    items: {
+      item_id: string;
+      ordered_quantity: number;
+      unit_cost?: number;
+      requisition_id?: string;
+      notes?: string;
+    }[];
+    tax_rate_pct?: number;
+    payment_terms?: string;
+    notes?: string;
+    created_by?: string;
+  }): PurchaseOrder {
+    if (!data.items || data.items.length === 0) {
+      throw new Error('Purchase Order must specify at least one line item.');
+    }
+    if (!data.supplier_name || !data.supplier_name.trim()) {
+      throw new Error('Supplier name is required for Purchase Order.');
+    }
+
+    const storeroom = this.storerooms.get(data.storeroom_id);
+    if (!storeroom) {
+      throw new Error(`Storeroom ${data.storeroom_id} not found.`);
+    }
+
+    const dept = accountingStore.departments.get(data.department_code);
+    const now = new Date().toISOString();
+    const poNumberSeq = 1000 + this.purchaseOrders.size + 1;
+    const poNumber = `PO-${now.slice(0, 7).replace('-', '')}-${poNumberSeq}`;
+    const poId = `PO-${now.slice(0, 10).replace(/-/g, '')}-${Date.now().toString(36).toUpperCase()}`;
+
+    const items: PurchaseOrderItem[] = [];
+    let subtotal = 0;
+
+    for (const line of data.items) {
+      const item = this.items.get(line.item_id);
+      if (!item) {
+        throw new Error(`Inventory item ${line.item_id} not found.`);
+      }
+      const qty = Number(line.ordered_quantity);
+      if (qty <= 0) {
+        throw new Error(`Ordered quantity for ${item.item_name} must be greater than 0.`);
+      }
+
+      const cost = line.unit_cost !== undefined && line.unit_cost >= 0
+        ? Number(line.unit_cost)
+        : (item.last_purchase_cost || item.average_cost || 0);
+
+      const lineSubtotal = Math.round(qty * cost * 100) / 100;
+      subtotal += lineSubtotal;
+
+      items.push({
+        item_id: item.item_id,
+        item_code: item.item_code,
+        item_name: item.item_name,
+        uom: item.uom,
+        ordered_quantity: qty,
+        received_quantity: 0,
+        unit_cost: cost,
+        subtotal: lineSubtotal,
+        requisition_id: line.requisition_id || undefined,
+        notes: line.notes,
+      });
+    }
+
+    const taxRate = data.tax_rate_pct !== undefined ? Number(data.tax_rate_pct) : 11; // default 11% PPN in Indonesia
+    const taxAmount = Math.round(subtotal * (taxRate / 100) * 100) / 100;
+    const totalAmount = Math.round((subtotal + taxAmount) * 100) / 100;
+
+    // Collect all linked requisition IDs from arguments or item-level lines
+    const linkedReqSet = new Set<string>();
+    if (Array.isArray(data.requisition_ids)) {
+      data.requisition_ids.forEach((id) => id && linkedReqSet.add(id));
+    }
+    items.forEach((it) => {
+      if (it.requisition_id) linkedReqSet.add(it.requisition_id);
+    });
+    const requisition_ids = Array.from(linkedReqSet);
+
+    const po: PurchaseOrder = {
+      po_id: poId,
+      po_number: poNumber,
+      order_date: data.order_date || now.split('T')[0],
+      expected_delivery_date: data.expected_delivery_date || '',
+      supplier_name: data.supplier_name.trim(),
+      supplier_contact: data.supplier_contact || '',
+      supplier_email: data.supplier_email || '',
+      supplier_address: data.supplier_address || '',
+      storeroom_id: storeroom.storeroom_id,
+      storeroom_name: storeroom.name,
+      department_code: data.department_code,
+      department_name: dept?.department_name || `Dept ${data.department_code}`,
+      requisition_ids,
+      status: 'APPROVED', // Auto-approved upon creation by procurement officer
+      items,
+      subtotal,
+      tax_rate_pct: taxRate,
+      tax_amount: taxAmount,
+      total_amount: totalAmount,
+      payment_terms: data.payment_terms || 'Net 30 Days',
+      notes: data.notes || '',
+      created_by: data.created_by || 'Procurement Officer',
+      approved_by: data.created_by || 'Purchasing Manager',
+      approved_at: now,
+      created_at: now,
+      updated_at: now,
+    };
+
+    this.purchaseOrders.set(po.po_id, po);
+
+    // Update linked Requisitions with this PO ID and calculate fulfilled / ordered status
+    requisition_ids.forEach((reqId) => {
+      const req = this.requisitions.get(reqId);
+      if (req) {
+        if (!req.linked_po_ids) req.linked_po_ids = [];
+        if (!req.linked_po_ids.includes(po.po_id)) {
+          req.linked_po_ids.push(po.po_id);
+        }
+
+        // Determine if requisition is partially ordered or fully ordered
+        // Sum total ordered across all POs linked to this requisition
+        let allItemsCovered = true;
+        let anyItemCovered = false;
+
+        req.items.forEach((reqItem) => {
+          let totalOrderedForReqItem = 0;
+          this.purchaseOrders.forEach((existingPo) => {
+            if (existingPo.status !== 'CANCELLED') {
+              existingPo.items.forEach((poItem) => {
+                if (poItem.item_id === reqItem.item_id && (poItem.requisition_id === req.requisition_id || existingPo.requisition_ids.includes(req.requisition_id))) {
+                  totalOrderedForReqItem += poItem.ordered_quantity;
+                }
+              });
+            }
+          });
+
+          const targetQty = reqItem.approved_quantity !== undefined ? reqItem.approved_quantity : reqItem.requested_quantity;
+          if (totalOrderedForReqItem >= targetQty) {
+            anyItemCovered = true;
+          } else {
+            allItemsCovered = false;
+            if (totalOrderedForReqItem > 0) anyItemCovered = true;
+          }
+        });
+
+        if (allItemsCovered) {
+          req.status = 'ORDERED';
+        } else if (anyItemCovered) {
+          req.status = 'PARTIALLY_ORDERED';
+        }
+      }
+    });
+
+    this.saveToDisk();
+    return po;
+  }
+
+  public async generatePurchaseOrderJournal(
+    poId: string,
+    journalMode: 'COMMITMENT' | 'ACCRUAL' = 'COMMITMENT',
+    userName: string = 'Purchasing Manager'
+  ): Promise<{ po: PurchaseOrder; journal_id: string }> {
+    const po = this.purchaseOrders.get(poId);
+    if (!po) {
+      throw new Error(`Purchase Order ${poId} not found.`);
+    }
+
+    if (po.journal_id) {
+      const existing = accountingStore.getJournalById(po.journal_id);
+      if (existing) {
+        return { po, journal_id: po.journal_id };
+      }
+    }
+
+    const now = new Date().toISOString();
+    const journalDate = po.order_date || now.split('T')[0];
+    const period = journalDate.slice(0, 7);
+
+    let journalLines = [];
+    const sourceRef = po.po_number || po.po_id;
+
+    if (journalMode === 'COMMITMENT') {
+      // USALI 12 Encumbrance / Purchase Commitment:
+      // Debit: 9010 (Purchase Order Encumbrance / Committed Expense)
+      // Credit: 9020 (Reserve for Encumbrances / Outstanding POs)
+      const encumbranceAccount = '9010';
+      const reserveAccount = '9020';
+
+      journalLines = [
+        {
+          account_code: encumbranceAccount,
+          department_code: po.department_code || '700',
+          debit: po.total_amount,
+          credit: 0,
+          description: `PO Encumbrance: ${po.po_number} - ${po.supplier_name} (${po.items.length} items)`,
+        },
+        {
+          account_code: reserveAccount,
+          department_code: po.department_code || '700',
+          debit: 0,
+          credit: po.total_amount,
+          description: `Reserve for PO Commitment - ${po.po_number} (${po.payment_terms})`,
+        },
+      ];
+    } else {
+      // Direct Procurement Accrual / Goods in Transit:
+      // Debit: 1080 (Inventory Asset) or Expense Dept
+      // Credit: 2010 (Accounts Payable / Accrued Purchases)
+      const invAccount = '1080';
+      const apAccount = accountingStore.mappingConfig.spending_procurement_credit_account || '2010';
+
+      journalLines = [
+        {
+          account_code: invAccount,
+          department_code: po.department_code || '700',
+          debit: po.subtotal,
+          credit: 0,
+          description: `Procurement Order Subtotal: ${po.po_number} (${po.supplier_name})`,
+        },
+      ];
+
+      if (po.tax_amount > 0) {
+        // PPN Masukan / Value Added Tax In (Asset: 1100 / Prepaid Tax)
+        journalLines.push({
+          account_code: '1100',
+          department_code: '700',
+          debit: po.tax_amount,
+          credit: 0,
+          description: `VAT In (PPN 11%) - ${po.po_number}`,
+        });
+      }
+
+      journalLines.push({
+        account_code: apAccount,
+        department_code: po.department_code || '700',
+        debit: 0,
+        credit: po.total_amount,
+        description: `AP Trade Liability Accrual: ${po.supplier_name} (${po.po_number})`,
+      });
+    }
+
+    const journalHeader = {
+      journal_date: journalDate,
+      period: period,
+      source_type: 'SPENDING' as const,
+      source_reference: sourceRef,
+      created_by: `Procurement PO (${userName})`,
+    };
+
+    const createdJournal = await accountingStore.createJournal(journalHeader, journalLines);
+    po.journal_id = createdJournal.journal_id;
+    po.updated_at = now;
+
+    this.saveToDisk();
+    return { po, journal_id: createdJournal.journal_id };
+  }
+
+  public updatePurchaseOrderStatus(poId: string, status: PurchaseOrder['status']): PurchaseOrder {
+    const po = this.purchaseOrders.get(poId);
+    if (!po) throw new Error(`Purchase Order ${poId} not found.`);
+    po.status = status;
+    po.updated_at = new Date().toISOString();
+    this.saveToDisk();
+    return po;
+  }
+
+  public updatePurchaseOrderDetails(
+    poId: string,
+    updates: {
+      supplier_name?: string;
+      supplier_contact?: string;
+      supplier_email?: string;
+      supplier_address?: string;
+      order_date?: string;
+      expected_delivery_date?: string;
+      payment_terms?: string;
+      tax_rate_pct?: number;
+      notes?: string;
+      storeroom_id?: string;
+      department_code?: string;
+      hotel_name?: string;
+      hotel_division?: string;
+      hotel_address?: string;
+      hotel_tax_id?: string;
+      hotel_phone?: string;
+      hotel_email?: string;
+      receiving_dock_instructions?: string;
+      terms_conditions?: string;
+      prepared_by_title?: string;
+      authorized_by_title?: string;
+      created_by?: string;
+      approved_by?: string;
+      items?: {
+        item_id: string;
+        ordered_quantity: number;
+        unit_cost: number;
+        requisition_id?: string;
+        notes?: string;
+      }[];
+    }
+  ): PurchaseOrder {
+    const po = this.purchaseOrders.get(poId);
+    if (!po) throw new Error(`Purchase Order ${poId} not found.`);
+
+    if (updates.supplier_name !== undefined) po.supplier_name = updates.supplier_name.trim();
+    if (updates.supplier_contact !== undefined) po.supplier_contact = updates.supplier_contact;
+    if (updates.supplier_email !== undefined) po.supplier_email = updates.supplier_email;
+    if (updates.supplier_address !== undefined) po.supplier_address = updates.supplier_address;
+    if (updates.order_date !== undefined) po.order_date = updates.order_date;
+    if (updates.expected_delivery_date !== undefined) po.expected_delivery_date = updates.expected_delivery_date;
+    if (updates.payment_terms !== undefined) po.payment_terms = updates.payment_terms;
+    if (updates.notes !== undefined) po.notes = updates.notes;
+    if (updates.hotel_name !== undefined) po.hotel_name = updates.hotel_name;
+    if (updates.hotel_division !== undefined) po.hotel_division = updates.hotel_division;
+    if (updates.hotel_address !== undefined) po.hotel_address = updates.hotel_address;
+    if (updates.hotel_tax_id !== undefined) po.hotel_tax_id = updates.hotel_tax_id;
+    if (updates.hotel_phone !== undefined) po.hotel_phone = updates.hotel_phone;
+    if (updates.hotel_email !== undefined) po.hotel_email = updates.hotel_email;
+    if (updates.receiving_dock_instructions !== undefined) po.receiving_dock_instructions = updates.receiving_dock_instructions;
+    if (updates.terms_conditions !== undefined) po.terms_conditions = updates.terms_conditions;
+    if (updates.prepared_by_title !== undefined) po.prepared_by_title = updates.prepared_by_title;
+    if (updates.authorized_by_title !== undefined) po.authorized_by_title = updates.authorized_by_title;
+    if (updates.created_by !== undefined) po.created_by = updates.created_by;
+    if (updates.approved_by !== undefined) po.approved_by = updates.approved_by;
+
+    if (updates.storeroom_id && updates.storeroom_id !== po.storeroom_id) {
+      const store = this.storerooms.get(updates.storeroom_id);
+      if (store) {
+        po.storeroom_id = store.storeroom_id;
+        po.storeroom_name = store.name;
+      }
+    }
+
+    if (updates.department_code && updates.department_code !== po.department_code) {
+      const dept = accountingStore.departments.get(updates.department_code);
+      po.department_code = updates.department_code;
+      po.department_name = dept?.department_name || `Dept ${updates.department_code}`;
+    }
+
+    if (updates.tax_rate_pct !== undefined) {
+      po.tax_rate_pct = Number(updates.tax_rate_pct);
+    }
+
+    if (updates.items && Array.isArray(updates.items)) {
+      let subtotal = 0;
+      const updatedItems: PurchaseOrderItem[] = [];
+      for (const line of updates.items) {
+        const item = this.items.get(line.item_id);
+        const qty = Number(line.ordered_quantity);
+        const cost = Number(line.unit_cost);
+        const lineSubtotal = Math.round(qty * cost * 100) / 100;
+        subtotal += lineSubtotal;
+
+        updatedItems.push({
+          item_id: line.item_id,
+          item_code: item?.item_code || line.item_id,
+          item_name: item?.item_name || 'Item',
+          uom: item?.uom || 'UNIT',
+          ordered_quantity: qty,
+          received_quantity: 0,
+          unit_cost: cost,
+          subtotal: lineSubtotal,
+          requisition_id: line.requisition_id,
+          notes: line.notes,
+        });
+      }
+      po.items = updatedItems;
+      po.subtotal = subtotal;
+      po.tax_amount = Math.round(subtotal * ((po.tax_rate_pct || 0) / 100) * 100) / 100;
+      po.total_amount = Math.round((po.subtotal + po.tax_amount) * 100) / 100;
+    } else if (updates.tax_rate_pct !== undefined) {
+      po.tax_amount = Math.round(po.subtotal * ((po.tax_rate_pct || 0) / 100) * 100) / 100;
+      po.total_amount = Math.round((po.subtotal + po.tax_amount) * 100) / 100;
+    }
+
+    po.updated_at = new Date().toISOString();
+    this.saveToDisk();
+    return po;
   }
 
   // --- 3. DIRECT STOCK ISSUE (DEPARTMENT CONSUMPTION) ---

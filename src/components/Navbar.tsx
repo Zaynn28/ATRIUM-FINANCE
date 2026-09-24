@@ -28,6 +28,9 @@ import {
   Package,
   Coins,
   Building2,
+  Receipt,
+  PieChart,
+  BookOpen,
 } from 'lucide-react';
 import { PrimaryNavPillar, SystemUser, UserRoleDefinition } from '../types';
 
@@ -52,10 +55,12 @@ interface NavbarProps {
   activePillar: PrimaryNavPillar;
   onSelectPillar: (pillar: PrimaryNavPillar) => void;
   // Sub-tabs for pillars that have sub-views
-  operationsSubTab?: 'revenue' | 'spending' | 'inventory' | 'service-charge' | 'owner-pool';
-  onSelectOperationsSubTab?: (tab: 'revenue' | 'spending' | 'inventory' | 'service-charge' | 'owner-pool') => void;
+  operationsSubTab?: 'revenue' | 'spending' | 'inventory' | 'service-charge';
+  onSelectOperationsSubTab?: (tab: 'revenue' | 'spending' | 'inventory' | 'service-charge') => void;
   accountingCoreSubTab?: 'workbench' | 'ledger' | 'trial-balance';
   onSelectAccountingCoreSubTab?: (tab: 'workbench' | 'ledger' | 'trial-balance') => void;
+  reportsSubTab?: 'usali' | 'financial' | 'trial-balance' | 'ledger' | 'owner-pool';
+  onSelectReportsSubTab?: (tab: 'usali' | 'financial' | 'trial-balance' | 'ledger' | 'owner-pool') => void;
   // RBAC Current User & Roles
   currentUser?: SystemUser;
   currentRole?: UserRoleDefinition;
@@ -83,6 +88,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectOperationsSubTab,
   accountingCoreSubTab = 'workbench',
   onSelectAccountingCoreSubTab,
+  reportsSubTab = 'usali',
+  onSelectReportsSubTab,
   currentUser,
   currentRole,
   allUsers = [],
@@ -116,17 +123,18 @@ export const Navbar: React.FC<NavbarProps> = ({
       badgeColor: 'amber',
     },
     { id: 'reports', num: '4', label: 'Reports', icon: TrendingUp },
-    { id: 'configuration', num: '5', label: 'Configuration', icon: Sliders },
+    { id: 'tax', num: '5', label: 'Tax', icon: Receipt },
+    { id: 'configuration', num: '6', label: 'Configuration', icon: Sliders },
     {
       id: 'controls-audit',
-      num: '6',
+      num: '7',
       label: 'Controls & Audit',
       icon: ShieldAlert,
       badge: exceptionsCount > 0 ? exceptionsCount : null,
       badgeColor: 'rose',
     },
-    { id: 'integrations', num: '7', label: 'Integrations', icon: Workflow },
-    { id: 'administration', num: '8', label: 'Administration', icon: ShieldCheck },
+    { id: 'integrations', num: '8', label: 'Integrations', icon: Workflow },
+    { id: 'administration', num: '9', label: 'Administration', icon: ShieldCheck },
   ];
 
   return (
@@ -355,7 +363,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <ArrowDownLeft className="w-3.5 h-3.5" />
-                <span>Revenue Cycle (Sales &amp; PMS Ingestion)</span>
+                <span>Revenue Cycle (Sales &amp; Accounts Receivable AR)</span>
               </button>
 
               <button
@@ -380,7 +388,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <Package className="w-3.5 h-3.5 text-blue-400" />
-                <span>Hotel Inventory &amp; Storerooms</span>
+                <span>Procurement, PO &amp; Storerooms</span>
               </button>
 
               <button
@@ -395,22 +403,84 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Coins className="w-3.5 h-3.5 text-amber-400" />
                 <span>Staff Service Charge &amp; Gratuities Pool</span>
               </button>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 hidden md:block">
+              Auto-generates balanced double-entry drafts
+            </span>
+          </div>
+        </div>
+      )}
 
+      {activePillar === 'reports' && (
+        <div className="px-4 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80">
+          <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mr-2">
+                Reports &amp; Statements:
+              </span>
               <button
-                id="nav-operations-owner-pool"
-                onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('owner-pool')}
+                onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('usali')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  operationsSubTab === 'owner-pool'
+                  reportsSubTab === 'usali'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span>USALI 12 Statements</span>
+              </button>
+
+              <button
+                onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('financial')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  reportsSubTab === 'financial'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <Scale className="w-3.5 h-3.5" />
+                <span>Balance Sheet &amp; P&amp;L</span>
+              </button>
+
+              <button
+                onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('trial-balance')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  reportsSubTab === 'trial-balance'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Trial Balance</span>
+              </button>
+
+              <button
+                onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('ledger')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  reportsSubTab === 'ledger'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>General Ledger</span>
+              </button>
+
+              <button
+                id="nav-reports-owner-pool"
+                onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('owner-pool')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  reportsSubTab === 'owner-pool'
+                    ? 'bg-indigo-600 text-white font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <PieChart className="w-3.5 h-3.5 text-indigo-400" />
                 <span>Owner Pool &amp; Return Distribution</span>
               </button>
             </div>
-            <span className="text-[11px] font-mono text-slate-400 hidden md:block">
-              Auto-generates balanced double-entry drafts
+            <span className="text-[11px] font-mono text-indigo-400 hidden md:block">
+              USALI 12 Financial Reporting &amp; Owner Yield Analysis
             </span>
           </div>
         </div>

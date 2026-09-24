@@ -10,12 +10,12 @@ import { RevenueCycleView } from './components/RevenueCycleView';
 import { SpendingCycleView } from './components/SpendingCycleView';
 import { InventoryModule } from './components/inventory/InventoryModule';
 import { ServiceChargeModule } from './components/operations/service-charge/ServiceChargeModule';
-import { OwnerPoolModule } from './components/operations/owner-pool/OwnerPoolModule';
 import { JournalWorkbenchView } from './components/JournalWorkbenchView';
 import { GeneralLedgerView } from './components/GeneralLedgerView';
 import { TrialBalanceView } from './components/TrialBalanceView';
 import { ConfigurationView } from './components/ConfigurationView';
 import { ReportsHubView } from './components/reports/ReportsHubView';
+import { TaxModule } from './components/TaxModule';
 import { ControlsAuditView } from './components/ControlsAuditView';
 import { IntegrationsView } from './components/IntegrationsView';
 import { AdministrationView } from './components/AdministrationView';
@@ -48,8 +48,9 @@ export default function App() {
   const [activePillar, setActivePillar] = useState<PrimaryNavPillar>('command-centre');
 
   // Sub-navigation within multi-view pillars
-  const [operationsSubTab, setOperationsSubTab] = useState<'revenue' | 'spending' | 'inventory' | 'service-charge' | 'owner-pool'>('revenue');
+  const [operationsSubTab, setOperationsSubTab] = useState<'revenue' | 'spending' | 'inventory' | 'service-charge'>('revenue');
   const [accountingCoreSubTab, setAccountingCoreSubTab] = useState<'workbench' | 'ledger' | 'trial-balance'>('workbench');
+  const [reportsSubTab, setReportsSubTab] = useState<'usali' | 'financial' | 'trial-balance' | 'ledger' | 'owner-pool'>('usali');
 
   // Master and Transactional Ledger State
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -150,27 +151,37 @@ export default function App() {
     setActivePillar(pillar);
     if (
       pillar === 'operations' &&
-      (subView === 'revenue' || subView === 'spending' || subView === 'inventory' || subView === 'service-charge' || subView === 'owner-pool')
+      (subView === 'revenue' || subView === 'spending' || subView === 'inventory' || subView === 'service-charge')
     ) {
-      setOperationsSubTab(subView);
+      setOperationsSubTab(subView as any);
     } else if (
       pillar === 'accounting-core' &&
       (subView === 'workbench' || subView === 'ledger' || subView === 'trial-balance')
     ) {
-      setAccountingCoreSubTab(subView);
+      setAccountingCoreSubTab(subView as any);
+    } else if (
+      pillar === 'reports' &&
+      (subView === 'usali' || subView === 'financial' || subView === 'trial-balance' || subView === 'ledger' || subView === 'owner-pool')
+    ) {
+      setReportsSubTab(subView as any);
     }
   };
 
   // Cross-Tab Navigation Handler for backward compatibility
   const handleCrossTabNavigate = (tab: string) => {
-    if (tab === 'revenue' || tab === 'spending' || tab === 'inventory' || tab === 'service-charge' || tab === 'owner-pool') {
+    if (tab === 'revenue' || tab === 'spending' || tab === 'inventory' || tab === 'service-charge') {
       setActivePillar('operations');
       setOperationsSubTab(tab as any);
+    } else if (tab === 'owner-pool') {
+      setActivePillar('reports');
+      setReportsSubTab('owner-pool');
     } else if (tab === 'workbench' || tab === 'ledger' || tab === 'trial-balance') {
       setActivePillar('accounting-core');
       setAccountingCoreSubTab(tab as any);
     } else if (tab === 'reports') {
       setActivePillar('reports');
+    } else if (tab === 'tax') {
+      setActivePillar('tax');
     } else if (tab === 'accounts' || tab === 'configuration') {
       setActivePillar('configuration');
     } else if (tab === 'controls') {
@@ -228,6 +239,8 @@ export default function App() {
         onSelectOperationsSubTab={setOperationsSubTab}
         accountingCoreSubTab={accountingCoreSubTab}
         onSelectAccountingCoreSubTab={setAccountingCoreSubTab}
+        reportsSubTab={reportsSubTab}
+        onSelectReportsSubTab={setReportsSubTab}
         currentUser={currentUser}
         currentRole={currentRole}
         allUsers={accessControl?.users || []}
@@ -331,10 +344,6 @@ export default function App() {
               />
             )}
 
-            {activePillar === 'operations' && operationsSubTab === 'owner-pool' && (
-              <OwnerPoolModule />
-            )}
-
             {/* 3. ACCOUNTING CORE (Actual independent double-entry accounting module) */}
             {activePillar === 'accounting-core' && accountingCoreSubTab === 'workbench' && (
               <JournalWorkbenchView
@@ -362,12 +371,21 @@ export default function App() {
               <TrialBalanceView />
             )}
 
-            {/* 4. REPORTS (Dedicated USALI 12 & Financial Reporting Layer) */}
+            {/* 4. REPORTS (Dedicated USALI 12 & Financial Reporting Layer & Owner Pool) */}
             {activePillar === 'reports' && (
-              <ReportsHubView onOpenJournalInWorkbench={handleViewJournal} />
+              <ReportsHubView
+                activeReport={reportsSubTab}
+                onSelectReport={setReportsSubTab}
+                onOpenJournalInWorkbench={handleViewJournal}
+              />
             )}
 
-            {/* 5. CONFIGURATION (Isolated from accounting transactions: COA, Depts, Clearing rules) */}
+            {/* 5. TAX (Hospitality Tax Compliance, PBJT, PPh, PPN, Owner Tax) */}
+            {activePillar === 'tax' && (
+              <TaxModule currentUser={currentUser} currentRole={currentRole} />
+            )}
+
+            {/* 6. CONFIGURATION (Isolated from accounting transactions: COA, Depts, Clearing rules) */}
             {activePillar === 'configuration' && (
               <ConfigurationView
                 accounts={accounts}

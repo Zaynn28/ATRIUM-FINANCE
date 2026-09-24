@@ -522,7 +522,7 @@ export interface DrilldownDetail {
 
 export interface ControlException {
   id: string;
-  category: 'UNMAPPED_ACCOUNT' | 'UNASSIGNED_DEPARTMENT' | 'DRAFT_PENDING' | 'MISSING_SOURCE' | 'MISSING_VOUCHER' | 'RECONCILIATION_VARIANCE';
+  category: 'UNMAPPED_ACCOUNT' | 'UNASSIGNED_DEPARTMENT' | 'DRAFT_PENDING' | 'MISSING_SOURCE' | 'MISSING_VOUCHER' | 'RECONCILIATION_VARIANCE' | 'TAX_RECONCILIATION';
   severity: 'error' | 'warning' | 'info';
   title: string;
   description: string;
@@ -538,6 +538,7 @@ export type PrimaryNavPillar =
   | 'operations'
   | 'accounting-core'
   | 'reports'
+  | 'tax'
   | 'configuration'
   | 'controls-audit'
   | 'integrations'
@@ -713,7 +714,7 @@ export interface RequisitionItem {
   total_cost: number;
 }
 
-export type RequisitionStatus = 'PENDING' | 'APPROVED' | 'ISSUED' | 'REJECTED';
+export type RequisitionStatus = 'PENDING' | 'APPROVED' | 'PARTIALLY_ORDERED' | 'ORDERED' | 'ISSUED' | 'REJECTED';
 
 export interface DepartmentRequisition {
   requisition_id: string;
@@ -730,8 +731,66 @@ export interface DepartmentRequisition {
   approved_at?: string;
   issuer_name?: string;
   issued_at?: string;
+  linked_po_ids?: string[];
   journal_id?: string;
   created_at: string;
+}
+
+export type PurchaseOrderStatus = 'DRAFT' | 'APPROVED' | 'PARTIALLY_RECEIVED' | 'FULFILLED' | 'CANCELLED';
+
+export interface PurchaseOrderItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  uom: string;
+  ordered_quantity: number;
+  received_quantity: number;
+  unit_cost: number;
+  subtotal: number;
+  requisition_id?: string; // Linked requisition source
+  notes?: string;
+}
+
+export interface PurchaseOrder {
+  po_id: string; // e.g. PO-2026-0001
+  po_number: string;
+  order_date: string;
+  expected_delivery_date?: string;
+  supplier_id?: string;
+  supplier_name: string;
+  supplier_contact?: string;
+  supplier_email?: string;
+  supplier_address?: string;
+  storeroom_id: string;
+  storeroom_name: string;
+  department_code: string;
+  department_name: string;
+  requisition_ids: string[]; // 1 Requisition can be split across multiple POs / suppliers
+  status: PurchaseOrderStatus;
+  items: PurchaseOrderItem[];
+  subtotal: number;
+  tax_rate_pct: number; // e.g. 11% PPN
+  tax_amount: number;
+  total_amount: number;
+  payment_terms: string; // e.g. "Net 30 Days", "COD", "50% Advance"
+  notes?: string;
+  // Document customization & letterhead
+  hotel_name?: string;
+  hotel_division?: string;
+  hotel_address?: string;
+  hotel_tax_id?: string;
+  hotel_phone?: string;
+  hotel_email?: string;
+  receiving_dock_instructions?: string;
+  terms_conditions?: string;
+  prepared_by_title?: string;
+  authorized_by_title?: string;
+  created_by: string;
+  approved_by?: string;
+  approved_at?: string;
+  journal_id?: string; // Encumbrance / Commitment or Procurement Accrual Journal ID
+  created_at: string;
+  updated_at: string;
 }
 
 export interface GoodsReceiptItem {
@@ -1161,6 +1220,222 @@ export interface OwnerPoolDashboardKPIs {
   current_batch_id?: string;
   current_batch_status?: OwnerDistributionBatchStatus;
 }
+
+// ==========================================
+// --- TAX MODULE TYPES (Indonesian Hospitality Tax Framework) ---
+// ==========================================
+
+export type TaxTypeCode =
+  | 'PBJT_HOTEL'
+  | 'PPH_21'
+  | 'PPH_23'
+  | 'PPH_26'
+  | 'PPH_FINAL_4_2'
+  | 'PPH_25'
+  | 'PPH_BADAN'
+  | 'PPN'
+  | 'OWNER_TAX';
+
+export type TaxObligationStatus =
+  | 'DRAFT'
+  | 'READY'
+  | 'PAID'
+  | 'FILED'
+  | 'RECONCILED'
+  | 'CLOSED';
+
+export type TaxFilingStatus =
+  | 'Draft'
+  | 'Ready'
+  | 'Paid'
+  | 'Filed'
+  | 'Reconciled'
+  | 'Closed';
+
+export interface TaxRuleConfig {
+  tax_code: TaxTypeCode;
+  tax_name: string;
+  tax_category: 'LOCAL_TAX' | 'NATIONAL_WHT' | 'CORPORATE_TAX' | 'VAT' | 'OWNER_TAX';
+  tax_rate_pct: number; // Configurable; historical snapshots stored per calculation
+  is_rate_configured: boolean; // Flag to disallow guessing if not configured
+  tax_base_description: string;
+  gl_liability_account: string; // e.g. 2040, 2070, 2080
+  source_data_type: 'REVENUE' | 'PAYROLL' | 'SPENDING_AP' | 'CORPORATE_P_L' | 'OWNER_POOL' | 'MANUAL';
+  filing_due_day: number; // Day of following month (e.g. 10th for PBJT, 20th for PPh, end of month for PPN)
+  payment_due_day: number;
+  active: 'Y' | 'N';
+  notes?: string;
+  updated_at?: string;
+  updated_by?: string;
+}
+
+export interface TaxDocumentAttachment {
+  id: string;
+  obligation_id: string;
+  doc_type: 'Invoice' | 'Bukti Potong' | 'NTPN' | 'BPE' | 'Tax Return' | 'Payment Receipt' | 'Other';
+  file_name: string;
+  file_url: string;
+  notes?: string;
+  uploaded_at: string;
+  uploaded_by: string;
+}
+
+export interface TaxObligationItem {
+  id: string; // e.g. TAX-2026-09-PBJT_HOTEL
+  period: string; // YYYY-MM
+  tax_code: TaxTypeCode;
+  tax_name: string;
+  tax_base: number;
+  tax_rate_pct: number;
+  is_rate_configured: boolean;
+  tax_amount: number;
+  paid_amount: number;
+  filing_due_date: string;
+  payment_due_date: string;
+  status: TaxFilingStatus;
+
+  // Source & Audit Trail
+  source_data_available: boolean;
+  source_data_type: string;
+  source_transactions_count: number;
+  source_reference: string;
+  gl_account_code: string;
+  gl_account_name: string;
+  rule_applied_description: string;
+
+  // Payment Details
+  payment_date?: string;
+  ntpn_reference?: string;
+  payment_bank_account?: string;
+
+  // Filing Details
+  filing_date?: string;
+  bpe_reference?: string;
+
+  // Evidence & Audit
+  documents: TaxDocumentAttachment[];
+  calculation_timestamp?: string;
+  calculated_by?: string;
+  reconciled_at?: string;
+  reconciled_by?: string;
+  closed_at?: string;
+  closed_by?: string;
+}
+
+export interface TaxPeriodSummaryKPIs {
+  period: string;
+  has_data: boolean;
+  tax_payable: number;
+  tax_paid: number;
+  tax_outstanding: number;
+  filing_due_count: number;
+  overdue_count: number;
+  is_period_closed: boolean;
+  closed_at?: string;
+  closed_by?: string;
+}
+
+export interface TaxReconciliationLine {
+  tax_code: TaxTypeCode;
+  tax_name: string;
+  gl_account_code: string;
+  gl_account_name: string;
+  calculated_amount: number;
+  gl_balance_amount: number;
+  paid_amount: number;
+  filed_amount: number;
+  difference_amount: number;
+  status: 'RECONCILED' | 'DIFFERENCE_FOUND';
+  discrepancy_note?: string;
+}
+
+export interface TaxPeriodCloseValidation {
+  can_close: boolean;
+  checks: {
+    all_taxes_calculated: boolean;
+    all_payments_recorded: boolean;
+    all_filings_recorded: boolean;
+    required_evidence_attached: boolean;
+    all_reconciled: boolean;
+  };
+  missing_items: string[];
+}
+
+// ==========================================
+// ACCOUNTS RECEIVABLE (AR) & ACCOUNTS PAYABLE (AP) MODULE
+// ==========================================
+
+export interface ARAgingItem {
+  id: string;
+  source: 'REVENUE_TX' | 'NIGHT_AUDIT' | 'MANUAL';
+  transaction_id: string;
+  journal_id: string;
+  date: string;
+  due_date: string;
+  customer_name: string;
+  customer_type: 'GUEST_FOLIO' | 'CITY_LEDGER_CORPORATE' | 'OTA_COLLECT' | 'BANQUET_CLIENT';
+  department_code: string;
+  department_name: string;
+  account_code: string;
+  original_amount: number;
+  paid_amount: number;
+  outstanding_balance: number;
+  days_overdue: number;
+  aging_bucket: 'CURRENT' | '1_30' | '31_60' | '61_90' | 'OVER_90';
+  status: 'PENDING' | 'PARTIALLY_PAID' | 'SETTLED' | 'DISPUTED';
+  notes?: string;
+  settlements: {
+    settlement_id: string;
+    date: string;
+    amount: number;
+    payment_method: string;
+    reference: string;
+    journal_id?: string;
+  }[];
+}
+
+export interface APAgingItem {
+  id: string;
+  source: 'PURCHASE_ORDER' | 'SPENDING_TX' | 'DIRECT_INVOICE';
+  reference_id: string;
+  journal_id?: string;
+  date: string;
+  due_date: string;
+  vendor_name: string;
+  vendor_contact?: string;
+  department_code: string;
+  department_name: string;
+  account_code: string;
+  original_amount: number;
+  paid_amount: number;
+  outstanding_balance: number;
+  days_overdue: number;
+  aging_bucket: 'CURRENT' | '1_30' | '31_60' | '61_90' | 'OVER_90';
+  status: 'PENDING' | 'PARTIALLY_PAID' | 'PAID' | 'SCHEDULED';
+  payment_terms: string;
+  notes?: string;
+  payments: {
+    payment_id: string;
+    date: string;
+    amount: number;
+    payment_method: string;
+    bank_account_code: string;
+    reference: string;
+    journal_id?: string;
+  }[];
+}
+
+export interface AgingSummary {
+  total_outstanding: number;
+  current: number;
+  bucket_1_30: number;
+  bucket_31_60: number;
+  bucket_61_90: number;
+  bucket_over_90: number;
+  count: number;
+}
+
+
 
 
 

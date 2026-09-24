@@ -241,6 +241,10 @@ export class OwnerPoolStore {
     return this.batches.get(batchId) || null;
   }
 
+  public getBatchByPeriod(period: string): OwnerDistributionBatch | null {
+    return this.batches.get(`ODB-${period}`) || null;
+  }
+
   /**
    * 14-Step Automatic Monthly Distribution Calculation:
    * 1. Retrieves posted eligible Room Revenue from Accounting Ledger (Account 4010 & 4020)

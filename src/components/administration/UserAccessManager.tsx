@@ -72,24 +72,29 @@ const PILLAR_METADATA: Record<
     number: '4',
     description: 'USALI 12 P&L, Balance Sheet, Income Statement, and financial statement exports',
   },
+  'tax': {
+    label: 'Tax Module',
+    number: '5',
+    description: 'Hospitality tax obligations (PBJT, PPh 21, PPh 23, PPN, Owner Tax), filing, and reconciliation',
+  },
   'configuration': {
     label: 'Configuration',
-    number: '5',
+    number: '6',
     description: 'Chart of Accounts, Departmental cost centers, and report formatting designs',
   },
   'controls-audit': {
     label: 'Controls & Audit',
-    number: '6',
+    number: '7',
     description: 'Continuous anomaly scans, automated journal exception logs, and audit trails',
   },
   'integrations': {
     label: 'Integrations',
-    number: '7',
+    number: '8',
     description: 'Google Sheets synchronization, PMS night audit connectors, and data imports',
   },
   'administration': {
     label: 'Administration',
-    number: '8',
+    number: '9',
     description: 'Accounting period lock date, hotel master profile, user access, and RBAC permissions',
   },
 };

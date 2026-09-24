@@ -22,6 +22,7 @@ import {
   SpendingType,
 } from '../types';
 import { api } from '../services/api';
+import { AccountsPayableModule } from './ap/AccountsPayableModule';
 
 interface SpendingCycleViewProps {
   transactions: SpendingTransaction[];
@@ -42,6 +43,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
   onOpenMappingModal,
   onViewJournal,
 }) => {
+  const [activeCycleTab, setActiveCycleTab] = useState<'AP_MODULE' | 'SPENDING_ENTRY'>('AP_MODULE');
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     type: 'Procurement' as SpendingType,
@@ -143,16 +145,47 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold">
+              Procurement &amp; Spending Cycle
+            </span>
+          </div>
           <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
             <ArrowUpRight className="w-5 h-5 text-amber-400" />
-            <span>Spending Cycle (Procurement, Payroll &amp; Expenses)</span>
+            <span>Procurement Spending &amp; Accounts Payable (AP)</span>
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Record supplier bills, operating purchases, and payroll liabilities with automated draft journal generation
+            Monitor and control supplier liabilities, aging schedules, and automated double-entry voucher disbursements
           </p>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Sub-tab pills */}
+          <div className="bg-slate-950 p-1 rounded-xl border border-slate-800 flex items-center gap-1">
+            <button
+              onClick={() => setActiveCycleTab('AP_MODULE')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeCycleTab === 'AP_MODULE'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Accounts Payable (AP)</span>
+            </button>
+            <button
+              onClick={() => setActiveCycleTab('SPENDING_ENTRY')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeCycleTab === 'SPENDING_ENTRY'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Record Spending Voucher</span>
+            </button>
+          </div>
+
           <button
             onClick={onOpenMappingModal}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
@@ -163,7 +196,15 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
         </div>
       </div>
 
-      {/* Unmapped Exception Banner */}
+      {activeCycleTab === 'AP_MODULE' ? (
+        <AccountsPayableModule
+          departments={departments}
+          accounts={accounts}
+          onViewJournal={onViewJournal}
+        />
+      ) : (
+        <>
+          {/* Unmapped Exception Banner */}
       {!currentDefaultCredit && !formData.credit_account_code && (
         <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
@@ -489,6 +530,8 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };

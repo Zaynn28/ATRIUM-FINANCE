@@ -14,6 +14,7 @@ import {
   Scan,
   Warehouse,
   ClipboardList,
+  ShoppingCart,
   Layers,
   ArrowRight,
   Plus,
@@ -66,6 +67,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       storerooms: 'STOREROOMS',
       receiving: 'RECEIVING',
       requisitions: 'REQUISITIONS',
+      'purchase-orders': 'PURCHASE_ORDERS',
+      'purchase_orders': 'PURCHASE_ORDERS',
+      orders: 'PURCHASE_ORDERS',
       issues: 'ISSUE',
       issue: 'ISSUE',
       transfers: 'TRANSFER',
@@ -160,6 +164,14 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           >
             <ClipboardList className="w-3.5 h-3.5 text-blue-400" />
             <span>Requisition</span>
+          </button>
+
+          <button
+            onClick={() => navigate('purchase-orders')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 rounded-lg text-xs font-medium border border-blue-500/40 transition-colors"
+          >
+            <ShoppingCart className="w-3.5 h-3.5 text-blue-400" />
+            <span>Purchase Orders</span>
           </button>
 
           <button

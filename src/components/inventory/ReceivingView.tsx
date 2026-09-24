@@ -28,6 +28,7 @@ import { api } from '../../services/api';
 interface ReceivingViewProps {
   onViewJournal?: (journalId: string) => void;
   onOpenScanner: () => void;
+  initialPoReference?: string;
 }
 
 interface ReceiptLineInput {
@@ -42,6 +43,7 @@ interface ReceiptLineInput {
 export const ReceivingView: React.FC<ReceivingViewProps> = ({
   onViewJournal,
   onOpenScanner,
+  initialPoReference,
 }) => {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [storerooms, setStorerooms] = useState<InventoryStoreroom[]>([]);
@@ -50,7 +52,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
 
   // Form State
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [poReference, setPoReference] = useState('PO-2026-03-042');
+  const [poReference, setPoReference] = useState(initialPoReference || 'PO-2026-03-042');
   const [vendorName, setVendorName] = useState('PT Sukses Jaya Pangan');
   const [storeroomId, setStoreroomId] = useState('CSR-01');
   const [notes, setNotes] = useState('Delivered via Delivery Order #DO-9921; temperature inspected & verified.');
@@ -106,6 +108,12 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (initialPoReference) {
+      setPoReference(initialPoReference);
+    }
+  }, [initialPoReference]);
 
   const handleItemSelect = (index: number, itemId: string) => {
     const selected = items.find((i) => i.item_id === itemId);

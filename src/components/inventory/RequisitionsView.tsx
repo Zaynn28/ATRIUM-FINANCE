@@ -18,6 +18,8 @@ import {
   PackageCheck,
   RefreshCw,
   FileText,
+  ShoppingCart,
+  Split,
 } from 'lucide-react';
 import {
   DepartmentRequisition,
@@ -30,6 +32,7 @@ import { api } from '../../services/api';
 interface RequisitionsViewProps {
   departments: Department[];
   onViewJournal?: (journalId: string) => void;
+  onCreatePo?: (requisitionId: string) => void;
 }
 
 export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
@@ -279,6 +282,10 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                             ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                             : req.status === 'APPROVED'
                             ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                            : req.status === 'PARTIALLY_ORDERED'
+                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            : req.status === 'ORDERED'
+                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                             : req.status === 'PENDING_APPROVAL'
                             ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                             : 'bg-slate-800 text-slate-300'
@@ -290,6 +297,12 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                     <td className="px-4 py-3 text-[11px] text-slate-400">
                       {req.approved_by ? `Appr: ${req.approved_by}` : 'Awaiting Dept Head'}
                       {req.issued_by ? ` • Issued: ${req.issued_by}` : ''}
+                      {req.linked_po_ids && req.linked_po_ids.length > 0 && (
+                        <div className="text-[10px] text-purple-400 font-mono mt-0.5 flex items-center gap-1">
+                          <ShoppingCart className="w-3 h-3" />
+                          <span>{req.linked_po_ids.length} PO(s) Linked</span>
+                        </div>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
@@ -299,6 +312,17 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                             className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold"
                           >
                             Approve
+                          </button>
+                        )}
+
+                        {(req.status === 'APPROVED' || req.status === 'PARTIALLY_ORDERED') && onCreatePo && (
+                          <button
+                            onClick={() => onCreatePo(req.requisition_id)}
+                            title="Generate Purchase Order to Supplier (supports multi-supplier split)"
+                            className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold flex items-center gap-1"
+                          >
+                            <ShoppingCart className="w-3 h-3 text-blue-400" />
+                            <span>Create PO</span>
                           </button>
                         )}
 
