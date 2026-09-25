@@ -11,6 +11,7 @@ import { store } from './server/store';
 import { inventoryStore } from './server/inventoryStore';
 import { serviceChargeStore } from './server/serviceChargeStore';
 import { ownerPoolStore } from './server/ownerPoolStore';
+import { ownerEmailStore } from './server/ownerEmailStore';
 import { taxStore } from './server/taxStore';
 import { arapStore } from './server/arapStore';
 
@@ -1217,6 +1218,137 @@ async function startServer() {
       }
       const stmt = ownerPoolStore.getOwnerStatement(unitId, period);
       res.json(stmt);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // --- APARTMENT OWNER RETURN DISTRIBUTION EMAIL AUTOMATION API ROUTES ---
+
+  // 1. Get Email Configuration & Template
+  app.get('/api/owner-pool/email-config', (req, res) => {
+    try {
+      res.json(ownerEmailStore.getConfig());
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 2. Update Email Configuration & Template
+  app.post('/api/owner-pool/email-config', (req, res) => {
+    try {
+      const updatedBy = String(req.body.updated_by || req.headers['x-user-name'] || 'Financial Controller');
+      const updated = ownerEmailStore.updateConfig(req.body, updatedBy);
+      res.json({ success: true, config: updated });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 3. Get Batch Email Drafts (Allows seeing draft of email for each investor)
+  app.get('/api/owner-pool/email-drafts', (req, res) => {
+    try {
+      const batchId = req.query.batch_id ? String(req.query.batch_id) : undefined;
+      const period = req.query.period ? String(req.query.period) : '2026-09';
+      const drafts = ownerEmailStore.getBatchDrafts(batchId, period);
+      res.json(drafts);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 4. Update & Save Email Draft (Allows editing draft of email)
+  app.post('/api/owner-pool/email-drafts/:id', (req, res) => {
+    try {
+      const draft = ownerEmailStore.saveDraft(req.params.id, req.body);
+      res.json({ success: true, draft });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 5. Reset Draft to Default Template
+  app.post('/api/owner-pool/email-drafts/:id/reset', (req, res) => {
+    try {
+      ownerEmailStore.resetDraft(req.params.id);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 6. Send Single Email Draft (or test preview to user)
+  app.post('/api/owner-pool/email-drafts/:id/send', (req, res) => {
+    try {
+      const sentBy = String(req.body.sent_by || req.headers['x-user-name'] || 'Financial Controller');
+      const testEmail = req.body.test_email ? String(req.body.test_email) : undefined;
+      const result = ownerEmailStore.sendSingleEmail(req.params.id, sentBy, testEmail);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 7. ONE BUTTON TO EMAIL ALL INVESTORS
+  app.post('/api/owner-pool/email-all', (req, res) => {
+    try {
+      const period = String(req.body.period || '2026-09');
+      const sentBy = String(req.body.sent_by || req.headers['x-user-name'] || 'Financial Controller');
+      const unitIds = Array.isArray(req.body.unit_ids) ? req.body.unit_ids : undefined;
+      const testOverride = req.body.test_email ? String(req.body.test_email) : undefined;
+
+      const batchResult = ownerEmailStore.sendBatchEmails(period, sentBy, {
+        unitIds,
+        testRecipientOverride: testOverride,
+      });
+
+      res.json({
+        success: true,
+        message: `Successfully emailed ${batchResult.successful_count} investors for period ${period}.`,
+        result: batchResult,
+      });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 8. Email Dispatch Logs & Delivery Audit History
+  app.get('/api/owner-pool/email-dispatches', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : undefined;
+      const logs = ownerEmailStore.getDispatchLogs(period);
+      res.json(logs);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 9. Clear Email Logs
+  app.delete('/api/owner-pool/email-dispatches', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : undefined;
+      const result = ownerEmailStore.clearDispatchLogs(period);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // 10. Document Attachment Preview / Download Content
+  app.get('/api/owner-pool/document-preview', (req, res) => {
+    try {
+      const docType = String(req.query.doc_type || 'STATEMENT_PDF');
+      const unitId = String(req.query.unit_id || '');
+      const period = String(req.query.period || '2026-09');
+
+      if (!unitId) {
+        return res.status(400).json({ error: 'unit_id is required' });
+      }
+
+      const doc = ownerEmailStore.renderDocumentContent(docType, unitId, period);
+      res.setHeader('Content-Type', doc.contentType);
+      res.setHeader('Content-Disposition', `inline; filename="${doc.filename}"`);
+      res.send(doc.content);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

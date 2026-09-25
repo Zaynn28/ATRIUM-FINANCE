@@ -248,7 +248,7 @@ class ARAPStore {
     );
 
     // Auto-approve journal
-    await store.updateJournalStatus(journalId, 'POSTED', params.userName || 'AR Controller');
+    await store.postJournal(journalId, { autoApprove: true, approver: params.userName || 'AR Controller' });
 
     // Save settlement
     const currentSettlements = this.arSettlements.get(params.ar_id) || [];
@@ -444,7 +444,7 @@ class ARAPStore {
     );
 
     // Auto-approve journal to post to GL
-    await store.updateJournalStatus(journalId, 'POSTED', params.userName || 'Financial Controller');
+    await store.postJournal(journalId, { autoApprove: true, approver: params.userName || 'Financial Controller' });
 
     // Save payment
     const currentPayments = this.apPayments.get(params.ap_id) || [];

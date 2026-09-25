@@ -71,8 +71,9 @@ export const UnitsRegistryView: React.FC = () => {
     setLoading(true);
     try {
       const data = await api.getOwnerUnits();
-      setUnits(data.units);
-      setSummary(data.summary);
+      const list = Array.isArray(data?.units) ? data.units : (Array.isArray(data) ? data : []);
+      setUnits(list);
+      setSummary(data?.summary || null);
     } catch (err: any) {
       setError(err.message || 'Failed to load units data');
     } finally {
@@ -172,13 +173,13 @@ export const UnitsRegistryView: React.FC = () => {
     }
   };
 
-  const filteredUnits = units.filter((u) => {
+  const filteredUnits = (units || []).filter((u) => {
     const matchSearch =
-      u.unit_number.toLowerCase().includes(search.toLowerCase()) ||
-      u.owner_name.toLowerCase().includes(search.toLowerCase()) ||
-      u.unit_type.toLowerCase().includes(search.toLowerCase());
+      (u.unit_number || '').toLowerCase().includes(search.toLowerCase()) ||
+      (u.owner_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (u.unit_type || '').toLowerCase().includes(search.toLowerCase());
 
-    const matchFloor = floorFilter === 'ALL' || u.floor_number.toString() === floorFilter;
+    const matchFloor = floorFilter === 'ALL' || u.floor_number?.toString() === floorFilter;
     const matchStatus = statusFilter === 'ALL' || u.distribution_status === statusFilter;
 
     return matchSearch && matchFloor && matchStatus;
@@ -186,7 +187,7 @@ export const UnitsRegistryView: React.FC = () => {
 
   const formatIDR = (val: number) => `Rp ${Math.round(val).toLocaleString('id-ID')}`;
 
-  const distinctFloors = Array.from(new Set(units.map((u) => u.floor_number))).sort((a, b) => Number(a) - Number(b));
+  const distinctFloors = Array.from(new Set((units || []).map((u) => u.floor_number))).filter((f): f is number => typeof f === 'number').sort((a, b) => Number(a) - Number(b));
 
   return (
     <div className="space-y-6">
@@ -198,7 +199,7 @@ export const UnitsRegistryView: React.FC = () => {
             <Building2 className="w-4 h-4 text-indigo-600" />
           </div>
           <div className="text-2xl font-bold text-slate-900">
-            {summary?.totalUnitsCount || units.length}
+            {summary?.totalUnitsCount ?? (units || []).length}
           </div>
           <div className="text-[11px] text-slate-500 mt-1">Floors 3–12 Master Inventory</div>
         </div>
@@ -323,7 +324,7 @@ export const UnitsRegistryView: React.FC = () => {
                     Loading apartment master database...
                   </td>
                 </tr>
-              ) : filteredUnits.length === 0 ? (
+              ) : (filteredUnits || []).length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-8 text-center text-slate-400">
                     No apartment units found matching the filter criteria.

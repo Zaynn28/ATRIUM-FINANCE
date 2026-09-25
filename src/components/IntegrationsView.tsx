@@ -105,10 +105,10 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({ onViewJourna
         description: pmsDesc,
       });
 
-      setCreatedJournalId(res.journal.journal_id);
+      setCreatedJournalId(res.journal?.journal_id || null);
       setStatusMessage({
         type: 'success',
-        text: `PMS Night Audit recorded! Created ${res.transactions.length} revenue transactions and Draft Journal ${res.journal.journal_id}.`,
+        text: `PMS Night Audit recorded! Created ${res.transactions?.length || 0} revenue transactions and Draft Journal ${res.journal?.journal_id || ''}.`,
       });
       if (onRefresh) onRefresh();
     } catch (err: any) {

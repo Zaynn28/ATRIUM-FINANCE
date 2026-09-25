@@ -261,7 +261,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               Audit &amp; System Exceptions
             </h3>
 
-            {!metrics?.exceptions || metrics.exceptions.length === 0 ? (
+            {!metrics?.exceptions || (metrics.exceptions?.length || 0) === 0 ? (
               <div className="py-6 text-center text-slate-400 text-xs flex flex-col items-center gap-1.5">
                 <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                 <p className="font-medium text-slate-200">No active exceptions</p>
@@ -270,7 +270,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </p>
               </div>
             ) : (
-              metrics.exceptions.map((exc: any, idx: number) => (
+              (metrics.exceptions || []).map((exc: any, idx: number) => (
                 <div
                   key={idx}
                   className={`p-3 rounded-lg border text-xs flex items-start justify-between gap-3 ${

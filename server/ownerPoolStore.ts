@@ -418,6 +418,7 @@ export class OwnerPoolStore {
         unit_number: unit.unit_number,
         owner_id: unit.owner_id,
         owner_name: unit.owner_name,
+        owner_email: unit.owner_email || '',
         unit_sqm: unit.unit_sqm,
         allocation_pct: allocationPct,
         pool_allocation_amount: poolAllocAmount,

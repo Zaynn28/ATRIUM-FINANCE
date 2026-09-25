@@ -39,6 +39,10 @@ import {
   OwnerDistributionBatch,
   OwnerPoolAllocationLine,
   OwnerPoolDashboardKPIs,
+  OwnerDistributionEmailConfig,
+  OwnerDistributionEmailDraft,
+  OwnerEmailDispatchLog,
+  OwnerEmailBatchResult,
   TaxTypeCode,
   TaxRuleConfig,
   TaxObligationItem,
@@ -1348,6 +1352,104 @@ export const api = {
     const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch Owner Statement');
     return res.json();
+  },
+
+  // --- OWNER RETURN DISTRIBUTION EMAIL AUTOMATION API ---
+
+  async getOwnerEmailConfig(): Promise<OwnerDistributionEmailConfig> {
+    const res = await fetch('/api/owner-pool/email-config');
+    if (!res.ok) throw new Error('Failed to fetch email configuration');
+    return res.json();
+  },
+
+  async updateOwnerEmailConfig(config: Partial<OwnerDistributionEmailConfig>): Promise<{ success: boolean; config: OwnerDistributionEmailConfig }> {
+    const res = await fetch('/api/owner-pool/email-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to update email configuration');
+    }
+    return res.json();
+  },
+
+  async getOwnerEmailDrafts(period: string = '2026-09', batchId?: string): Promise<OwnerDistributionEmailDraft[]> {
+    const url = `/api/owner-pool/email-drafts?period=${encodeURIComponent(period)}${batchId ? `&batch_id=${encodeURIComponent(batchId)}` : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to load owner distribution email drafts');
+    return res.json();
+  },
+
+  async saveOwnerEmailDraft(draftId: string, updates: Partial<OwnerDistributionEmailDraft>): Promise<{ success: boolean; draft: OwnerDistributionEmailDraft }> {
+    const res = await fetch(`/api/owner-pool/email-drafts/${encodeURIComponent(draftId)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to save email draft');
+    }
+    return res.json();
+  },
+
+  async resetOwnerEmailDraft(draftId: string): Promise<{ success: boolean }> {
+    const res = await fetch(`/api/owner-pool/email-drafts/${encodeURIComponent(draftId)}/reset`, {
+      method: 'POST',
+    });
+    if (!res.ok) throw new Error('Failed to reset email draft to template');
+    return res.json();
+  },
+
+  async sendSingleOwnerEmail(draftId: string, testEmail?: string): Promise<{ success: boolean; dispatch: OwnerEmailDispatchLog; draft: OwnerDistributionEmailDraft }> {
+    const res = await fetch(`/api/owner-pool/email-drafts/${encodeURIComponent(draftId)}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ test_email: testEmail }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to send owner email');
+    }
+    return res.json();
+  },
+
+  // ONE BUTTON TO EMAIL ALL INVESTORS
+  async emailAllInvestors(params: {
+    period: string;
+    unit_ids?: string[];
+    test_email?: string;
+  }): Promise<{ success: boolean; message: string; result: OwnerEmailBatchResult }> {
+    const res = await fetch('/api/owner-pool/email-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to email all investors');
+    }
+    return res.json();
+  },
+
+  async getOwnerEmailDispatches(period?: string): Promise<OwnerEmailDispatchLog[]> {
+    const url = `/api/owner-pool/email-dispatches${period ? `?period=${encodeURIComponent(period)}` : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch email dispatch logs');
+    return res.json();
+  },
+
+  async clearOwnerEmailDispatches(period?: string): Promise<{ count: number }> {
+    const url = `/api/owner-pool/email-dispatches${period ? `?period=${encodeURIComponent(period)}` : ''}`;
+    const res = await fetch(url, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to clear email logs');
+    return res.json();
+  },
+
+  getDocumentPreviewUrl(docType: string, unitId: string, period: string): string {
+    return `/api/owner-pool/document-preview?doc_type=${encodeURIComponent(docType)}&unit_id=${encodeURIComponent(unitId)}&period=${encodeURIComponent(period)}`;
   },
 
   // --- TAX MODULE API METHODS ---

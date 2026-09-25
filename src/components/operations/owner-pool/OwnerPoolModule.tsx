@@ -8,6 +8,7 @@ import { MonthlyDistributionView } from './MonthlyDistributionView';
 import { UnitsRegistryView } from './UnitsRegistryView';
 import { OwnerStatementView } from './OwnerStatementView';
 import { PoolPolicyConfigView } from './PoolPolicyConfigView';
+import { EmailDistributionView } from './EmailDistributionView';
 import {
   PieChart,
   Building2,
@@ -15,17 +16,24 @@ import {
   Sliders,
   ShieldCheck,
   TrendingUp,
+  Mail,
 } from 'lucide-react';
 
 export const OwnerPoolModule: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    'distribution' | 'units' | 'statements' | 'policy'
+    'distribution' | 'units' | 'statements' | 'email' | 'policy'
   >('distribution');
   const [selectedUnitForStatement, setSelectedUnitForStatement] = useState<string | null>(null);
+  const [selectedPeriodForEmail, setSelectedPeriodForEmail] = useState<string>('2026-09');
 
   const handleNavigateToStatement = (unitId: string) => {
     setSelectedUnitForStatement(unitId);
     setActiveTab('statements');
+  };
+
+  const handleNavigateToEmail = (period?: string) => {
+    if (period) setSelectedPeriodForEmail(period);
+    setActiveTab('email');
   };
 
   return (
@@ -101,6 +109,21 @@ export const OwnerPoolModule: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveTab('email')}
+          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors whitespace-nowrap ${
+            activeTab === 'email'
+              ? 'border-indigo-600 text-indigo-700 font-bold bg-indigo-50/40 rounded-t-lg'
+              : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+          }`}
+        >
+          <Mail className="w-4 h-4" />
+          <span>Email Distribution</span>
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            One-Click Dispatch
+          </span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('policy')}
           className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors whitespace-nowrap ${
             activeTab === 'policy'
@@ -116,10 +139,19 @@ export const OwnerPoolModule: React.FC = () => {
       {/* Tab Content */}
       <div>
         {activeTab === 'distribution' && (
-          <MonthlyDistributionView onNavigateToStatement={handleNavigateToStatement} />
+          <MonthlyDistributionView
+            onNavigateToStatement={handleNavigateToStatement}
+            onNavigateToEmail={handleNavigateToEmail}
+          />
         )}
         {activeTab === 'units' && <UnitsRegistryView />}
         {activeTab === 'statements' && <OwnerStatementView />}
+        {activeTab === 'email' && (
+          <EmailDistributionView
+            initialPeriod={selectedPeriodForEmail}
+            onNavigateToBatch={() => setActiveTab('distribution')}
+          />
+        )}
         {activeTab === 'policy' && <PoolPolicyConfigView />}
       </div>
     </div>

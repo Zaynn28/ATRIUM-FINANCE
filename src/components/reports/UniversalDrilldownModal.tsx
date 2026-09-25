@@ -190,11 +190,11 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                 <div className="flex items-center gap-4 text-xs font-mono">
                   <div className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
                     <span className="text-slate-400">Accounts Mapped: </span>
-                    <span className="font-semibold text-slate-100">{data.accounts.length}</span>
+                    <span className="font-semibold text-slate-100">{data?.accounts?.length || 0}</span>
                   </div>
                   <div className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
                     <span className="text-slate-400">Posted Journal Lines: </span>
-                    <span className="font-semibold text-slate-100">{data.journal_lines.length}</span>
+                    <span className="font-semibold text-slate-100">{data?.journal_lines?.length || 0}</span>
                   </div>
                   <div className="px-3 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-800/40 text-emerald-300 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -228,7 +228,7 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
-                        {data.accounts.length === 0 ? (
+                        {!data?.accounts || data.accounts.length === 0 ? (
                           <tr>
                             <td colSpan={6} className="py-8 text-center text-slate-400">
                               No accounts configured for this report line.

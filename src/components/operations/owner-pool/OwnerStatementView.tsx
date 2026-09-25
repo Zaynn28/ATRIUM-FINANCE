@@ -34,9 +34,10 @@ export const OwnerStatementView: React.FC = () => {
 
   useEffect(() => {
     api.getOwnerUnits().then((res) => {
-      setUnits(res.units);
-      if (res.units.length > 0 && !selectedUnitId) {
-        setSelectedUnitId(res.units[0].unit_id);
+      const list = Array.isArray(res?.units) ? res.units : (Array.isArray(res) ? res : []);
+      setUnits(list);
+      if (list.length > 0 && !selectedUnitId) {
+        setSelectedUnitId(list[0].unit_id);
       }
     }).catch(console.error);
   }, []);

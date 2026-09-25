@@ -260,7 +260,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
             <Shield className="w-4 h-4 text-emerald-400" />
             <span>User Access & Role Entitlements (RBAC)</span>
             <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-900/60 text-emerald-300 border border-emerald-700/40">
-              {accessState.users.length} Users
+              {(accessState?.users?.length || 0)} Users
             </span>
           </button>
 

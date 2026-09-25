@@ -404,7 +404,7 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>Hotel Users Directory ({users.length})</span>
+            <span>Hotel Users Directory ({(users || []).length})</span>
           </button>
 
           <button
@@ -416,7 +416,7 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
             }`}
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>Roles & Privilege Profiles ({roles.length})</span>
+            <span>Roles & Privilege Profiles ({(roles || []).length})</span>
           </button>
 
           <button
@@ -645,9 +645,9 @@ export const UserAccessManager: React.FC<UserAccessManagerProps> = ({
             </div>
 
             <div className="space-y-1.5">
-              {roles.map((role) => {
+              {(roles || []).map((role) => {
                 const isSelected = role.id === selectedRoleId;
-                const assignedCount = users.filter((u) => u.roleId === role.id).length;
+                const assignedCount = (users || []).filter((u) => u.roleId === role.id).length;
 
                 return (
                   <button

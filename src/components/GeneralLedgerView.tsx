@@ -63,7 +63,13 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
       })
       .then((data) => {
         if (isMounted) {
-          setLedgerData(data);
+          setLedgerData({
+            account: data?.account || null,
+            entries: Array.isArray(data?.entries) ? data.entries : [],
+            total_debit: data?.total_debit || 0,
+            total_credit: data?.total_credit || 0,
+            ending_balance: data?.ending_balance || 0,
+          });
           setLoading(false);
         }
       })
@@ -196,7 +202,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
             </span>
           </div>
           <span className="text-xs text-slate-500 font-mono">
-            {ledgerData.entries.length} posted record(s)
+            {(ledgerData?.entries?.length || 0)} posted record(s)
           </span>
         </div>
 
@@ -221,7 +227,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
                     Loading General Ledger entries...
                   </td>
                 </tr>
-              ) : ledgerData.entries.length === 0 ? (
+              ) : !ledgerData?.entries || ledgerData.entries.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-14 text-center text-slate-500 font-sans">
                     <FileSpreadsheet className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
@@ -232,7 +238,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
                   </td>
                 </tr>
               ) : (
-                ledgerData.entries.map((entry, idx) => (
+                (ledgerData.entries || []).map((entry, idx) => (
                   <tr key={`${entry.journal_id}-${idx}`} className="hover:bg-slate-800/40">
                     <td className="py-2.5 px-3 text-slate-300 whitespace-nowrap">{entry.journal_date}</td>
                     <td className="py-2.5 px-3 whitespace-nowrap">

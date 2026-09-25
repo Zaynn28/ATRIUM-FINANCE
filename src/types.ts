@@ -24,7 +24,7 @@ export interface Department {
 }
 
 export type JournalStatus = 'DRAFT' | 'VALIDATED' | 'APPROVED' | 'POSTED' | 'REVERSED';
-export type SourceType = 'REVENUE' | 'SPENDING' | 'MANUAL' | 'REVERSAL';
+export type SourceType = 'REVENUE' | 'SPENDING' | 'MANUAL' | 'REVERSAL' | 'AR_SETTLEMENT' | 'AP_PAYMENT';
 
 export interface JournalHeader {
   journal_id: string;
@@ -1085,6 +1085,7 @@ export interface OwnerPoolAllocationLine {
   unit_number: string;
   owner_id: string;
   owner_name: string;
+  owner_email?: string;
   unit_sqm: number;
   allocation_pct: number;       // Unit SQM / Total Eligible SQM
 
@@ -1219,6 +1220,117 @@ export interface OwnerPoolDashboardKPIs {
   posted_batches_count: number;
   current_batch_id?: string;
   current_batch_status?: OwnerDistributionBatchStatus;
+}
+
+export type OwnerEmailAttachmentType =
+  | 'STATEMENT_PDF'
+  | 'CALCULATION_AUDIT'
+  | 'HOTEL_PERFORMANCE_CERT'
+  | 'PAYMENT_ADVICE'
+  | 'TAX_WITHHOLDING_SLIP'
+  | 'CSV_DATA_BREAKDOWN';
+
+export interface OwnerEmailAttachmentConfig {
+  include_statement_pdf: boolean;
+  statement_format: 'PDF_FORMATTED' | 'HTML_SUMMARY';
+  include_calculation_audit: boolean;
+  include_hotel_performance_cert: boolean;
+  include_payment_advice: boolean;
+  include_tax_slip: boolean;
+  include_csv_breakdown: boolean;
+}
+
+export interface OwnerDistributionEmailConfig {
+  config_id: string;
+  sender_name: string;
+  sender_email: string;
+  reply_to_email: string;
+  subject_template: string;
+  body_template: string;
+  cc_emails: string[];
+  bcc_emails: string[];
+  attachments: OwnerEmailAttachmentConfig;
+  auto_archive_sent: boolean;
+  updated_at: string;
+  updated_by: string;
+}
+
+export interface OwnerDistributionEmailDraftAttachment {
+  id: string;
+  type: OwnerEmailAttachmentType;
+  name: string;
+  description: string;
+  format: string;
+  size_kb: number;
+  enabled: boolean;
+  preview_available: boolean;
+}
+
+export interface OwnerDistributionEmailDraft {
+  draft_id: string;
+  batch_id: string;
+  period: string;
+  unit_id: string;
+  unit_number: string;
+  owner_id: string;
+  owner_name: string;
+  recipient_email: string;
+  cc_emails: string[];
+  bcc_emails: string[];
+  subject: string;
+  body_text: string;
+  body_html: string;
+  custom_note?: string;
+  attachments: OwnerDistributionEmailDraftAttachment[];
+  financial_summary: {
+    unit_sqm: number;
+    allocation_pct: number;
+    pool_allocation_amount: number;
+    guaranteed_return_amount: number;
+    applicable_return_basis_type: string;
+    gross_return_amount: number;
+    tax_type_label: string;
+    tax_rate_pct: number;
+    tax_withheld_amount: number;
+    net_distribution_amount: number;
+    bank_name: string;
+    bank_account_number: string;
+    bank_account_name: string;
+  };
+  status: 'DRAFT' | 'READY' | 'SENT' | 'FAILED';
+  last_edited_at?: string;
+  sent_at?: string;
+  delivery_message_id?: string;
+  error_message?: string;
+}
+
+export interface OwnerEmailDispatchLog {
+  dispatch_id: string;
+  batch_id: string;
+  period: string;
+  unit_id: string;
+  unit_number: string;
+  owner_name: string;
+  recipient_email: string;
+  subject: string;
+  attachments_count: number;
+  attachment_names: string[];
+  net_amount: number;
+  status: 'SENT' | 'DELIVERED' | 'FAILED';
+  dispatched_at: string;
+  sent_by: string;
+  delivery_message_id?: string;
+  notes?: string;
+}
+
+export interface OwnerEmailBatchResult {
+  batch_id: string;
+  period: string;
+  total_recipients: number;
+  successful_count: number;
+  failed_count: number;
+  dispatched_at: string;
+  dispatches: OwnerEmailDispatchLog[];
 }
 
 // ==========================================

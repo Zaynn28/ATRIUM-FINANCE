@@ -31,14 +31,18 @@ import {
   Calculator,
   Lock,
   FileText,
+  Mail,
+  Send,
 } from 'lucide-react';
 
 interface MonthlyDistributionViewProps {
   onNavigateToStatement?: (unitId: string) => void;
+  onNavigateToEmail?: (period?: string) => void;
 }
 
 export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = ({
   onNavigateToStatement,
+  onNavigateToEmail,
 }) => {
   const [period, setPeriod] = useState<string>('2026-09');
   const [kpis, setKpis] = useState<OwnerPoolDashboardKPIs | null>(null);
@@ -168,13 +172,13 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
     return `Rp ${Math.round(val).toLocaleString('id-ID')}`;
   };
 
-  const filteredLines = currentBatch?.lines.filter((l) => {
+  const filteredLines = (currentBatch?.lines || []).filter((l) => {
     const matchSearch =
-      l.unit_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      l.owner_name.toLowerCase().includes(searchTerm.toLowerCase());
+      (l.unit_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (l.owner_name || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchStatus = statusFilter === 'ALL' || l.status === statusFilter;
     return matchSearch && matchStatus;
-  }) || [];
+  });
 
   return (
     <div className="space-y-6">
@@ -293,6 +297,17 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
               </button>
             </div>
           ) : null}
+
+          {currentBatch && onNavigateToEmail && (
+            <button
+              onClick={() => onNavigateToEmail(period)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-linear-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
+              title="See/edit email drafts and email all investors"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Email All Investors</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -455,7 +470,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
       </div>
 
       {/* 8-Point Reconciliation Banner */}
-      {currentBatch && (
+      {currentBatch && currentBatch.reconciliation && (
         <div className={`p-4 rounded-xl border text-xs space-y-3 ${
           currentBatch.reconciliation.is_reconciled
             ? 'bg-emerald-50/70 border-emerald-200'
@@ -516,7 +531,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             </div>
           </div>
 
-          {currentBatch.reconciliation.discrepancy_messages.length > 0 && (
+          {currentBatch.reconciliation.discrepancy_messages && currentBatch.reconciliation.discrepancy_messages.length > 0 && (
             <div className="p-2.5 bg-amber-100/70 border border-amber-300 rounded text-amber-900 space-y-1">
               {currentBatch.reconciliation.discrepancy_messages.map((msg, i) => (
                 <div key={i} className="flex items-start gap-1.5">
@@ -672,6 +687,15 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
                             title="Open Printable Statement"
                           >
                             <FileText className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        {onNavigateToEmail && (
+                          <button
+                            onClick={() => onNavigateToEmail(period)}
+                            className="p-1 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                            title="See / Edit Email Draft for this Investor"
+                          >
+                            <Mail className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>

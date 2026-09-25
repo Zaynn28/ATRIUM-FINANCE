@@ -38,6 +38,7 @@ interface RequisitionsViewProps {
 export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
   departments,
   onViewJournal,
+  onCreatePo,
 }) => {
   const [requisitions, setRequisitions] = useState<DepartmentRequisition[]>([]);
   const [items, setItems] = useState<InventoryItem[]>([]);
