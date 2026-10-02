@@ -195,7 +195,7 @@ export const StoreroomsView: React.FC<StoreroomsViewProps> = ({
 
               <div className="pt-2 border-t border-slate-800/80">
                 <div className="text-xs font-bold font-mono text-emerald-400">
-                  IDR {(storeVal ?? 0).toLocaleString()}
+                  Rp {(storeVal ?? 0).toLocaleString('id-ID')}
                 </div>
                 <div className="text-[10px] text-slate-400 font-mono">
                   {storeItems.length} SKUs Stocked
@@ -229,7 +229,7 @@ export const StoreroomsView: React.FC<StoreroomsViewProps> = ({
               <div className="text-right">
                 <span className="text-[10px] font-mono text-slate-400 block uppercase">Total Store Value</span>
                 <span className="text-base font-bold font-mono text-emerald-400">
-                  IDR {(totalStoreValuation ?? 0).toLocaleString()}
+                  Rp {(totalStoreValuation ?? 0).toLocaleString('id-ID')}
                 </span>
               </div>
 
@@ -255,8 +255,8 @@ export const StoreroomsView: React.FC<StoreroomsViewProps> = ({
                   <th className="px-4 py-2.5">Item Name</th>
                   <th className="px-4 py-2.5">Bin Location</th>
                   <th className="px-4 py-2.5 text-right">Quantity In Store</th>
-                  <th className="px-4 py-2.5 text-right">Unit Avg Cost</th>
-                  <th className="px-4 py-2.5 text-right">Store Valuation</th>
+                  <th className="px-4 py-2.5 text-right">Unit Avg Cost (Rp)</th>
+                  <th className="px-4 py-2.5 text-right">Store Valuation (Rp)</th>
                   <th className="px-4 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
@@ -284,10 +284,10 @@ export const StoreroomsView: React.FC<StoreroomsViewProps> = ({
                         {(qty ?? 0).toLocaleString()} {item.uom}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono text-slate-400">
-                        IDR {(item.average_cost ?? 0).toLocaleString()}
+                        Rp {(item.average_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono font-medium text-emerald-400">
-                        IDR {(val ?? 0).toLocaleString()}
+                        Rp {(val ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right">
                         <button

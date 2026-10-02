@@ -64,7 +64,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
 
   // System Settings State
   const [settings, setSettings] = useState<SystemSettings>({
-    property_name: 'Atrium Hotel & Resort (Flagship)',
+    property_name: 'PT Atrium Management Group',
     room_count: 120,
     base_currency: 'IDR',
     fiscal_year: '2026',

@@ -352,7 +352,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                     {(scannedItem.current_stock ?? 0).toLocaleString()} {scannedItem.uom}
                   </div>
                   <span className="text-[11px] font-mono text-slate-400 block">
-                    Avg Cost: IDR {(scannedItem.average_cost ?? 0).toLocaleString()}
+                    Avg Cost: Rp {(scannedItem.average_cost ?? 0).toLocaleString('id-ID')}
                   </span>
                 </div>
               </div>

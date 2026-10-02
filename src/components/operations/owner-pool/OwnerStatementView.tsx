@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { OwnerUnit, OwnerPoolAllocationLine, OwnerDistributionBatch } from '../../../types';
 import { api } from '../../../services/api';
+import { AtriumLogo } from '../../common/AtriumLogo';
 import {
   FileText,
   Search,
@@ -18,7 +19,10 @@ import {
   AlertCircle,
   Clock,
   ArrowUpRight,
+  FileSpreadsheet,
 } from 'lucide-react';
+import { exportReportToExcel } from '../../../utils/excelExporter';
+import { printReportElement } from '../../../utils/printManager';
 
 export const OwnerStatementView: React.FC = () => {
   const [units, setUnits] = useState<OwnerUnit[]>([]);
@@ -56,7 +60,57 @@ export const OwnerStatementView: React.FC = () => {
   }, [selectedUnitId, selectedPeriod]);
 
   const handlePrint = () => {
-    window.print();
+    printReportElement('owner-statement-printable-sheet', {
+      title: `Owner_Statement_${unit?.unit_number || 'Unit'}_${selectedPeriod}`,
+      orientation: 'portrait',
+    });
+  };
+
+  const handleExportExcel = () => {
+    if (!line || !unit) return;
+
+    const rows: (string | number)[][] = [
+      ['OWNER & UNIT SPECIFICATIONS', ''],
+      ['Owner / Investor', unit.owner_name],
+      ['Owner Email', unit.owner_email || '—'],
+      ['Unit Number', unit.unit_number],
+      ['Unit Type', unit.unit_type],
+      ['Floor Number', unit.floor_number],
+      ['Unit Area (sqm)', unit.unit_sqm],
+      ['Contract Start Date', unit.contract_start_date],
+      ['Purchase Price', unit.purchase_price],
+      ['Less VAT Deducted', -unit.vat_amount],
+      ['Net Return Basis', line.return_basis_amount],
+      ['', ''],
+      ['HOTEL OPERATIONS & DISTRIBUTABLE POOL', ''],
+      ['Total Room Revenue', batch?.total_room_revenue ?? 0],
+      ['Total Pool Revenue', batch?.total_pool_revenue ?? 0],
+      ['Operating Deductions', -(batch?.total_deductions ?? 0)],
+      ['Net Distributable Pool', batch?.distributable_pool ?? 0],
+      ['', ''],
+      ['UNIT ALLOCATION & SETTLEMENT', ''],
+      ['Unit Allocation Weight (Sqm Share)', `${(line.weight_factor * 100).toFixed(4)}%`],
+      ['Gross Distribution Share', line.gross_distribution],
+      ['Maintenance Reserve (Sink Fund)', -line.maintenance_reserve],
+      ['Management Operational Fee', -line.management_fee],
+      ['PPh 4(2) Final Withholding Tax', -line.pph_final_tax],
+      ['', ''],
+      ['NET DISBURSED TO INVESTOR', line.net_distribution],
+    ];
+
+    exportReportToExcel(
+      `Owner_Statement_Unit_${unit.unit_number}_${selectedPeriod}.xlsx`,
+      [
+        {
+          name: `Unit ${unit.unit_number}`,
+          title: `MONTHLY RETURN STATEMENT — UNIT ${unit.unit_number}`,
+          subtitle: `PT Atrium Management Group • Atrium Suites & Residences Lombok • Period: ${selectedPeriod}`,
+          headers: ['Statement Breakdown Item', 'Amount / Detail'],
+          rows,
+          colWidths: [40, 25],
+        },
+      ]
+    );
   };
 
   const formatIDR = (val?: number) => {
@@ -70,6 +124,38 @@ export const OwnerStatementView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Statement Print Stylesheet */}
+      <style>{`
+        @page {
+          size: A4 portrait;
+          margin: 12mm 10mm 15mm 10mm;
+        }
+        @media print {
+          header, nav, aside, footer,
+          .print\\:hidden,
+          button,
+          .sidebar,
+          #root > header {
+            display: none !important;
+          }
+          html, body {
+            background-color: #ffffff !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 9.5pt !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          #root, #root > div {
+            background: #ffffff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+        }
+      `}</style>
+
       {/* Control / Selector Header (Hidden on Print) */}
       <div className="print:hidden flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex flex-wrap items-center gap-3">
@@ -102,13 +188,24 @@ export const OwnerStatementView: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={handlePrint}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors self-end sm:self-auto"
-        >
-          <Printer className="w-4 h-4" />
-          Print / Export Statement
-        </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+            title="Export statement to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Print PDF</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Statement Document */}
@@ -125,22 +222,24 @@ export const OwnerStatementView: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden p-8 sm:p-10 space-y-8 font-sans max-w-4xl mx-auto print:border-none print:shadow-none print:p-0">
+        <div id="owner-statement-printable-sheet" className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden p-8 sm:p-10 space-y-8 font-sans max-w-4xl mx-auto print:border-none print:shadow-none print:p-0">
           {/* Statement Header */}
           <div className="flex justify-between items-start border-b border-slate-200 pb-6">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Building className="w-6 h-6 text-indigo-700" />
-                <span className="text-lg font-black tracking-tight text-slate-900">
-                  ATRIUM RESIDENCES & HOTEL
-                </span>
+            <div className="flex items-center gap-3.5">
+              <div className="shrink-0">
+                <AtriumLogo variant="arch-only" size="lg" theme="light" />
               </div>
-              <p className="text-xs text-slate-500">
-                PT Atrium Manajemen Graha (AMG Hotel Operation)
-              </p>
-              <p className="text-xs text-slate-500">
-                Jl. Danau Tamblingan No. 88, Sanur, Denpasar, Bali 80228
-              </p>
+              <div>
+                <span className="text-lg font-black tracking-tight text-slate-900 uppercase">
+                  PT ATRIUM MANAGEMENT GROUP
+                </span>
+                <p className="text-xs text-amber-800 font-semibold uppercase tracking-wider">
+                  Atrium Suites &amp; Residences • Lombok
+                </p>
+                <p className="text-xs text-slate-500">
+                  Jl. Raya Senggigi, Batu Layar, Lombok Barat, NTB
+                </p>
+              </div>
             </div>
             <div className="text-right">
               <span className="inline-block px-2.5 py-1 bg-indigo-50 text-indigo-800 font-bold text-xs rounded-md uppercase tracking-wider mb-1">
@@ -337,7 +436,7 @@ export const OwnerStatementView: React.FC = () => {
                 <ShieldCheck className="w-4 h-4" /> Verified Financial Record
               </span>
               <p className="text-[10px] text-slate-400 mt-0.5">
-                Processed via AMG Enterprise ERP
+                Processed via PT Atrium Management Group ERP
               </p>
             </div>
           </div>

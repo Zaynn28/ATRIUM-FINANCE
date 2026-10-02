@@ -20,12 +20,17 @@ import {
   ExternalLink,
   ShieldCheck,
   Truck,
-  DollarSign,
+  Coins,
   Send,
   Building2,
+  FileSpreadsheet,
+  Printer,
+  Eye,
 } from 'lucide-react';
 import { APAgingItem, AgingSummary, Account, Department } from '../../types';
 import { api } from '../../services/api';
+import { exportReportToExcel } from '../../utils/excelExporter';
+import { PrintableReportContainer } from '../reports/PrintableReportContainer';
 
 interface AccountsPayableModuleProps {
   accounts: Account[];
@@ -49,6 +54,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
     count: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [previewMode, setPreviewMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [bucketFilter, setBucketFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -193,6 +199,80 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
     }
   };
 
+  const handlePrint = () => {
+    window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+  };
+
+  const handleExportExcel = () => {
+    const rows: (string | number)[][] = filteredItems.map((item) => [
+      item.bill_id,
+      item.vendor_name,
+      item.po_id || '',
+      item.bill_date,
+      item.due_date,
+      item.original_amount,
+      item.outstanding_amount,
+      item.days_overdue,
+      item.aging_bucket,
+      item.status,
+      item.origin_journal_id || '',
+    ]);
+
+    // Totals row
+    rows.push([
+      'TOTAL',
+      '',
+      '',
+      '',
+      '',
+      filteredItems.reduce((s, i) => s + (i.original_amount || 0), 0),
+      filteredItems.reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      '',
+      '',
+      '',
+      '',
+    ]);
+
+    const summaryRows: (string | number)[][] = [
+      ['Total AP Due', summary.total_outstanding],
+      ['Current (Not Due)', summary.current],
+      ['1 - 30 Days Overdue', summary.bucket_1_30],
+      ['31 - 60 Days Overdue', summary.bucket_31_60],
+      ['61 - 90 Days Overdue', summary.bucket_61_90],
+      ['Over 90 Days (Critical)', summary.bucket_over_90],
+    ];
+
+    exportReportToExcel('AP_Aging_Schedule_PT_Atrium_Management_Group.xlsx', [
+      {
+        name: 'AP Vendor Bills',
+        title: 'ACCOUNTS PAYABLE AGING & VENDOR BILLS SCHEDULE',
+        subtitle: 'PT Atrium Management Group • Trade Creditors & Procurement Subledger',
+        headers: [
+          'Bill ID',
+          'Vendor / Supplier',
+          'PO Ref',
+          'Bill Date',
+          'Due Date',
+          'Original (Rp)',
+          'Outstanding (Rp)',
+          'Days Overdue',
+          'Aging Bucket',
+          'Status',
+          'Journal Ref',
+        ],
+        rows,
+        colWidths: [16, 28, 14, 14, 14, 18, 18, 14, 15, 12, 18],
+      },
+      {
+        name: 'Aging Summary',
+        title: 'ACCOUNTS PAYABLE AGING ANALYSIS SUMMARY',
+        headers: ['Aging Bucket Category', 'Total Outstanding (Rp)'],
+        rows: summaryRows,
+        colWidths: [30, 25],
+      },
+    ]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Module Banner & Quick Controls */}
@@ -214,7 +294,41 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            className="px-3 py-2 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-emerald-600 shadow-xs"
+            title="Export AP Aging schedule to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Toggle PDF Preview */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border shadow-xs ${
+              previewMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Toggle Paper Print/PDF Preview"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="px-3 py-2 bg-amber-600/90 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+            title="Print AP Aging Report"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
+          </button>
+
           <button
             onClick={loadData}
             disabled={loading}
@@ -226,13 +340,24 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
         </div>
       </div>
 
-      {/* AP Aging Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* Printable Report Wrapper */}
+      <PrintableReportContainer
+        reportTitle="Accounts Payable Aging & Vendor Liability Schedule"
+        reportSubtitle="Sub-Ledger Supplier Liabilities, PO Match Verification & Cash Disbursement Schedule"
+        property="PT Atrium Management Group"
+        orientation="landscape"
+        previewMode={previewMode}
+        onExitPreview={() => setPreviewMode(false)}
+        onExportExcel={handleExportExcel}
+      >
+        <div className="space-y-6">
+          {/* AP Aging Metric Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Total Outstanding Payable */}
         <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 shadow-sm">
           <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>Total AP Due</span>
-            <DollarSign className="w-3.5 h-3.5 text-blue-400" />
+            <Coins className="w-3.5 h-3.5 text-blue-400" />
           </div>
           <div className="text-lg font-bold font-mono text-white">
             Rp {(summary.total_outstanding / 1_000_000).toFixed(1)}M
@@ -480,6 +605,8 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
           </table>
         </div>
       </div>
+        </div>
+      </PrintableReportContainer>
 
       {/* Disburse / Pay Vendor Modal */}
       {paymentModalItem && (

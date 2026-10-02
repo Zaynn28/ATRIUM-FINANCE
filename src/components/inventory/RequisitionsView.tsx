@@ -20,6 +20,8 @@ import {
   FileText,
   ShoppingCart,
   Split,
+  Printer,
+  Coins,
 } from 'lucide-react';
 import {
   DepartmentRequisition,
@@ -28,6 +30,7 @@ import {
   Department,
 } from '../../types';
 import { api } from '../../services/api';
+import { PurchaseRequisitionDocumentModal } from './PurchaseRequisitionDocumentModal';
 
 interface RequisitionsViewProps {
   departments: Department[];
@@ -44,6 +47,9 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [storerooms, setStorerooms] = useState<InventoryStoreroom[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Printable Requisition Document State
+  const [activePrintableReq, setActivePrintableReq] = useState<DepartmentRequisition | null>(null);
 
   // New Requisition Form
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -249,7 +255,8 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                 <th className="px-4 py-3">Department</th>
                 <th className="px-4 py-3">Requester</th>
                 <th className="px-4 py-3">Source Storeroom</th>
-                <th className="px-4 py-3 text-right">Items</th>
+                <th className="px-4 py-3 text-right">Items Qty</th>
+                <th className="px-4 py-3 text-right">Est. Budget (Rp)</th>
                 <th className="px-4 py-3 text-center">Status</th>
                 <th className="px-4 py-3">Approval / Issuer</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -258,98 +265,120 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
             <tbody className="divide-y divide-slate-800 text-slate-300">
               {requisitions.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-10 text-center text-slate-500 font-mono">
+                  <td colSpan={10} className="py-10 text-center text-slate-500 font-mono">
                     No department requisitions on record.
                   </td>
                 </tr>
               ) : (
-                requisitions.map((req) => (
-                  <tr key={req.requisition_id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-4 py-3 font-mono font-bold text-purple-400">
-                      {req.requisition_number}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-slate-400">{req.date}</td>
-                    <td className="px-4 py-3 font-semibold text-white">{req.department_code}</td>
-                    <td className="px-4 py-3 text-slate-300">{req.requester_name}</td>
-                    <td className="px-4 py-3 font-mono text-slate-400">{req.storeroom_id}</td>
-                    <td className="px-4 py-3 text-right font-mono font-medium">
-                      {req.items.reduce((s, i) => s + (i.issued_quantity || i.requested_quantity), 0)} units (
-                      {req.items.length} SKUs)
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                          req.status === 'ISSUED'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : req.status === 'APPROVED'
-                            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                            : req.status === 'PARTIALLY_ORDERED'
-                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                            : req.status === 'ORDERED'
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                            : req.status === 'PENDING_APPROVAL'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                            : 'bg-slate-800 text-slate-300'
-                        }`}
-                      >
-                        {req.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-[11px] text-slate-400">
-                      {req.approved_by ? `Appr: ${req.approved_by}` : 'Awaiting Dept Head'}
-                      {req.issued_by ? ` • Issued: ${req.issued_by}` : ''}
-                      {req.linked_po_ids && req.linked_po_ids.length > 0 && (
-                        <div className="text-[10px] text-purple-400 font-mono mt-0.5 flex items-center gap-1">
-                          <ShoppingCart className="w-3 h-3" />
-                          <span>{req.linked_po_ids.length} PO(s) Linked</span>
+                requisitions.map((req) => {
+                  const estReqCost = req.items.reduce((sum, line) => {
+                    const itm = items.find((i) => i.item_id === line.item_id);
+                    const cost = line.unit_cost || itm?.average_cost || itm?.last_purchase_price || 0;
+                    const qty = line.approved_quantity !== undefined ? line.approved_quantity : line.requested_quantity;
+                    return sum + (qty * cost);
+                  }, 0);
+
+                  return (
+                    <tr key={req.requisition_id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="px-4 py-3 font-mono font-bold text-purple-400">
+                        {req.requisition_number || req.requisition_id}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-slate-400">{req.date}</td>
+                      <td className="px-4 py-3 font-semibold text-white">{req.department_code}</td>
+                      <td className="px-4 py-3 text-slate-300">{req.requester_name}</td>
+                      <td className="px-4 py-3 font-mono text-slate-400">{req.storeroom_id}</td>
+                      <td className="px-4 py-3 text-right font-mono font-medium">
+                        {req.items.reduce((s, i) => s + (i.issued_quantity || i.requested_quantity), 0)} units (
+                        {req.items.length} SKUs)
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-200">
+                        Rp {estReqCost.toLocaleString('id-ID')}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                            req.status === 'ISSUED'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : req.status === 'APPROVED'
+                              ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                              : req.status === 'PARTIALLY_ORDERED'
+                              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                              : req.status === 'ORDERED'
+                              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                              : req.status === 'PENDING_APPROVAL'
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              : 'bg-slate-800 text-slate-300'
+                          }`}
+                        >
+                          {req.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[11px] text-slate-400">
+                        {req.approved_by ? `Appr: ${req.approved_by}` : 'Awaiting Dept Head'}
+                        {req.issued_by ? ` • Issued: ${req.issued_by}` : ''}
+                        {req.linked_po_ids && req.linked_po_ids.length > 0 && (
+                          <div className="text-[10px] text-purple-400 font-mono mt-0.5 flex items-center gap-1">
+                            <ShoppingCart className="w-3 h-3" />
+                            <span>{req.linked_po_ids.length} PO(s) Linked</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* Printable Form Trigger Button */}
+                          <button
+                            onClick={() => setActivePrintableReq(req)}
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-purple-900/40 text-purple-300 hover:text-white border border-slate-700 hover:border-purple-500/40 text-[11px] font-semibold flex items-center gap-1 transition-all shadow-sm"
+                            title="Open Printable Requisition Voucher / Form"
+                          >
+                            <Printer className="w-3 h-3 text-purple-400" />
+                            <span>Print Form</span>
+                          </button>
+
+                          {req.status === 'PENDING_APPROVAL' && (
+                            <button
+                              onClick={() => handleOpenApproveModal(req)}
+                              className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold"
+                            >
+                              Approve
+                            </button>
+                          )}
+
+                          {(req.status === 'APPROVED' || req.status === 'PARTIALLY_ORDERED') && onCreatePo && (
+                            <button
+                              onClick={() => onCreatePo(req.requisition_id)}
+                              title="Generate Purchase Order to Supplier (supports multi-supplier split)"
+                              className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold flex items-center gap-1"
+                            >
+                              <ShoppingCart className="w-3 h-3 text-blue-400" />
+                              <span>Create PO</span>
+                            </button>
+                          )}
+
+                          {req.status === 'APPROVED' && (
+                            <button
+                              onClick={() => setIssuingReq(req)}
+                              className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 shadow-sm"
+                            >
+                              <PackageCheck className="w-3 h-3" />
+                              <span>Issue Stock</span>
+                            </button>
+                          )}
+
+                          {req.journal_id && onViewJournal && (
+                            <button
+                              onClick={() => onViewJournal(req.journal_id!)}
+                              title="View Journal in Workbench"
+                              className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {req.status === 'PENDING_APPROVAL' && (
-                          <button
-                            onClick={() => handleOpenApproveModal(req)}
-                            className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold"
-                          >
-                            Approve
-                          </button>
-                        )}
-
-                        {(req.status === 'APPROVED' || req.status === 'PARTIALLY_ORDERED') && onCreatePo && (
-                          <button
-                            onClick={() => onCreatePo(req.requisition_id)}
-                            title="Generate Purchase Order to Supplier (supports multi-supplier split)"
-                            className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold flex items-center gap-1"
-                          >
-                            <ShoppingCart className="w-3 h-3 text-blue-400" />
-                            <span>Create PO</span>
-                          </button>
-                        )}
-
-                        {req.status === 'APPROVED' && (
-                          <button
-                            onClick={() => setIssuingReq(req)}
-                            className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 shadow-sm"
-                          >
-                            <PackageCheck className="w-3 h-3" />
-                            <span>Issue Stock</span>
-                          </button>
-                        )}
-
-                        {req.journal_id && onViewJournal && (
-                          <button
-                            onClick={() => onViewJournal(req.journal_id!)}
-                            title="View Journal in Workbench"
-                            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -656,6 +685,30 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal: Printable Purchase Requisition Form */}
+      {activePrintableReq && (
+        <PurchaseRequisitionDocumentModal
+          requisition={activePrintableReq}
+          departments={departments}
+          storerooms={storerooms}
+          inventoryItems={items}
+          onClose={() => setActivePrintableReq(null)}
+          onApprove={(req) => {
+            setActivePrintableReq(null);
+            handleOpenApproveModal(req);
+          }}
+          onCreatePo={onCreatePo ? (reqId) => {
+            setActivePrintableReq(null);
+            onCreatePo(reqId);
+          } : undefined}
+          onIssueStock={(req) => {
+            setActivePrintableReq(null);
+            setIssuingReq(req);
+          }}
+          onViewJournal={onViewJournal}
+        />
       )}
     </div>
   );

@@ -259,7 +259,7 @@ export const DEFAULT_MASTER_REPORT_CONFIG: MasterReportConfig = {
     show_percent_of_revenue: true,
     double_underline_totals: true,
     show_signature_block: true,
-    header_company_name: 'Atrium Hotel & Resort',
+    header_company_name: 'PT Atrium Management Group',
     header_subtitle: 'USALI 12th Revised Edition & Statutory Financial Reporting',
     footer_disclaimer: 'CONFIDENTIAL • Generated from strict double-entry posted journals. Zero variance verified.',
   },
@@ -1240,6 +1240,15 @@ export interface OwnerEmailAttachmentConfig {
   include_csv_breakdown: boolean;
 }
 
+export interface OwnerEmailSmtpConfig {
+  enabled: boolean;
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+}
+
 export interface OwnerDistributionEmailConfig {
   config_id: string;
   sender_name: string;
@@ -1251,6 +1260,7 @@ export interface OwnerDistributionEmailConfig {
   bcc_emails: string[];
   attachments: OwnerEmailAttachmentConfig;
   auto_archive_sent: boolean;
+  smtp?: OwnerEmailSmtpConfig;
   updated_at: string;
   updated_by: string;
 }

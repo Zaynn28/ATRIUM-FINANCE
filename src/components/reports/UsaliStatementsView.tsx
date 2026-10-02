@@ -19,7 +19,9 @@ import { UsaliStatementReport, ReportLineItem } from '../../types';
 import { api } from '../../services/api';
 import { UniversalReportToolbar } from './UniversalReportToolbar';
 import { UniversalDrilldownModal } from './UniversalDrilldownModal';
+import { PrintableReportContainer } from './PrintableReportContainer';
 import { formatAmount } from '../../utils/reportFormatter';
+import { exportReportToExcel } from '../../utils/excelExporter';
 
 interface UsaliStatementsViewProps {
   onOpenJournalInWorkbench?: (journalId: string) => void;
@@ -37,14 +39,34 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
   onOpenJournalInWorkbench,
 }) => {
   const [period, setPeriod] = useState<string>('');
-  const [property, setProperty] = useState<string>('Atrium Hotel & Resort');
+  const [property, setProperty] = useState<string>('PT Atrium Management Group');
   const [activeTab, setActiveTab] = useState<UsaliTab>('summary-operator');
   const [report, setReport] = useState<UsaliStatementReport | null>(null);
   const [loading, setLoading] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
 
   // Drilldown modal state
   const [drilldownLineId, setDrilldownLineId] = useState<string | null>(null);
   const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
+
+  const getStatementTitle = () => {
+    switch (activeTab) {
+      case 'summary-operator':
+        return 'USALI 12 Summary Operating Statement — Operator';
+      case 'summary-owner':
+        return 'USALI 12 Summary Operating Statement — Owner Perspective';
+      case 'schedule-rooms':
+        return 'Schedule 1 — Rooms Departmental Statement';
+      case 'schedule-fb':
+        return 'Schedule 2 — Food & Beverage Departmental Statement';
+      case 'undistributed':
+        return 'Undistributed Operating Expenses Schedules (A&G, POM, S&M, Energy)';
+      case 'kpis':
+        return 'USALI Operating Metrics & Performance KPIs';
+      default:
+        return 'USALI 12 Financial Statement';
+    }
+  };
 
   const fetchReport = (selectedPeriod?: string) => {
     setLoading(true);
@@ -111,6 +133,78 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
     document.body.removeChild(link);
   };
 
+  // Excel (.xlsx) export with auto-sized columns and PT Atrium Management Group format
+  const handleExportExcel = () => {
+    if (!report) return;
+
+    const opRows: (string | number)[][] = [
+      ['OPERATING REVENUES', ''],
+      ...report.operating_revenue.map((r) => [`   ${r.label}`, r.amount]),
+      ['Total Operating Revenue', report.total_operating_revenue],
+      ['', ''],
+      ['DEPARTMENTAL EXPENSES', ''],
+      ...report.departmental_expenses.map((r) => [`   ${r.label}`, r.amount]),
+      ['Total Departmental Expenses', report.total_departmental_expenses],
+      ['TOTAL DEPARTMENTAL PROFIT', report.total_departmental_profit],
+      ['', ''],
+      ['UNDISTRIBUTED OPERATING EXPENSES', ''],
+      ...report.undistributed_operating_expenses.map((r) => [`   ${r.label}`, r.amount]),
+      ['Total Undistributed Expenses', report.total_undistributed_expenses],
+      ['', ''],
+      ['GROSS OPERATING PROFIT (GOP)', report.gross_operating_profit],
+      ['GOP Margin %', `${gopMargin}%`],
+      ['', ''],
+      ['MANAGEMENT FEES & NON-OPERATING', ''],
+      ...report.management_fees.map((r) => [`   ${r.label}`, r.amount]),
+      ['Total Management Fees', report.total_management_fees],
+      ['INCOME BEFORE NON-OPERATING EXPENSES', report.income_before_non_operating],
+      ['', ''],
+      ['NON-OPERATING INCOME & EXPENSES', ''],
+      ...report.non_operating_expenses.map((r) => [`   ${r.label}`, r.amount]),
+      ['Total Non-Operating Expenses', report.total_non_operating_expenses],
+      ['', ''],
+      ['NET OPERATING INCOME (EBITDA)', report.ebitda],
+      ['REPLACEMENT RESERVE', report.replacement_reserve],
+      ['EBITDA LESS REPLACEMENT RESERVE', report.ebitda_less_replacement_reserve],
+    ];
+
+    const schedRows: (string | number)[][] = [
+      ['ROOMS DEPARTMENT (SCHEDULE 1)', ''],
+      ['Rooms Revenue', report.schedules_summary.rooms_revenue],
+      ['Rooms Expenses', report.schedules_summary.rooms_expenses],
+      ['Rooms Departmental Profit', report.schedules_summary.rooms_profit],
+      ['Rooms Profit Margin', `${roomsMargin}%`],
+      ['', ''],
+      ['FOOD & BEVERAGE DEPARTMENT (SCHEDULE 2)', ''],
+      ['F&B Revenue', report.schedules_summary.fb_revenue],
+      ['F&B Expenses', report.schedules_summary.fb_expenses],
+      ['F&B Departmental Profit', report.schedules_summary.fb_profit],
+      ['F&B Profit Margin', `${fbMargin}%`],
+    ];
+
+    exportReportToExcel(
+      `USALI_12_Operating_Statement_${property.replace(/\s+/g, '_')}_${period || 'All_Time'}.xlsx`,
+      [
+        {
+          name: 'Operating Statement',
+          title: 'USALI 12th Revised Edition — Operating Statement',
+          period: period || 'All Time',
+          headers: ['Statement Line Item', 'Amount (Rp)'],
+          rows: opRows,
+          colWidths: [45, 20],
+        },
+        {
+          name: 'Department Schedules',
+          title: 'USALI 12 — Departmental Schedules Summary',
+          period: period || 'All Time',
+          headers: ['Department Schedule Line', 'Amount (Rp)'],
+          rows: schedRows,
+          colWidths: [45, 20],
+        },
+      ]
+    );
+  };
+
   // KPI Calculations (using posted data)
   const gopMargin =
     report && report.total_operating_revenue > 0
@@ -137,6 +231,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
         onPropertyChange={setProperty}
         onRefresh={() => fetchReport(period)}
         onExportCsv={handleExportCsv}
+        onExportExcel={handleExportExcel}
+        previewMode={previewMode}
+        onTogglePreview={() => setPreviewMode(!previewMode)}
         loading={loading}
       />
 
@@ -263,37 +360,41 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
 
       {/* Main Statement Table View */}
       {report && (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-          <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
-            <div>
-              <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                {property}
+        <PrintableReportContainer
+          reportTitle={getStatementTitle()}
+          reportSubtitle="Hospitality Standard Operating Statement • USALI 12th Revised Edition"
+          period={period}
+          property={property}
+          previewMode={previewMode}
+          onExitPreview={() => setPreviewMode(false)}
+          onExportExcel={handleExportExcel}
+        >
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-xl print:border-none print:shadow-none print:rounded-none">
+            <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between print:hidden">
+              <div>
+                <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
+                  {property}
+                </div>
+                <h2 className="text-base font-bold text-slate-100">
+                  {getStatementTitle()}
+                </h2>
               </div>
-              <h2 className="text-base font-bold text-slate-100">
-                {activeTab === 'summary-operator' && 'USALI 12 Summary Operating Statement — Operator'}
-                {activeTab === 'summary-owner' && 'USALI 12 Summary Operating Statement — Owner Perspective'}
-                {activeTab === 'schedule-rooms' && 'Schedule 1 — Rooms Departmental Statement'}
-                {activeTab === 'schedule-fb' && 'Schedule 2 — Food & Beverage Departmental Statement'}
-                {activeTab === 'undistributed' && 'Undistributed Operating Expenses Schedules (A&G, POM, S&M, Energy)'}
-                {activeTab === 'kpis' && 'USALI Operating Metrics & Performance KPIs'}
-              </h2>
+              <span className="text-xs font-mono text-slate-400">
+                Period: <strong className="text-slate-200">{period || 'All Available Posted Periods'}</strong>
+              </span>
             </div>
-            <span className="text-xs font-mono text-slate-400">
-              Period: <strong className="text-slate-200">{period || 'All Available Posted Periods'}</strong>
-            </span>
-          </div>
 
-          <div className="p-6 overflow-x-auto">
-            {activeTab === 'summary-operator' && (
-              <table className="w-full text-xs">
-                <thead className="bg-slate-950/60 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
-                  <tr>
-                    <th className="py-2.5 px-4 text-left">USALI 12 Line Description</th>
-                    <th className="py-2.5 px-4 text-right">Amount (IDR)</th>
-                    <th className="py-2.5 px-4 text-right">% Revenue</th>
-                    <th className="py-2.5 px-4 text-center">Drill-Down</th>
-                  </tr>
-                </thead>
+            <div className="p-6 overflow-x-auto print:p-0">
+              {activeTab === 'summary-operator' && (
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-950/60 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
+                    <tr>
+                      <th className="py-2.5 px-4 text-left">USALI 12 Line Description</th>
+                      <th className="py-2.5 px-4 text-right">Amount (Rp)</th>
+                      <th className="py-2.5 px-4 text-right">% Revenue</th>
+                      <th className="py-2.5 px-4 text-center print:hidden">Drill-Down</th>
+                    </tr>
+                  </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {/* OPERATING REVENUE */}
                   <tr className="bg-slate-950/40 text-emerald-400 font-bold uppercase tracking-wider">
@@ -318,7 +419,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
-                      <td className="py-2.5 px-4 text-center">
+                      <td className="py-2.5 px-4 text-center print:hidden">
                         <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                           <span>Inspect</span>
                           <ChevronRight className="w-3 h-3" />
@@ -332,7 +433,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">100.0%</td>
-                    <td className="py-3 px-4 text-center">—</td>
+                    <td className="py-3 px-4 text-center print:hidden">—</td>
                   </tr>
 
                   {/* DEPARTMENTAL EXPENSES */}
@@ -358,7 +459,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
-                      <td className="py-2.5 px-4 text-center">
+                      <td className="py-2.5 px-4 text-center print:hidden">
                         <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                           <span>Inspect</span>
                           <ChevronRight className="w-3 h-3" />
@@ -376,7 +477,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.total_departmental_expenses ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-2.5 px-4 text-center">—</td>
+                    <td className="py-2.5 px-4 text-center print:hidden">—</td>
                   </tr>
                   <tr className="bg-emerald-950/30 font-bold border-t border-b border-emerald-800/50 text-emerald-300">
                     <td className="py-3 px-4 pl-4 uppercase">Total Departmental Profit</td>
@@ -388,7 +489,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.total_departmental_profit ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-3 px-4 text-center">—</td>
+                    <td className="py-3 px-4 text-center print:hidden">—</td>
                   </tr>
 
                   {/* UNDISTRIBUTED OPERATING EXPENSES */}
@@ -414,7 +515,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
-                      <td className="py-2.5 px-4 text-center">
+                      <td className="py-2.5 px-4 text-center print:hidden">
                         <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                           <span>Inspect</span>
                           <ChevronRight className="w-3 h-3" />
@@ -432,7 +533,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.total_undistributed_expenses ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-2.5 px-4 text-center">—</td>
+                    <td className="py-2.5 px-4 text-center print:hidden">—</td>
                   </tr>
 
                   {/* GROSS OPERATING PROFIT (GOP) */}
@@ -442,7 +543,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
                     </td>
                     <td className="py-3.5 px-4 text-right">{gopMargin}%</td>
-                    <td className="py-3.5 px-4 text-center">—</td>
+                    <td className="py-3.5 px-4 text-center print:hidden">—</td>
                   </tr>
 
                   {/* MANAGEMENT FEES & EBITDA */}
@@ -459,7 +560,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-400">—</td>
-                      <td className="py-2.5 px-4 text-center">
+                      <td className="py-2.5 px-4 text-center print:hidden">
                         <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                           <span>Inspect</span>
                           <ChevronRight className="w-3 h-3" />
@@ -477,7 +578,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.ebitda ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-3 px-4 text-center">—</td>
+                    <td className="py-3 px-4 text-center print:hidden">—</td>
                   </tr>
                 </tbody>
               </table>
@@ -737,6 +838,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
             </div>
           </div>
         </div>
+        </PrintableReportContainer>
       )}
 
       {/* Universal Drilldown Modal */}

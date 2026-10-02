@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 680" width="100%" height="100%">
+  <defs>
+    <!-- Rich Luxury Metallic Gold Gradients based on Atrium Suites emblem -->
+    <linearGradient id="goldArch1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C5A059" />
+      <stop offset="30%" stop-color="#DFBA73" />
+      <stop offset="50%" stop-color="#EAD59E" />
+      <stop offset="70%" stop-color="#C5A059" />
+      <stop offset="100%" stop-color="#9A7332" />
+    </linearGradient>
+
+    <linearGradient id="goldArch2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B28C47" />
+      <stop offset="40%" stop-color="#D4AE67" />
+      <stop offset="75%" stop-color="#A57F3B" />
+      <stop offset="100%" stop-color="#805F25" />
+    </linearGradient>
+
+    <linearGradient id="goldArch3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#987332" />
+      <stop offset="50%" stop-color="#BF9853" />
+      <stop offset="100%" stop-color="#6F4D18" />
+    </linearGradient>
+
+    <linearGradient id="goldArch4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7A5620" />
+      <stop offset="50%" stop-color="#A17B39" />
+      <stop offset="100%" stop-color="#55390F" />
+    </linearGradient>
+
+    <linearGradient id="goldArchInner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#52360E" />
+      <stop offset="60%" stop-color="#73501A" />
+      <stop offset="100%" stop-color="#3D2608" />
+    </linearGradient>
+
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B88E4B" />
+      <stop offset="25%" stop-color="#DDB972" />
+      <stop offset="50%" stop-color="#C5A059" />
+      <stop offset="75%" stop-color="#E2C281" />
+      <stop offset="100%" stop-color="#A87F3B" />
+    </linearGradient>
+
+    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#50350B" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- ARCH EMBLEM MOTIF (5 CONCENTRIC ARCHES) -->
+  <g id="archEmblem" transform="translate(400, 160)" text-anchor="middle" filter="url(#subtleGlow)">
+    <!-- Arch 1: Outermost Arch with flared plinths -->
+    <path d="M -150 140 
+             L -150 135 
+             C -150 135 -142 135 -138 126
+             L -138 -20 
+             C -138 -105 -76 -165 0 -165 
+             C 76 -165 138 -105 138 -20 
+             L 138 126 
+             C 142 135 150 135 150 135 
+             L 150 140 
+             L 115 140 
+             L 115 125 
+             C 115 125 119 125 120 120 
+             L 120 -20 
+             C 120 -90 66 -147 0 -147 
+             C -66 -147 -120 -90 -120 -20 
+             L -120 120 
+             C -119 125 -115 125 -115 125 
+             L -115 140 
+             Z" 
+          fill="url(#goldArch1)" />
+
+    <!-- Arch 2: Second Layer -->
+    <path d="M -106 130 
+             L -106 -20 
+             C -106 -76 -58 -128 0 -128 
+             C 58 -128 106 -76 106 -20 
+             L 106 130 
+             L 90 130 
+             L 90 -20 
+             C 90 -66 49 -110 0 -110 
+             C -49 -110 -90 -66 -90 -20 
+             L -90 130 
+             Z" 
+          fill="url(#goldArch2)" />
+
+    <!-- Arch 3: Third Layer -->
+    <path d="M -77 122 
+             L -77 -20 
+             C -77 -57 -42 -92 0 -92 
+             C 42 -92 77 -57 77 -20 
+             L 77 122 
+             L 63 122 
+             L 63 -20 
+             C 63 -47 34 -76 0 -76 
+             C -34 -76 -63 -47 -63 -20 
+             L -63 122 
+             Z" 
+          fill="url(#goldArch3)" />
+
+    <!-- Arch 4: Fourth Layer -->
+    <path d="M -51 114 
+             L -51 -20 
+             C -51 -40 -28 -60 0 -60 
+             C 28 -60 51 -40 51 -20 
+             L 51 114 
+             L 39 114 
+             L 39 -20 
+             C 39 -32 21 -46 0 -46 
+             C -21 -46 -39 -32 -39 -20 
+             L -39 114 
+             Z" 
+          fill="url(#goldArch4)" />
+
+    <!-- Arch 5: Innermost Core -->
+    <path d="M -28 106 
+             L -28 -20 
+             C -28 -28 -15 -33 0 -33 
+             C 15 -33 28 -28 28 -20 
+             L 28 106 
+             L 17 106 
+             L 17 -20 
+             C 17 -22 9 -23 0 -23 
+             C -9 -23 -17 -22 -17 -20 
+             L -17 106 
+             Z" 
+          fill="url(#goldArchInner)" />
+  </g>
+
+  <!-- LOGO TYPOGRAPHY -->
+  <!-- "ATRIUM" in luxury Trajan/Cinzel Serif -->
+  <text x="400" y="420" 
+        font-family="'Playfair Display', 'Cinzel', 'Trajan Pro', 'Didot', 'Bodoni MT', 'Times New Roman', serif" 
+        font-size="82" 
+        font-weight="400" 
+        letter-spacing="0.22em" 
+        fill="url(#goldText)" 
+        text-anchor="middle">
+    ATRIUM
+  </text>
+
+  <!-- "SUITES" in refined uppercase serif -->
+  <text x="400" y="515" 
+        font-family="'Playfair Display', 'Cinzel', 'Trajan Pro', 'Didot', 'Times New Roman', serif" 
+        font-size="64" 
+        font-weight="400" 
+        letter-spacing="0.32em" 
+        fill="url(#goldText)" 
+        text-anchor="middle">
+    SUITES
+  </text>
+
+  <!-- "• LOMBOK •" with decorative diamond dots -->
+  <g transform="translate(400, 580)" text-anchor="middle">
+    <!-- Left diamond -->
+    <path d="M -115 -6 L -110 -12 L -105 -6 L -110 0 Z" fill="url(#goldText)" />
+    
+    <text x="0" y="0" 
+          font-family="'Montserrat', 'Cinzel', 'Playfair Display', 'Arial', sans-serif" 
+          font-size="24" 
+          font-weight="500" 
+          letter-spacing="0.55em" 
+          fill="url(#goldText)">
+      LOMBOK
+    </text>
+    
+    <!-- Right diamond -->
+    <path d="M 105 -6 L 110 -12 L 115 -6 L 110 0 Z" fill="url(#goldText)" />
+  </g>
+
+  <!-- "PT ATRIUM MANAGEMENT GROUP" Tagline -->
+  <text x="400" y="640" 
+        font-family="'Montserrat', 'Inter', 'Helvetica Neue', sans-serif" 
+        font-size="16" 
+        font-weight="700" 
+        letter-spacing="0.38em" 
+        fill="#8C682D" 
+        text-anchor="middle">
+    PT ATRIUM MANAGEMENT GROUP
+  </text>
+</svg>

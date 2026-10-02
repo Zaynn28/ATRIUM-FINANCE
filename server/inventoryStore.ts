@@ -1085,6 +1085,39 @@ export class InventoryStore {
     };
 
     this.receipts.set(receipt.receipt_id, receipt);
+
+    // Automatically update linked Purchase Order if po_reference matches
+    if (data.po_reference) {
+      const trimmedRef = data.po_reference.trim();
+      const matchedPo = this.purchaseOrders.get(trimmedRef) ||
+        Array.from(this.purchaseOrders.values()).find(
+          (p) => p.po_number.toLowerCase() === trimmedRef.toLowerCase() || p.po_id === trimmedRef
+        );
+
+      if (matchedPo) {
+        processedItems.forEach((recItem) => {
+          const poLine = matchedPo.items.find((item) => item.item_id === recItem.item_id);
+          if (poLine) {
+            poLine.received_quantity = (poLine.received_quantity || 0) + recItem.received_quantity;
+          }
+        });
+
+        const allReceived = matchedPo.items.every(
+          (item) => (item.received_quantity || 0) >= item.ordered_quantity
+        );
+        const anyReceived = matchedPo.items.some(
+          (item) => (item.received_quantity || 0) > 0
+        );
+
+        if (allReceived) {
+          matchedPo.status = 'FULFILLED';
+        } else if (anyReceived) {
+          matchedPo.status = 'PARTIALLY_RECEIVED';
+        }
+        matchedPo.updated_at = now;
+      }
+    }
+
     this.saveToDisk();
 
     return { receipt, journal_id: journalId };
@@ -1711,6 +1744,105 @@ export class InventoryStore {
     po.updated_at = new Date().toISOString();
     this.saveToDisk();
     return po;
+  }
+
+  // --- AUTOMATED PROCUREMENT RECEIVING & INVENTORY INGESTION ---
+  public async receivePurchaseOrder(
+    poId: string,
+    options: {
+      received_date?: string;
+      notes?: string;
+      storeroom_id?: string;
+      items?: {
+        item_id: string;
+        received_quantity: number;
+        unit_cost?: number;
+        bin_location?: string;
+        batch_or_lot?: string;
+        expiry_date?: string;
+      }[];
+      userId?: string;
+      userName?: string;
+    } = {}
+  ): Promise<{ receipt: GoodsReceipt; po: PurchaseOrder; journal_id?: string }> {
+    const po = this.purchaseOrders.get(poId) ||
+      Array.from(this.purchaseOrders.values()).find((p) => p.po_number === poId || p.po_id === poId);
+    if (!po) {
+      throw new Error(`Purchase Order ${poId} not found.`);
+    }
+
+    if (po.status === 'CANCELLED') {
+      throw new Error(`Cannot receive goods for a CANCELLED purchase order.`);
+    }
+
+    const storeroomId = options.storeroom_id || po.storeroom_id;
+    const storeroom = this.storerooms.get(storeroomId);
+    if (!storeroom) {
+      throw new Error(`Target storeroom ${storeroomId} not found.`);
+    }
+
+    const userName = options.userName || 'Procurement Receiving Officer';
+    const userId = options.userId || 'usr-controller-1';
+    const receivedDate = options.received_date || new Date().toISOString().split('T')[0];
+
+    // Determine lines to receive
+    let receiptLines: {
+      item_id: string;
+      received_quantity: number;
+      unit_cost: number;
+      bin_location?: string;
+      batch_or_lot?: string;
+      expiry_date?: string;
+    }[] = [];
+
+    if (options.items && options.items.length > 0) {
+      receiptLines = options.items.map((it) => {
+        const poLine = po.items.find((p) => p.item_id === it.item_id);
+        return {
+          item_id: it.item_id,
+          received_quantity: Number(it.received_quantity),
+          unit_cost: it.unit_cost !== undefined ? Number(it.unit_cost) : (poLine?.unit_cost || 0),
+          bin_location: it.bin_location,
+          batch_or_lot: it.batch_or_lot || `LOT-${receivedDate.replace(/-/g, '').slice(0, 6)}`,
+          expiry_date: it.expiry_date,
+        };
+      });
+    } else {
+      // By default receive remaining unreceived quantity for each line item
+      receiptLines = po.items.map((line) => {
+        const remaining = Math.max(0, line.ordered_quantity - (line.received_quantity || 0));
+        return {
+          item_id: line.item_id,
+          received_quantity: remaining > 0 ? remaining : line.ordered_quantity,
+          unit_cost: line.unit_cost,
+          bin_location: undefined,
+          batch_or_lot: `LOT-${receivedDate.replace(/-/g, '').slice(0, 6)}`,
+          expiry_date: '',
+        };
+      });
+    }
+
+    // Filter out zero quantities
+    receiptLines = receiptLines.filter((l) => l.received_quantity > 0);
+    if (receiptLines.length === 0) {
+      throw new Error('All items on this Purchase Order have already been fully received.');
+    }
+
+    // Process goods receipt (updates storeroom stock, recalculates weighted average cost, records movements, generates GL journal)
+    const result = await this.processGoodsReceipt(
+      {
+        date: receivedDate,
+        po_reference: po.po_number,
+        vendor_name: po.supplier_name,
+        storeroom_id: storeroom.storeroom_id,
+        items: receiptLines,
+        notes: options.notes || `Direct Procurement Delivery Ingestion for PO ${po.po_number} (${po.supplier_name})`,
+      },
+      userId,
+      userName
+    );
+
+    return { receipt: result.receipt, po, journal_id: result.journal_id };
   }
 
   // --- 3. DIRECT STOCK ISSUE (DEPARTMENT CONSUMPTION) ---

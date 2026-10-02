@@ -13,7 +13,7 @@ import { api } from '../../../services/api';
 import { CalculationDetailModal } from './CalculationDetailModal';
 import {
   Calendar,
-  DollarSign,
+  Coins,
   PieChart,
   Users,
   Building,
@@ -33,7 +33,11 @@ import {
   FileText,
   Mail,
   Send,
+  FileSpreadsheet,
+  Printer,
 } from 'lucide-react';
+import { exportReportToExcel } from '../../../utils/excelExporter';
+import { printReportElement } from '../../../utils/printManager';
 
 interface MonthlyDistributionViewProps {
   onNavigateToStatement?: (unitId: string) => void;
@@ -180,6 +184,75 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
     return matchSearch && matchStatus;
   });
 
+  const handlePrint = () => {
+    printReportElement('owner-distribution-table-area', {
+      title: `Owner_Distribution_Batch_${currentBatch?.batch_id || 'Batch'}_${period}`,
+      property: 'PT Atrium Management Group',
+      orientation: 'landscape',
+    });
+  };
+
+  const handleExportExcel = () => {
+    if (!currentBatch) return;
+
+    const rows: (string | number)[][] = currentBatch.lines.map((l) => [
+      l.unit_number,
+      l.owner_name,
+      l.unit_sqm,
+      l.contract_year_number,
+      `${(l.weight_factor * 100).toFixed(4)}%`,
+      l.gross_distribution,
+      l.maintenance_reserve,
+      l.management_fee,
+      l.pph_final_tax,
+      l.net_distribution,
+      l.status,
+      l.settlement_reference || '',
+    ]);
+
+    rows.push([
+      'TOTAL',
+      'Batch Totals',
+      currentBatch.lines.reduce((s, l) => s + l.unit_sqm, 0),
+      '',
+      '100.00%',
+      currentBatch.lines.reduce((s, l) => s + l.gross_distribution, 0),
+      currentBatch.lines.reduce((s, l) => s + l.maintenance_reserve, 0),
+      currentBatch.lines.reduce((s, l) => s + l.management_fee, 0),
+      currentBatch.lines.reduce((s, l) => s + l.pph_final_tax, 0),
+      currentBatch.lines.reduce((s, l) => s + l.net_distribution, 0),
+      currentBatch.status,
+      '',
+    ]);
+
+    exportReportToExcel(
+      `Owner_Pool_Distribution_Batch_${period}_PT_Atrium_Management_Group.xlsx`,
+      [
+        {
+          name: `Batch ${period}`,
+          title: `OWNER POOL MONTHLY DISTRIBUTION RUN — ${period}`,
+          subtitle: `PT Atrium Management Group • Atrium Suites & Residences Lombok • Status: ${currentBatch.status}`,
+          headers: [
+            'Unit #',
+            'Owner / Investor',
+            'Area (sqm)',
+            'Year',
+            'Weight %',
+            'Gross Distribution (Rp)',
+            'Sink Fund (Rp)',
+            'Mgmt Fee (Rp)',
+            'PPh 4(2) Tax (Rp)',
+            'Net Disbursed (Rp)',
+            'Status',
+            'Payment Ref',
+          ],
+          rows,
+          colWidths: [10, 28, 12, 8, 12, 22, 18, 18, 18, 22, 14, 20],
+        },
+      ]
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Controls: Period Selection & Action Flow */}
@@ -218,6 +291,29 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             >
               Status: {currentBatch.status}
             </span>
+          )}
+
+          {/* Export to Excel and Print PDF buttons */}
+          {currentBatch && (
+            <div className="flex items-center gap-1.5 ml-2">
+              <button
+                onClick={handleExportExcel}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+                title="Export distribution batch to Excel (.xlsx)"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Excel (.xlsx)</span>
+              </button>
+
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                title="Print Distribution Run"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -332,7 +428,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
         <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold">
             <span>Room Revenue (Audited)</span>
-            <DollarSign className="w-3.5 h-3.5 text-indigo-600" />
+            <Coins className="w-3.5 h-3.5 text-indigo-600" />
           </div>
           <div className="text-lg font-black text-slate-900 truncate">
             {kpis?.has_posted_data ? formatIDR(kpis.room_revenue) : 'No Data'}
@@ -577,7 +673,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
         </div>
 
         {/* Table Container */}
-        <div className="overflow-x-auto">
+        <div id="owner-distribution-table-area" className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">

@@ -212,10 +212,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </div>
           <div>
             <div className="text-xl font-bold font-mono text-white">
-              IDR {(kpis?.total_inventory_value_idr ?? kpis?.total_valuation ?? 0).toLocaleString()}
+              Rp {(kpis?.total_inventory_value_idr ?? kpis?.total_valuation ?? 0).toLocaleString('id-ID')}
             </div>
-            <div className="text-xs font-mono text-slate-400 mt-0.5">
-              ≈ USD ${(kpis?.total_inventory_value_usd ?? Math.round(((kpis?.total_valuation ?? 0) / 16000) * 100) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <div className="text-xs font-mono text-emerald-400 mt-0.5">
+              Nilai Total Persediaan Fisik (Perpetual Moving Avg)
             </div>
           </div>
           <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
@@ -340,7 +340,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-300 font-medium">{cat.category_name}</span>
                     <span className="font-mono text-slate-400">
-                      IDR {(cat.total_value_idr ?? 0).toLocaleString()} ({pct}%)
+                      Rp {(cat.total_value_idr ?? 0).toLocaleString('id-ID')} ({pct}%)
                     </span>
                   </div>
                   <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -384,7 +384,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </span>
                 </div>
                 <div className="text-sm font-bold font-mono text-emerald-400">
-                  IDR {(st.total_value_idr ?? 0).toLocaleString()}
+                  Rp {(st.total_value_idr ?? 0).toLocaleString('id-ID')}
                 </div>
               </div>
             ))}
@@ -526,10 +526,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         {isPositive ? `+${m.quantity}` : m.quantity} {m.uom}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono text-slate-400">
-                        IDR {(m.unit_cost ?? 0).toLocaleString()}
+                        Rp {(m.unit_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono font-medium text-white">
-                        IDR {(m.total_cost ?? 0).toLocaleString()}
+                        Rp {(m.total_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 font-mono text-slate-400 text-[11px]">
                         {m.reference_number || '-'}

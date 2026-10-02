@@ -21,6 +21,8 @@ import {
   Calendar,
   Layers,
   ArrowRight,
+  FileSpreadsheet,
+  Printer,
 } from 'lucide-react';
 import {
   ServiceChargeDistributionCycle,
@@ -28,6 +30,8 @@ import {
   Department,
 } from '../../../types';
 import { api } from '../../../services/api';
+import { exportReportToExcel } from '../../../utils/excelExporter';
+import { printReportElement } from '../../../utils/printManager';
 import { StaffPaySlipModal } from './StaffPaySlipModal';
 
 interface DistributionEngineViewProps {
@@ -154,6 +158,91 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
     return matchesSearch && matchesDept;
   }) || [];
 
+  const handlePrint = () => {
+    printReportElement('service-charge-distribution-table', {
+      title: `Service_Charge_Distribution_${activeCycle?.cycle_id || 'Roster'}_${activeCycle?.period || ''}`,
+      property: 'PT Atrium Management Group',
+      orientation: 'landscape',
+    });
+  };
+
+  const handleExportExcel = () => {
+    if (!activeCycle) return;
+
+    const rows: (string | number)[][] = displayedLines.map((l) => [
+      l.employee_id,
+      l.employee_name,
+      l.job_title,
+      getDeptName(l.department_code),
+      l.base_points,
+      l.seniority_multiplier,
+      `${(l.attendance_factor * 100).toFixed(0)}%`,
+      l.effective_points,
+      l.gross_amount,
+      l.tax_withheld,
+      l.net_payout,
+    ]);
+
+    rows.push([
+      'TOTAL',
+      'Batch Totals',
+      '',
+      '',
+      '',
+      '',
+      '',
+      displayedLines.reduce((s, l) => s + l.effective_points, 0),
+      displayedLines.reduce((s, l) => s + l.gross_amount, 0),
+      displayedLines.reduce((s, l) => s + l.tax_withheld, 0),
+      displayedLines.reduce((s, l) => s + l.net_payout, 0),
+    ]);
+
+    const summaryRows: (string | number)[][] = [
+      ['Gross Service Charge Collected', activeCycle.total_collected_pool],
+      ['Retention / Breakage Reserve', -activeCycle.retained_breakage_reserve],
+      ['Net Distributable Pool', activeCycle.net_distributable_pool],
+      ['Total Eligible Staff Points', activeCycle.total_eligible_points],
+      ['Point Value (Rate / Point)', activeCycle.point_value_idr],
+      ['Total Payout Gross', activeCycle.total_gross_payout],
+      ['Total PPh 21 Tax Withheld', activeCycle.total_tax_withheld],
+      ['Total Net Disbursed to Staff', activeCycle.total_net_payout],
+      ['Status', activeCycle.status],
+    ];
+
+    exportReportToExcel(
+      `Service_Charge_Distribution_${activeCycle.period}_PT_Atrium_Management_Group.xlsx`,
+      [
+        {
+          name: 'Staff Allocation',
+          title: `STAFF SERVICE CHARGE ALLOCATION ROSTER — ${activeCycle.period}`,
+          subtitle: `PT Atrium Management Group • Atrium Suites & Residences Lombok • Status: ${activeCycle.status}`,
+          headers: [
+            'Emp ID',
+            'Employee Name',
+            'Job Title',
+            'Department',
+            'Base Pts',
+            'Seniority',
+            'Attendance',
+            'Effective Pts',
+            'Gross Amount (Rp)',
+            'PPh 21 Tax (Rp)',
+            'Net Payout (Rp)',
+          ],
+          rows,
+          colWidths: [12, 28, 22, 22, 10, 10, 12, 14, 18, 16, 18],
+        },
+        {
+          name: 'Pool Summary',
+          title: `SERVICE CHARGE POOL SUMMARY & POINT VALUE — ${activeCycle.period}`,
+          headers: ['Metric Parameter', 'Value / Amount (Rp)'],
+          rows: summaryRows,
+          colWidths: [35, 25],
+        },
+      ]
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Notice Banner */}
@@ -194,8 +283,28 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-slate-400 font-mono">Select Cycle:</label>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Direct Excel Download Button */}
+            <button
+              onClick={handleExportExcel}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+              title="Export staff distribution roster to Excel (.xlsx)"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Excel (.xlsx)</span>
+            </button>
+
+            {/* Print Button */}
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+              title="Print Service Charge Distribution"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </button>
+
+            <label className="text-xs text-slate-400 font-mono ml-2">Select Cycle:</label>
             <select
               value={selectedCycleId}
               onChange={(e) => setSelectedCycleId(e.target.value)}
@@ -434,7 +543,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
         </div>
       </div>
 
-      <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900">
+      <div id="service-charge-distribution-table" className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400 tracking-wider">

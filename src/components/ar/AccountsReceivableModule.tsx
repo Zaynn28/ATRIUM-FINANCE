@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  DollarSign,
+  Coins,
   TrendingDown,
   AlertCircle,
   Clock,
@@ -23,9 +23,14 @@ import {
   ChevronRight,
   ShieldCheck,
   Percent,
+  FileSpreadsheet,
+  Printer,
+  Eye,
 } from 'lucide-react';
 import { ARAgingItem, AgingSummary, Account, Department } from '../../types';
 import { api } from '../../services/api';
+import { exportReportToExcel } from '../../utils/excelExporter';
+import { PrintableReportContainer } from '../reports/PrintableReportContainer';
 
 interface AccountsReceivableModuleProps {
   accounts: Account[];
@@ -49,6 +54,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
     count: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [previewMode, setPreviewMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [bucketFilter, setBucketFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -193,6 +199,80 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
     }
   };
 
+  const handlePrint = () => {
+    window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+  };
+
+  const handleExportExcel = () => {
+    const rows: (string | number)[][] = filteredItems.map((item) => [
+      item.invoice_id,
+      item.customer_name,
+      item.customer_type,
+      item.invoice_date,
+      item.due_date,
+      item.original_amount,
+      item.outstanding_amount,
+      item.days_overdue,
+      item.aging_bucket,
+      item.status,
+      item.origin_journal_id || '',
+    ]);
+
+    // Totals row
+    rows.push([
+      'TOTAL',
+      '',
+      '',
+      '',
+      '',
+      filteredItems.reduce((s, i) => s + (i.original_amount || 0), 0),
+      filteredItems.reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      '',
+      '',
+      '',
+      '',
+    ]);
+
+    const summaryRows: (string | number)[][] = [
+      ['Total AR Ledger', summary.total_outstanding],
+      ['Current (Not Due)', summary.current],
+      ['1 - 30 Days Overdue', summary.bucket_1_30],
+      ['31 - 60 Days Overdue', summary.bucket_31_60],
+      ['61 - 90 Days Overdue', summary.bucket_61_90],
+      ['Over 90 Days (Delinquent)', summary.bucket_over_90],
+    ];
+
+    exportReportToExcel('AR_Aging_Schedule_PT_Atrium_Management_Group.xlsx', [
+      {
+        name: 'AR Invoices',
+        title: 'ACCOUNTS RECEIVABLE AGING & INVOICE SCHEDULE',
+        subtitle: 'PT Atrium Management Group • City Ledger & Guest Folios Subledger',
+        headers: [
+          'Invoice ID',
+          'Customer / Client',
+          'Type',
+          'Invoice Date',
+          'Due Date',
+          'Original (Rp)',
+          'Outstanding (Rp)',
+          'Days Overdue',
+          'Aging Bucket',
+          'Status',
+          'Journal Ref',
+        ],
+        rows,
+        colWidths: [16, 28, 14, 14, 14, 18, 18, 14, 15, 12, 18],
+      },
+      {
+        name: 'Aging Summary',
+        title: 'ACCOUNTS RECEIVABLE AGING ANALYSIS SUMMARY',
+        headers: ['Aging Bucket Category', 'Total Outstanding (Rp)'],
+        rows: summaryRows,
+        colWidths: [30, 25],
+      },
+    ]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Module Banner & Quick Controls */}
@@ -214,7 +294,41 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            className="px-3 py-2 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-emerald-600 shadow-xs"
+            title="Export AR Aging schedule to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Toggle PDF Preview */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border shadow-xs ${
+              previewMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Toggle Paper Print/PDF Preview"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="px-3 py-2 bg-amber-600/90 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+            title="Print AR Aging Report"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
+          </button>
+
           <button
             onClick={loadData}
             disabled={loading}
@@ -226,13 +340,24 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         </div>
       </div>
 
-      {/* AR Aging Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* Printable Report Wrapper */}
+      <PrintableReportContainer
+        reportTitle="Accounts Receivable Aging & City Ledger Schedule"
+        reportSubtitle="Sub-Ledger Customer Receivables, Folio Aging & Payment Collection Tracking"
+        property="PT Atrium Management Group"
+        orientation="landscape"
+        previewMode={previewMode}
+        onExitPreview={() => setPreviewMode(false)}
+        onExportExcel={handleExportExcel}
+      >
+        <div className="space-y-6">
+          {/* AR Aging Metric Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Total Outstanding */}
         <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 shadow-sm">
           <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>Total AR Ledger</span>
-            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+            <Coins className="w-3.5 h-3.5 text-emerald-400" />
           </div>
           <div className="text-lg font-bold font-mono text-white">
             Rp {(summary.total_outstanding / 1_000_000).toFixed(1)}M
@@ -482,6 +607,8 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           </table>
         </div>
       </div>
+        </div>
+      </PrintableReportContainer>
 
       {/* Collect / Receive Payment Modal */}
       {settlementModalItem && (

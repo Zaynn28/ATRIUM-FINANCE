@@ -26,9 +26,14 @@ import {
   MapPin,
   Sparkles,
   RotateCcw,
+  PackageCheck,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { PurchaseOrder, InventoryItem, InventoryStoreroom, Department } from '../../types';
 import { api } from '../../services/api';
+import { AtriumLogo } from '../common/AtriumLogo';
+import { exportReportToExcel } from '../../utils/excelExporter';
+import { printReportElement } from '../../utils/printManager';
 
 interface PurchaseOrderDocumentModalProps {
   po: PurchaseOrder;
@@ -40,6 +45,7 @@ interface PurchaseOrderDocumentModalProps {
   onViewJournal?: (journalId: string) => void;
   onNavigateToReceiving?: (poNumber: string) => void;
   onGenerateJournal?: (po: PurchaseOrder) => void;
+  onReceivePo?: (po: PurchaseOrder) => Promise<void>;
 }
 
 export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProps> = ({
@@ -52,23 +58,25 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
   onViewJournal,
   onNavigateToReceiving,
   onGenerateJournal,
+  onReceivePo,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [receivingStock, setReceivingStock] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // 1. Hotel / Issuer Letterhead state
-  const [hotelName, setHotelName] = useState(po.hotel_name || 'THE ATRIUM HOTEL & RESORT');
+  const [hotelName, setHotelName] = useState(po.hotel_name || 'PT ATRIUM MANAGEMENT GROUP');
   const [hotelDivision, setHotelDivision] = useState(
     po.hotel_division || 'Hospitality Operations & Procurement Directorate'
   );
   const [hotelAddress, setHotelAddress] = useState(
-    po.hotel_address || 'Jl. Malioboro No. 45, D.I. Yogyakarta 55271, Indonesia'
+    po.hotel_address || 'Jl. Raya Senggigi, Batu Layar, Lombok Barat, NTB 83355'
   );
   const [hotelTaxId, setHotelTaxId] = useState(po.hotel_tax_id || '01.345.678.9-541.000');
-  const [hotelPhone, setHotelPhone] = useState(po.hotel_phone || '+62 274 555-8888');
-  const [hotelEmail, setHotelEmail] = useState(po.hotel_email || 'procurement@atriumhotel.com');
+  const [hotelPhone, setHotelPhone] = useState(po.hotel_phone || '+62 370 612-8888');
+  const [hotelEmail, setHotelEmail] = useState(po.hotel_email || 'procurement@atriumresort.com');
 
   // 2. Order Metadata & Terms
   const [orderDate, setOrderDate] = useState(po.order_date);
@@ -126,88 +134,74 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
   const calcTax = Math.round(calcSubtotal * (Number(taxRatePct) / 100) * 100) / 100;
   const calcTotal = Math.round((calcSubtotal + calcTax) * 100) / 100;
 
-  // Print function: Reliable fallback using clean popup window with high-definition styling
   const handlePrint = () => {
-    const printContent = document.getElementById('po-printable-document');
-    if (!printContent) {
-      window.print();
-      return;
-    }
+    printReportElement('po-printable-document', {
+      title: `PO_${po.po_number}_${supplierName || 'Vendor'}`,
+      property: hotelName,
+      orientation: 'portrait',
+    });
+  };
 
-    // Open dedicated print window to guarantee 100% clean formatting and remove any UI modal chrome
-    const printWindow = window.open('', '_blank', 'width=900,height=1000');
-    if (printWindow) {
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Purchase Order - ${po.po_number}</title>
-            <style>
-              @page {
-                size: A4 portrait;
-                margin: 12mm 15mm 12mm 15mm;
-              }
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                color: #0f172a;
-                background: #ffffff;
-                margin: 0;
-                padding: 24px;
-                font-size: 10.5pt;
-                line-height: 1.4;
-              }
-              * {
-                box-sizing: border-box;
-              }
-              .no-print-in-preview {
-                display: none !important;
-              }
-              table {
-                width: 100%;
-                border-collapse: collapse;
-              }
-              th {
-                background: #f1f5f9;
-                color: #334155;
-                font-size: 8.5pt;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                padding: 8px 10px;
-                border-top: 1px solid #cbd5e1;
-                border-bottom: 1px solid #cbd5e1;
-                text-align: left;
-              }
-              td {
-                padding: 8px 10px;
-                border-bottom: 1px solid #e2e8f0;
-                font-size: 9.5pt;
-              }
-              .text-right { text-align: right; }
-              .text-center { text-align: center; }
-              @media print {
-                body { padding: 0; }
-                .no-print { display: none; }
-              }
-            </style>
-          </head>
-          <body>
-            ${printContent.innerHTML}
-            <script>
-              window.onload = function() {
-                window.print();
-                window.onafterprint = function() {
-                  window.close();
-                };
-              };
-            </script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    } else {
-      window.print();
-    }
+  const handleExportExcel = () => {
+    const rows: (string | number)[][] = items.map((line, idx) => {
+      const invItem = inventoryItems.find((i) => i.item_id === line.item_id);
+      return [
+        idx + 1,
+        line.item_code || invItem?.item_code || '',
+        line.item_name || invItem?.item_name || '',
+        line.uom || invItem?.uom || '',
+        line.ordered_quantity,
+        line.unit_cost,
+        Number(line.ordered_quantity || 0) * Number(line.unit_cost || 0),
+      ];
+    });
+
+    rows.push([
+      'TOTAL',
+      '',
+      '',
+      '',
+      items.reduce((s, i) => s + (Number(i.ordered_quantity) || 0), 0),
+      'Subtotal',
+      calcSubtotal,
+    ]);
+    rows.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      `Tax (${taxRatePct}%)`,
+      calcTax,
+    ]);
+    rows.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total Amount',
+      calcTotal,
+    ]);
+
+    exportReportToExcel(`PO_${po.po_number}_PT_Atrium_Management_Group.xlsx`, [
+      {
+        name: `PO ${po.po_number}`.slice(0, 31),
+        title: `OFFICIAL PURCHASE ORDER — ${po.po_number}`,
+        subtitle: `Issuer: ${hotelName} | Supplier: ${supplierName} | Order Date: ${orderDate} | Status: ${po.status}`,
+        headers: [
+          'No',
+          'Item Code',
+          'Item Description',
+          'UOM',
+          'Quantity',
+          'Unit Price (Rp)',
+          'Total Amount (Rp)',
+        ],
+        rows,
+        colWidths: [6, 15, 35, 10, 12, 18, 20],
+      },
+    ]);
   };
 
   // Line changes in Edit mode
@@ -320,12 +314,12 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
   // Reset to original saved state
   const handleResetToCurrent = () => {
     setIsEditing(false);
-    setHotelName(po.hotel_name || 'THE ATRIUM HOTEL & RESORT');
+    setHotelName(po.hotel_name || 'PT ATRIUM MANAGEMENT GROUP');
     setHotelDivision(po.hotel_division || 'Hospitality Operations & Procurement Directorate');
-    setHotelAddress(po.hotel_address || 'Jl. Malioboro No. 45, D.I. Yogyakarta 55271, Indonesia');
+    setHotelAddress(po.hotel_address || 'Jl. Raya Senggigi, Batu Layar, Lombok Barat, NTB 83355');
     setHotelTaxId(po.hotel_tax_id || '01.345.678.9-541.000');
-    setHotelPhone(po.hotel_phone || '+62 274 555-8888');
-    setHotelEmail(po.hotel_email || 'procurement@atriumhotel.com');
+    setHotelPhone(po.hotel_phone || '+62 370 612-8888');
+    setHotelEmail(po.hotel_email || 'procurement@atriumresort.com');
     setSupplierName(po.supplier_name);
     setSupplierContact(po.supplier_contact || '');
     setSupplierEmail(po.supplier_email || '');
@@ -360,6 +354,38 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
         notes: it.notes || '',
       }))
     );
+  };
+
+  const handleReceiveStockDirectly = async () => {
+    if (po.status === 'FULFILLED') {
+      setSuccessMessage(`PO ${po.po_number} is already fulfilled.`);
+      return;
+    }
+    const confirmed = window.confirm(
+      `Receive goods for PO ${po.po_number} (${po.supplier_name})?\n\nThis will automatically:\n1. Update on-hand inventory stock in ${po.storeroom_name}\n2. Recalculate moving average costs\n3. Generate Goods Receipt document\n4. Post double-entry GL journal (Dr 1080 Inventory, Cr 2010 AP)`
+    );
+    if (!confirmed) return;
+
+    setReceivingStock(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    try {
+      if (onReceivePo) {
+        await onReceivePo(po);
+        setSuccessMessage(`PO ${po.po_number} received! Goods receipt recorded & inventory stock updated.`);
+      } else {
+        const res = await api.receivePurchaseOrder(po.po_id, {
+          notes: `Delivery received against PO ${po.po_number} from ${po.supplier_name}`,
+        });
+        onUpdated(res.po);
+        setSuccessMessage(`PO ${po.po_number} received successfully! Goods Receipt #${res.receipt.receipt_id} recorded, inventory stock updated.`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage(err.message || 'Failed to receive goods for this PO');
+    } finally {
+      setReceivingStock(false);
+    }
   };
 
   return (
@@ -407,6 +433,24 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
           <div className="flex items-center gap-2">
             {!isEditing ? (
               <>
+                {po.status !== 'FULFILLED' && po.status !== 'CANCELLED' ? (
+                  <button
+                    type="button"
+                    disabled={receivingStock}
+                    onClick={handleReceiveStockDirectly}
+                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950 transition-colors"
+                    title="Directly receive delivery and automatically update inventory stock"
+                  >
+                    <PackageCheck className="w-3.5 h-3.5" />
+                    <span>{receivingStock ? 'Receiving Goods...' : 'Receive Goods & Update Stock'}</span>
+                  </button>
+                ) : (
+                  <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-mono text-[11px] rounded-lg border border-emerald-500/30 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Stock Received &amp; Updated</span>
+                  </span>
+                )}
+
                 <button
                   type="button"
                   onClick={() => setIsEditing(true)}
@@ -415,6 +459,16 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 >
                   <Edit3 className="w-3.5 h-3.5 text-blue-400" />
                   <span>Edit Document Details</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportExcel}
+                  className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition-colors border border-emerald-600"
+                  title="Export PO to Excel (.xlsx)"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  <span>Excel (.xlsx)</span>
                 </button>
 
                 <button
@@ -484,9 +538,9 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             {/* Header / Letterhead */}
             <div className="header flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-900 pb-5 mb-6 gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded bg-slate-900 text-white font-bold flex items-center justify-center font-mono text-sm shrink-0">
-                    AH
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0">
+                    <AtriumLogo variant="arch-only" size="md" theme="light" />
                   </div>
                   <div className="w-full">
                     {!isEditing ? (
@@ -779,8 +833,8 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                     <th className="py-2.5 px-3">Item Description / SKU</th>
                     <th className="py-2.5 px-3 text-center w-20">UOM</th>
                     <th className="py-2.5 px-3 text-right w-24">Qty</th>
-                    <th className="py-2.5 px-3 text-right w-32">Unit Price (IDR)</th>
-                    <th className="py-2.5 px-3 text-right w-36">Total (IDR)</th>
+                    <th className="py-2.5 px-3 text-right w-32">Unit Price (Rp)</th>
+                    <th className="py-2.5 px-3 text-right w-36">Total (Rp)</th>
                     {isEditing && <th className="py-2.5 px-2 w-10 text-center no-print-in-preview">Del</th>}
                   </tr>
                 </thead>
@@ -900,7 +954,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
               <div className="w-80 space-y-1.5 text-xs font-mono">
                 <div className="flex justify-between text-slate-600">
                   <span>Subtotal Amount:</span>
-                  <span>IDR {calcSubtotal.toLocaleString('id-ID')}</span>
+                  <span>Rp {calcSubtotal.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between text-slate-600 items-center">
                   <span>
@@ -908,26 +962,26 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                     {isEditing ? (
                       <span className="inline-flex items-center gap-1 font-bold">
                         (
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          value={taxRatePct}
-                          onChange={(e) => setTaxRatePct(Number(e.target.value))}
-                          className="w-12 bg-white border border-slate-300 rounded px-1 py-0.5 text-xs text-center text-slate-900 font-mono"
-                        />
+                          <input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={taxRatePct}
+                            onChange={(e) => setTaxRatePct(Number(e.target.value))}
+                            className="w-12 bg-white border border-slate-300 rounded px-1 py-0.5 text-xs text-center text-slate-900 font-mono"
+                          />
                         %)
                       </span>
                     ) : (
                       `(${taxRatePct}%):`
                     )}
                   </span>
-                  <span>IDR {calcTax.toLocaleString('id-ID')}</span>
+                  <span>Rp {calcTax.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between text-sm font-black text-slate-900 pt-2 border-t-2 border-slate-900">
                   <span>TOTAL ORDER COMMITMENT:</span>
                   <span className="text-blue-800">
-                    IDR {calcTotal.toLocaleString('id-ID')}
+                    Rp {calcTotal.toLocaleString('id-ID')}
                   </span>
                 </div>
               </div>

@@ -10,10 +10,12 @@ import {
   AlertTriangle,
   PieChart,
   Warehouse,
-  DollarSign,
+  Coins,
   Clock,
   Layers,
   FileSpreadsheet,
+  Printer,
+  Eye,
 } from 'lucide-react';
 import {
   InventoryItem,
@@ -22,6 +24,8 @@ import {
   StockAdjustmentRecord,
 } from '../../types';
 import { api } from '../../services/api';
+import { exportReportToExcel } from '../../utils/excelExporter';
+import { PrintableReportContainer } from '../reports/PrintableReportContainer';
 
 export const InventoryReportsView: React.FC = () => {
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -30,6 +34,7 @@ export const InventoryReportsView: React.FC = () => {
   const [adjustments, setAdjustments] = useState<StockAdjustmentRecord[]>([]);
   const [activeTab, setActiveTab] = useState<'VALUATION' | 'REORDER' | 'SPOILAGE' | 'SLOW_MOVING'>('VALUATION');
   const [loading, setLoading] = useState(true);
+  const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -94,6 +99,84 @@ export const InventoryReportsView: React.FC = () => {
       return acc;
     }, {} as Record<string, number>);
 
+  const handlePrint = () => {
+    window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+  };
+
+  const handleExportExcel = () => {
+    const valRows: (string | number)[][] = items.map((i) => [
+      i.item_code,
+      i.item_name,
+      categories.find((c) => c.category_id === i.category_id)?.category_name || i.category_id,
+      i.uom,
+      i.current_stock,
+      i.average_cost,
+      i.current_stock * i.average_cost,
+    ]);
+    valRows.push([
+      'TOTAL',
+      'Total Inventory Valuation',
+      '',
+      '',
+      items.reduce((s, i) => s + i.current_stock, 0),
+      '',
+      items.reduce((s, i) => s + i.current_stock * i.average_cost, 0),
+    ]);
+
+    const reorderRows: (string | number)[][] = reorderItems.map((r) => [
+      r.item.item_code,
+      r.item.item_name,
+      r.item.current_stock,
+      r.item.min_stock,
+      r.item.max_stock,
+      r.orderQty,
+      r.estCost,
+    ]);
+    reorderRows.push([
+      'TOTAL',
+      'Total Estimated Reorder Cost',
+      '',
+      '',
+      '',
+      reorderItems.reduce((s, r) => s + r.orderQty, 0),
+      reorderItems.reduce((s, r) => s + r.estCost, 0),
+    ]);
+
+    exportReportToExcel('Inventory_Financial_Report_PT_Atrium_Management_Group.xlsx', [
+      {
+        name: 'Stock Valuation',
+        title: 'HOTEL INVENTORY VALUATION REPORT',
+        subtitle: 'PT Atrium Management Group • Store & Cost Center Breakdown',
+        headers: [
+          'Item Code',
+          'Item Name',
+          'Category',
+          'UOM',
+          'Current Stock',
+          'Unit Cost (Rp)',
+          'Total Value (Rp)',
+        ],
+        rows: valRows,
+        colWidths: [15, 30, 20, 10, 15, 18, 20],
+      },
+      {
+        name: 'Reorder Projections',
+        title: 'STOCK REORDER & PAR LEVEL PROJECTIONS',
+        headers: [
+          'Item Code',
+          'Item Name',
+          'Current Stock',
+          'Min Stock',
+          'Max Stock',
+          'Suggested Order',
+          'Estimated Cost (Rp)',
+        ],
+        rows: reorderRows,
+        colWidths: [15, 30, 15, 12, 12, 16, 20],
+      },
+    ]);
+  };
+
   const exportCSV = () => {
     let csv = '';
     if (activeTab === 'VALUATION') {
@@ -125,24 +208,79 @@ export const InventoryReportsView: React.FC = () => {
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-emerald-400" />
-            <span>Hotel Cost Control & Inventory Financial Reports</span>
+            <span>Hotel Cost Control &amp; Inventory Financial Reports</span>
           </h3>
           <p className="text-xs text-slate-400">
             Valuation audits, reorder projections, and shrinkage write-off breakdowns for the Financial Controller.
           </p>
         </div>
 
-        <button
-          onClick={exportCSV}
-          className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors"
-        >
-          <Download className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Export CSV</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            className="px-3.5 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg border border-emerald-600 flex items-center gap-1.5 transition-colors shadow-xs"
+            title="Export full inventory valuation to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Toggle PDF Preview */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border shadow-xs ${
+              previewMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Toggle Paper Print/PDF Preview"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+            title="Print Inventory Report"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
+          </button>
+
+          <button
+            onClick={exportCSV}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-400" />
+            <span>CSV</span>
+          </button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-800 pb-2">
+      {/* Printable Report Wrapper */}
+      <PrintableReportContainer
+        reportTitle={
+          activeTab === 'VALUATION'
+            ? 'Inventory Valuation & Store Asset Register'
+            : activeTab === 'REORDER'
+            ? 'Stock Replenishment & Par Level Reorder Schedule'
+            : activeTab === 'SPOILAGE'
+            ? 'Inventory Wastage, Spoilage & Write-Off Audit'
+            : 'Slow-Moving & Dead Stock Analysis'
+        }
+        reportSubtitle="Hotel Material Control & Store Ledger Asset Valuation"
+        property="PT Atrium Management Group"
+        orientation="landscape"
+        previewMode={previewMode}
+        onExitPreview={() => setPreviewMode(false)}
+        onExportExcel={handleExportExcel}
+      >
+        <div className="space-y-6">
+          {/* Tabs */}
+          <div className="flex gap-2 border-b border-slate-800 pb-2 print:hidden">
         <button
           onClick={() => setActiveTab('VALUATION')}
           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
@@ -151,7 +289,7 @@ export const InventoryReportsView: React.FC = () => {
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <DollarSign className="w-3.5 h-3.5" />
+          <Coins className="w-3.5 h-3.5" />
           <span>Category & Store Valuation</span>
         </button>
 
@@ -188,7 +326,7 @@ export const InventoryReportsView: React.FC = () => {
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
               <span className="text-[11px] font-mono uppercase text-slate-400 block">Total Inventory Asset</span>
               <span className="text-xl font-bold font-mono text-emerald-400 mt-1 block">
-                IDR {(totalValuation ?? 0).toLocaleString()}
+                Rp {(totalValuation ?? 0).toLocaleString('id-ID')}
               </span>
               <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
                 Reconciled with GL 1080
@@ -231,7 +369,7 @@ export const InventoryReportsView: React.FC = () => {
                     <th className="px-4 py-2.5">Asset Account</th>
                     <th className="px-4 py-2.5">Expense / Cost Account</th>
                     <th className="px-4 py-2.5 text-right">Items Count</th>
-                    <th className="px-4 py-2.5 text-right">Current Valuation (IDR)</th>
+                    <th className="px-4 py-2.5 text-right">Current Valuation (Rp)</th>
                     <th className="px-4 py-2.5 text-right w-44">% of Total Portfolio</th>
                   </tr>
                 </thead>
@@ -247,7 +385,7 @@ export const InventoryReportsView: React.FC = () => {
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono">{cv.itemsCount}</td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-400">
-                        IDR {(cv.valuation ?? 0).toLocaleString()}
+                        Rp {(cv.valuation ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-2">
@@ -288,7 +426,7 @@ export const InventoryReportsView: React.FC = () => {
             <div className="text-right">
               <span className="text-[10px] font-mono text-slate-400 uppercase block">Total Reorder Budget</span>
               <span className="text-base font-bold font-mono text-amber-400">
-                IDR {(reorderItems.reduce((s, r) => s + (r.estCost || 0), 0) || 0).toLocaleString()}
+                Rp {(reorderItems.reduce((s, r) => s + (r.estCost || 0), 0) || 0).toLocaleString('id-ID')}
               </span>
             </div>
           </div>
@@ -303,8 +441,8 @@ export const InventoryReportsView: React.FC = () => {
                   <th className="px-4 py-2.5 text-right">Min Safety Level</th>
                   <th className="px-4 py-2.5 text-right">Target Par Level</th>
                   <th className="px-4 py-2.5 text-right">Suggested Reorder Qty</th>
-                  <th className="px-4 py-2.5 text-right">Unit Moving Avg</th>
-                  <th className="px-4 py-2.5 text-right">Estimated Procurement Cost</th>
+                  <th className="px-4 py-2.5 text-right">Unit Moving Avg (Rp)</th>
+                  <th className="px-4 py-2.5 text-right">Estimated Procurement Cost (Rp)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800 text-slate-300">
@@ -332,10 +470,10 @@ export const InventoryReportsView: React.FC = () => {
                         {r.orderQty} {r.item.uom}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono text-slate-400">
-                        IDR {(r.item.average_cost ?? 0).toLocaleString()}
+                        Rp {(r.item.average_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-amber-400">
-                        IDR {(r.estCost ?? 0).toLocaleString()}
+                        Rp {(r.estCost ?? 0).toLocaleString('id-ID')}
                       </td>
                     </tr>
                   ))
@@ -353,7 +491,7 @@ export const InventoryReportsView: React.FC = () => {
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
               <span className="text-[10px] font-mono uppercase text-slate-400 block">Total Spoilage Losses</span>
               <span className="text-xl font-bold font-mono text-rose-400 mt-1 block">
-                IDR {(totalSpoilageLoss ?? 0).toLocaleString()}
+                Rp {(totalSpoilageLoss ?? 0).toLocaleString('id-ID')}
               </span>
               <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
                 Expensed to GL 5180
@@ -366,7 +504,7 @@ export const InventoryReportsView: React.FC = () => {
                 <div key={reason} className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
                   <span className="text-[10px] font-mono uppercase text-slate-400 block">{reason}</span>
                   <span className="text-base font-bold font-mono text-white mt-1 block">
-                    IDR {(amtNum ?? 0).toLocaleString()}
+                    Rp {(amtNum ?? 0).toLocaleString('id-ID')}
                   </span>
                   <span className="text-[11px] text-slate-400 font-mono mt-0.5 block">
                     {totalSpoilageLoss > 0 ? ((amtNum / totalSpoilageLoss) * 100).toFixed(1) : 0}% of losses
@@ -392,7 +530,7 @@ export const InventoryReportsView: React.FC = () => {
                     <th className="px-4 py-2.5">Storeroom</th>
                     <th className="px-4 py-2.5">Reason Code</th>
                     <th className="px-4 py-2.5 text-right">Written-Off Qty</th>
-                    <th className="px-4 py-2.5 text-right">Financial Loss (IDR)</th>
+                    <th className="px-4 py-2.5 text-right">Financial Loss (Rp)</th>
                     <th className="px-4 py-2.5">Incident Description</th>
                   </tr>
                 </thead>
@@ -409,7 +547,7 @@ export const InventoryReportsView: React.FC = () => {
                           -{a.quantity} {a.uom}
                         </td>
                         <td className="px-4 py-2.5 text-right font-mono font-bold text-white">
-                          IDR {(a.total_cost ?? 0).toLocaleString()}
+                          Rp {(a.total_cost ?? 0).toLocaleString('id-ID')}
                         </td>
                         <td className="px-4 py-2.5 text-slate-400 text-[11px]">{a.reason_notes}</td>
                       </tr>
@@ -420,6 +558,8 @@ export const InventoryReportsView: React.FC = () => {
           </div>
         </div>
       )}
+        </div>
+      </PrintableReportContainer>
     </div>
   );
 };

@@ -5,6 +5,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import nodemailer from 'nodemailer';
 import {
   OwnerDistributionEmailConfig,
   OwnerDistributionEmailDraft,
@@ -13,6 +14,7 @@ import {
   OwnerDistributionEmailDraftAttachment,
   OwnerPoolAllocationLine,
   OwnerUnit,
+  OwnerEmailSmtpConfig,
 } from '../src/types';
 import { ownerPoolStore } from './ownerPoolStore';
 
@@ -72,6 +74,14 @@ Tel: (+62 361) 849-2000 | Email: investor.relations@atriumhotel.com</p>`,
     include_csv_breakdown: true,
   },
   auto_archive_sent: true,
+  smtp: {
+    enabled: false,
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: process.env.SMTP_SECURE === 'true',
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+  },
   updated_at: '2026-09-24T12:00:00.000Z',
   updated_by: 'Financial Controller',
 };
@@ -449,16 +459,112 @@ export class OwnerEmailStore {
     return found;
   }
 
+  public async testSmtpConnection(customSmtp?: OwnerEmailSmtpConfig): Promise<{ success: boolean; message: string }> {
+    const smtp = customSmtp || this.config.smtp;
+    if (!smtp || !smtp.host || !smtp.user) {
+      return {
+        success: false,
+        message: 'SMTP Host and Username/Email are required to test connection.',
+      };
+    }
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtp.host,
+        port: Number(smtp.port || 587),
+        secure: Boolean(smtp.secure),
+        auth: {
+          user: smtp.user,
+          pass: smtp.pass || '',
+        },
+        connectionTimeout: 8000,
+        greetingTimeout: 8000,
+      });
+
+      await transporter.verify();
+      return {
+        success: true,
+        message: `SMTP connection established successfully to ${smtp.host}:${smtp.port}! Authentication confirmed.`,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: `SMTP connection failed: ${err?.message || err}`,
+      };
+    }
+  }
+
+  private async dispatchViaNodemailer(
+    recipient: string,
+    draft: OwnerDistributionEmailDraft,
+    enabledAttachments: any[]
+  ): Promise<{ liveSmtpSent: boolean; messageId: string; note: string }> {
+    const smtp = this.config.smtp;
+    const isSmtpConfigured = Boolean(smtp && smtp.enabled && smtp.host && smtp.user);
+
+    if (!isSmtpConfigured) {
+      const simId = `MSG-SIM-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      return {
+        liveSmtpSent: false,
+        messageId: simId,
+        note: `Delivered via system dispatch engine (${enabledAttachments.length} verified attachments). To enable real mailbox delivery, configure and enable SMTP in Configuration.`,
+      };
+    }
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtp!.host,
+        port: Number(smtp!.port || 587),
+        secure: Boolean(smtp!.secure),
+        auth: {
+          user: smtp!.user,
+          pass: smtp!.pass || '',
+        },
+        connectionTimeout: 10000,
+      });
+
+      const mailAttachments = enabledAttachments.map((att) => {
+        const doc = this.renderDocumentContent(att.type, draft.unit_id, draft.period);
+        return {
+          filename: doc.filename,
+          content: doc.content,
+          contentType: doc.contentType,
+        };
+      });
+
+      const info = await transporter.sendMail({
+        from: `"${this.config.sender_name}" <${this.config.sender_email || smtp!.user}>`,
+        to: recipient,
+        replyTo: this.config.reply_to_email || undefined,
+        cc: Array.isArray(draft.cc_emails) && draft.cc_emails.length > 0 ? draft.cc_emails : undefined,
+        bcc: Array.isArray(draft.bcc_emails) && draft.bcc_emails.length > 0 ? draft.bcc_emails : undefined,
+        subject: draft.subject,
+        html: draft.body_html || `<div style="font-family:sans-serif;line-height:1.6">${draft.body_text}</div>`,
+        text: draft.body_text,
+        attachments: mailAttachments,
+      });
+
+      return {
+        liveSmtpSent: true,
+        messageId: info.messageId || `MSG-SMTP-${Date.now()}`,
+        note: `Delivered via SMTP (${smtp!.host}) with ${enabledAttachments.length} attachments. Message ID: ${info.messageId}`,
+      };
+    } catch (err: any) {
+      console.error('[OwnerEmailStore SMTP Error]:', err);
+      throw new Error(`SMTP Mail Delivery failed: ${err?.message || err}`);
+    }
+  }
+
   public resetDraft(draftId: string): void {
     this.savedDrafts.delete(draftId);
     this.saveToDisk();
   }
 
-  public sendSingleEmail(
+  public async sendSingleEmail(
     draftId: string,
     sentBy: string = 'Financial Controller',
     testRecipientOverride?: string
-  ): { success: boolean; dispatch: OwnerEmailDispatchLog; draft: OwnerDistributionEmailDraft } {
+  ): Promise<{ success: boolean; dispatch: OwnerEmailDispatchLog; draft: OwnerDistributionEmailDraft }> {
     const parts = draftId.split('-');
     const period = parts.length >= 3 ? `${parts[1]}-${parts[2]}` : '2026-09';
     const all = this.getBatchDrafts(undefined, period);
@@ -470,9 +576,9 @@ export class OwnerEmailStore {
 
     const recipient = testRecipientOverride || draft.recipient_email;
     const nowIso = new Date().toISOString();
-    const msgId = `MSG-EML-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
     const enabledAttachments = draft.attachments.filter((a) => a.enabled);
+
+    const deliveryResult = await this.dispatchViaNodemailer(recipient, draft, enabledAttachments);
 
     const log: OwnerEmailDispatchLog = {
       dispatch_id: `DSP-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -489,10 +595,10 @@ export class OwnerEmailStore {
       status: 'DELIVERED',
       dispatched_at: nowIso,
       sent_by: sentBy,
-      delivery_message_id: msgId,
+      delivery_message_id: deliveryResult.messageId,
       notes: testRecipientOverride
-        ? `Sent as preview test to ${testRecipientOverride}`
-        : `Successfully dispatched to registered investor mailbox with ${enabledAttachments.length} verified attachments`,
+        ? `[Test Preview to ${testRecipientOverride}] ${deliveryResult.note}`
+        : deliveryResult.note,
     };
 
     this.dispatches.unshift(log);
@@ -503,7 +609,7 @@ export class OwnerEmailStore {
         ...saved,
         status: 'SENT',
         sent_at: nowIso,
-        delivery_message_id: msgId,
+        delivery_message_id: deliveryResult.messageId,
       });
     }
 
@@ -516,16 +622,16 @@ export class OwnerEmailStore {
         ...draft,
         status: testRecipientOverride ? draft.status : 'SENT',
         sent_at: nowIso,
-        delivery_message_id: msgId,
+        delivery_message_id: deliveryResult.messageId,
       },
     };
   }
 
-  public sendBatchEmails(
+  public async sendBatchEmails(
     period: string = '2026-09',
     sentBy: string = 'Financial Controller',
     options?: { unitIds?: string[]; testRecipientOverride?: string }
-  ): OwnerEmailBatchResult {
+  ): Promise<OwnerEmailBatchResult> {
     const allDrafts = this.getBatchDrafts(undefined, period);
     const targetDrafts = options?.unitIds && options.unitIds.length > 0
       ? allDrafts.filter((d) => options.unitIds!.includes(d.unit_id))
@@ -537,44 +643,69 @@ export class OwnerEmailStore {
 
     const dispatches: OwnerEmailDispatchLog[] = [];
     const nowIso = new Date().toISOString();
+    let failedCount = 0;
 
     for (const draft of targetDrafts) {
       const recipient = options?.testRecipientOverride || draft.recipient_email;
-      const msgId = `MSG-EML-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
       const enabledAttachments = draft.attachments.filter((a) => a.enabled);
 
-      const log: OwnerEmailDispatchLog = {
-        dispatch_id: `DSP-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-        batch_id: draft.batch_id,
-        period: draft.period,
-        unit_id: draft.unit_id,
-        unit_number: draft.unit_number,
-        owner_name: draft.owner_name,
-        recipient_email: recipient,
-        subject: draft.subject,
-        attachments_count: enabledAttachments.length,
-        attachment_names: enabledAttachments.map((a) => a.name),
-        net_amount: draft.financial_summary.net_distribution_amount,
-        status: 'DELIVERED',
-        dispatched_at: nowIso,
-        sent_by: sentBy,
-        delivery_message_id: msgId,
-        notes: options?.testRecipientOverride
-          ? `Batch test dispatched to ${options.testRecipientOverride}`
-          : `Official distribution statement & ${enabledAttachments.length} attachments delivered to investor inbox`,
-      };
+      try {
+        const deliveryResult = await this.dispatchViaNodemailer(recipient, draft, enabledAttachments);
 
-      dispatches.push(log);
-      this.dispatches.unshift(log);
+        const log: OwnerEmailDispatchLog = {
+          dispatch_id: `DSP-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+          batch_id: draft.batch_id,
+          period: draft.period,
+          unit_id: draft.unit_id,
+          unit_number: draft.unit_number,
+          owner_name: draft.owner_name,
+          recipient_email: recipient,
+          subject: draft.subject,
+          attachments_count: enabledAttachments.length,
+          attachment_names: enabledAttachments.map((a) => a.name),
+          net_amount: draft.financial_summary.net_distribution_amount,
+          status: 'DELIVERED',
+          dispatched_at: nowIso,
+          sent_by: sentBy,
+          delivery_message_id: deliveryResult.messageId,
+          notes: options?.testRecipientOverride
+            ? `[Batch Test to ${options.testRecipientOverride}] ${deliveryResult.note}`
+            : deliveryResult.note,
+        };
 
-      if (!options?.testRecipientOverride) {
-        const saved = this.savedDrafts.get(draft.draft_id) || {};
-        this.savedDrafts.set(draft.draft_id, {
-          ...saved,
-          status: 'SENT',
-          sent_at: nowIso,
-          delivery_message_id: msgId,
-        });
+        dispatches.push(log);
+        this.dispatches.unshift(log);
+
+        if (!options?.testRecipientOverride) {
+          const saved = this.savedDrafts.get(draft.draft_id) || {};
+          this.savedDrafts.set(draft.draft_id, {
+            ...saved,
+            status: 'SENT',
+            sent_at: nowIso,
+            delivery_message_id: deliveryResult.messageId,
+          });
+        }
+      } catch (err: any) {
+        failedCount++;
+        const failLog: OwnerEmailDispatchLog = {
+          dispatch_id: `DSP-FAIL-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+          batch_id: draft.batch_id,
+          period: draft.period,
+          unit_id: draft.unit_id,
+          unit_number: draft.unit_number,
+          owner_name: draft.owner_name,
+          recipient_email: recipient,
+          subject: draft.subject,
+          attachments_count: enabledAttachments.length,
+          attachment_names: enabledAttachments.map((a) => a.name),
+          net_amount: draft.financial_summary.net_distribution_amount,
+          status: 'FAILED',
+          dispatched_at: nowIso,
+          sent_by: sentBy,
+          notes: `Delivery failed: ${err?.message || err}`,
+        };
+        dispatches.push(failLog);
+        this.dispatches.unshift(failLog);
       }
     }
 
@@ -584,8 +715,8 @@ export class OwnerEmailStore {
       batch_id: targetDrafts[0]?.batch_id || `ODB-${period}`,
       period,
       total_recipients: targetDrafts.length,
-      successful_count: targetDrafts.length,
-      failed_count: 0,
+      successful_count: targetDrafts.length - failedCount,
+      failed_count: failedCount,
       dispatched_at: nowIso,
       dispatches,
     };

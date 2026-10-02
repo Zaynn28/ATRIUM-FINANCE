@@ -36,6 +36,11 @@ import {
   ChevronRight,
   ExternalLink,
   UserCheck,
+  HelpCircle,
+  Info,
+  Server,
+  Check,
+  Lock,
 } from 'lucide-react';
 
 interface EmailDistributionViewProps {
@@ -91,6 +96,35 @@ export const EmailDistributionView: React.FC<EmailDistributionViewProps> = ({
   // One-Button Email All Confirmation Modal
   const [showBatchConfirmModal, setShowBatchConfirmModal] = useState(false);
   const [batchTestEmail, setBatchTestEmail] = useState('');
+
+  // SMTP Testing & Setup Guide State
+  const [smtpTesting, setSmtpTesting] = useState(false);
+  const [smtpTestResult, setSmtpTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
+  const [showSmtpPass, setShowSmtpPass] = useState(false);
+
+  const handleTestSmtp = async () => {
+    if (!tempConfig?.smtp) {
+      setSmtpTestResult({
+        success: false,
+        message: 'SMTP settings are not configured. Please fill in the Host, Port, and Username.',
+      });
+      return;
+    }
+    setSmtpTesting(true);
+    setSmtpTestResult(null);
+    try {
+      const res = await api.testOwnerEmailSmtp(tempConfig.smtp);
+      setSmtpTestResult(res);
+    } catch (err: any) {
+      setSmtpTestResult({
+        success: false,
+        message: err.message || 'SMTP connection failed. Check host, port, or password.',
+      });
+    } finally {
+      setSmtpTesting(false);
+    }
+  };
 
   const loadAllData = async (targetPeriod: string = period) => {
     setLoading(true);
@@ -516,6 +550,19 @@ export const EmailDistributionView: React.FC<EmailDistributionViewProps> = ({
 
         <div className="flex items-center gap-2 pb-2">
           <button
+            type="button"
+            onClick={() => setShowGuide(!showGuide)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs font-semibold transition-colors ${
+              showGuide
+                ? 'bg-indigo-50 border-indigo-300 text-indigo-700'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Setup &amp; Workflow Guide</span>
+          </button>
+
+          <button
             onClick={() => loadAllData(period)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
           >
@@ -524,6 +571,85 @@ export const EmailDistributionView: React.FC<EmailDistributionViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* SETUP & WORKFLOW GUIDE BANNER */}
+      {showGuide && (
+        <div className="bg-gradient-to-r from-indigo-900 to-slate-900 text-white border border-indigo-700/50 rounded-2xl p-6 shadow-md space-y-4 animate-in fade-in duration-150">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/30 text-indigo-300 flex items-center justify-center shrink-0">
+                <Mail className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-white">
+                  Owner Pool Email Distribution: Functional Setup &amp; Operations Guide
+                </h3>
+                <p className="text-xs text-indigo-200 mt-0.5">
+                  Follow these 5 streamlined steps to configure, verify, test, and broadcast certified return statements to all apartment owners.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowGuide(false)}
+              className="text-indigo-300 hover:text-white p-1 rounded-lg hover:bg-indigo-800/40"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs pt-1">
+            <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3.5 border border-white/10 space-y-1.5">
+              <div className="flex items-center gap-2 text-indigo-300 font-bold">
+                <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">1</span>
+                <span>Registry Setup</span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                In <strong>Units &amp; Owners Registry</strong>, ensure each unit has a registered Owner Name, SQM, Valid Email Address, and Bank Account details.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3.5 border border-white/10 space-y-1.5">
+              <div className="flex items-center gap-2 text-indigo-300 font-bold">
+                <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">2</span>
+                <span>Calculate Batch</span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                In <strong>Monthly Distribution Engine</strong>, calculate and reconcile the period (e.g. 65% pool vs 10% guarantee). This automatically generates all investor drafts.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3.5 border border-white/10 space-y-1.5">
+              <div className="flex items-center gap-2 text-indigo-300 font-bold">
+                <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">3</span>
+                <span>Template &amp; Docs</span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                In <strong>Format &amp; Attachment Configuration</strong>, define default attachments (Statement, Audit, Revenue Certificate, Bank Advice, PPh slip, CSV) and email text.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3.5 border border-white/10 space-y-1.5">
+              <div className="flex items-center gap-2 text-indigo-300 font-bold">
+                <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">4</span>
+                <span>SMTP Gateway</span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                Configure your corporate SMTP or Gmail App Password under Configuration &amp; test connection. Or leave in Audit Simulator mode for testing.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xs rounded-xl p-3.5 border border-white/10 space-y-1.5">
+              <div className="flex items-center gap-2 text-indigo-300 font-bold">
+                <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px]">5</span>
+                <span>Dispatch Emails</span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                Use <strong>Test to Me</strong> to verify a preview draft in your mailbox, then click <strong>One-Click Dispatch (Email All)</strong> to send certified reports to all investors!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SUB-TAB 1: DRAFTS & LIVE EDITOR */}
       {activeSubTab === 'drafts' && (
@@ -1041,6 +1167,227 @@ export const EmailDistributionView: React.FC<EmailDistributionViewProps> = ({
                 }
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
               />
+            </div>
+          </div>
+
+          {/* SMTP Server & Delivery Gateway Settings */}
+          <div className="p-5 bg-slate-900 text-slate-100 rounded-xl space-y-4 border border-slate-800 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                  <Server className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-slate-100 flex items-center gap-2">
+                    <span>SMTP Mail Gateway (Live Delivery to Inboxes)</span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      tempConfig.smtp?.enabled
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-slate-800 text-slate-400 border border-slate-700'
+                    }`}>
+                      {tempConfig.smtp?.enabled ? 'LIVE SMTP ENABLED' : 'AUDIT SIMULATOR MODE'}
+                    </span>
+                  </h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Connect your hotel's corporate SMTP server, Google Workspace (Gmail App Password), Microsoft 365, or SendGrid to send real certified emails.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-200">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(tempConfig.smtp?.enabled)}
+                    onChange={(e) => {
+                      const enabled = e.target.checked;
+                      setTempConfig({
+                        ...tempConfig,
+                        smtp: {
+                          enabled,
+                          host: tempConfig.smtp?.host || 'smtp.gmail.com',
+                          port: tempConfig.smtp?.port || 587,
+                          secure: tempConfig.smtp?.secure || false,
+                          user: tempConfig.smtp?.user || tempConfig.sender_email || '',
+                          pass: tempConfig.smtp?.pass || '',
+                        },
+                      });
+                    }}
+                    className="rounded text-indigo-500 focus:ring-indigo-400"
+                  />
+                  <span>Enable Live SMTP Dispatch</span>
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleTestSmtp}
+                  disabled={smtpTesting || !tempConfig.smtp?.host || !tempConfig.smtp?.user}
+                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
+                >
+                  <RefreshCw className={`w-3 h-3 ${smtpTesting ? 'animate-spin' : ''}`} />
+                  <span>{smtpTesting ? 'Testing...' : 'Test Connection'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Test result message banner */}
+            {smtpTestResult && (
+              <div
+                className={`p-3 rounded-lg text-xs flex items-start gap-2 ${
+                  smtpTestResult.success
+                    ? 'bg-emerald-950/60 border border-emerald-800/60 text-emerald-200'
+                    : 'bg-rose-950/60 border border-rose-800/60 text-rose-200'
+                }`}
+              >
+                {smtpTestResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <strong className="block font-semibold">{smtpTestResult.success ? 'Success!' : 'Connection Error:'}</strong>
+                  <span>{smtpTestResult.message}</span>
+                </div>
+              </div>
+            )}
+
+            {/* SMTP Inputs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">
+                  SMTP Host *
+                </label>
+                <input
+                  type="text"
+                  placeholder="smtp.gmail.com"
+                  value={tempConfig.smtp?.host || ''}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      smtp: {
+                        enabled: tempConfig.smtp?.enabled ?? false,
+                        host: e.target.value,
+                        port: tempConfig.smtp?.port || 587,
+                        secure: tempConfig.smtp?.secure || false,
+                        user: tempConfig.smtp?.user || '',
+                        pass: tempConfig.smtp?.pass || '',
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 focus:outline-hidden focus:border-indigo-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Port *
+                </label>
+                <input
+                  type="number"
+                  placeholder="587"
+                  value={tempConfig.smtp?.port || 587}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      smtp: {
+                        enabled: tempConfig.smtp?.enabled ?? false,
+                        host: tempConfig.smtp?.host || '',
+                        port: Number(e.target.value) || 587,
+                        secure: tempConfig.smtp?.secure || false,
+                        user: tempConfig.smtp?.user || '',
+                        pass: tempConfig.smtp?.pass || '',
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 focus:outline-hidden focus:border-indigo-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">
+                  SMTP Username / Email *
+                </label>
+                <input
+                  type="text"
+                  placeholder="investor.relations@atriumhotel.com"
+                  value={tempConfig.smtp?.user || ''}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      smtp: {
+                        enabled: tempConfig.smtp?.enabled ?? false,
+                        host: tempConfig.smtp?.host || '',
+                        port: tempConfig.smtp?.port || 587,
+                        secure: tempConfig.smtp?.secure || false,
+                        user: e.target.value,
+                        pass: tempConfig.smtp?.pass || '',
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 focus:outline-hidden focus:border-indigo-400"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-slate-300 font-semibold">
+                    Password / App Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowSmtpPass(!showSmtpPass)}
+                    className="text-[10px] text-indigo-400 hover:text-indigo-300"
+                  >
+                    {showSmtpPass ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                <input
+                  type={showSmtpPass ? 'text' : 'password'}
+                  placeholder="••••••••••••"
+                  value={tempConfig.smtp?.pass || ''}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      smtp: {
+                        enabled: tempConfig.smtp?.enabled ?? false,
+                        host: tempConfig.smtp?.host || '',
+                        port: tempConfig.smtp?.port || 587,
+                        secure: tempConfig.smtp?.secure || false,
+                        user: tempConfig.smtp?.user || '',
+                        pass: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 focus:outline-hidden focus:border-indigo-400"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 pt-1">
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={Boolean(tempConfig.smtp?.secure)}
+                  onChange={(e) =>
+                    setTempConfig({
+                      ...tempConfig,
+                      smtp: {
+                        enabled: tempConfig.smtp?.enabled ?? false,
+                        host: tempConfig.smtp?.host || '',
+                        port: tempConfig.smtp?.port || 587,
+                        secure: e.target.checked,
+                        user: tempConfig.smtp?.user || '',
+                        pass: tempConfig.smtp?.pass || '',
+                      },
+                    })
+                  }
+                  className="rounded text-indigo-500 focus:ring-indigo-400"
+                />
+                <span>Use SSL / TLS Encryption (Port 465). Uncheck for STARTTLS (Port 587).</span>
+              </label>
+              <span className="text-slate-400">
+                Tip: For Google Workspace / Gmail, generate a 16-character <strong>App Password</strong> in Google Account &gt; Security.
+              </span>
             </div>
           </div>
 

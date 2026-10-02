@@ -14,7 +14,11 @@ import {
   Layers,
   FileText,
   Table,
+  Eye,
+  FileCheck,
+  FileSpreadsheet,
 } from 'lucide-react';
+import { printReportElement } from '../../utils/printManager';
 
 interface UniversalReportToolbarProps {
   reportTitle: string;
@@ -25,7 +29,10 @@ interface UniversalReportToolbarProps {
   onPropertyChange?: (property: string) => void;
   onRefresh: () => void;
   onExportCsv: () => void;
+  onExportExcel?: () => void;
   onPrint?: () => void;
+  previewMode?: boolean;
+  onTogglePreview?: () => void;
   loading?: boolean;
   extraControls?: React.ReactNode;
 }
@@ -35,11 +42,14 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
   reportSubtitle,
   period,
   onPeriodChange,
-  property = 'Atrium Hotel & Resort',
+  property = 'PT Atrium Management Group',
   onPropertyChange,
   onRefresh,
   onExportCsv,
+  onExportExcel,
   onPrint,
+  previewMode = false,
+  onTogglePreview,
   loading = false,
   extraControls,
 }) => {
@@ -49,7 +59,15 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
     if (onPrint) {
       onPrint();
     } else {
-      window.print();
+      window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+    }
+  };
+
+  const handleExcel = () => {
+    if (onExportExcel) {
+      onExportExcel();
+    } else {
+      onExportCsv();
     }
   };
 
@@ -77,16 +95,16 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
             <select
               value={property}
               onChange={(e) => onPropertyChange && onPropertyChange(e.target.value)}
-              className="bg-transparent text-slate-200 outline-none cursor-pointer"
+              className="bg-transparent text-slate-200 outline-none cursor-pointer font-medium"
             >
-              <option value="Atrium Hotel & Resort" className="bg-slate-900 text-slate-200">
-                Atrium Hotel & Resort
+              <option value="PT Atrium Management Group" className="bg-slate-900 text-slate-200">
+                PT Atrium Management Group
+              </option>
+              <option value="Atrium Suites Lombok" className="bg-slate-900 text-slate-200">
+                Atrium Suites Lombok
               </option>
               <option value="GGV Properties" className="bg-slate-900 text-slate-200">
                 GGV (Multi-Property)
-              </option>
-              <option value="Uma Blu" className="bg-slate-900 text-slate-200">
-                Uma Blu (Multi-Property)
               </option>
             </select>
           </div>
@@ -114,6 +132,22 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
 
           {extraControls}
 
+          {/* Toggle Print Preview */}
+          {onTogglePreview && (
+            <button
+              onClick={onTogglePreview}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+                previewMode
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+              }`}
+              title="Toggle Paper Print/PDF Preview"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+            </button>
+          )}
+
           {/* Refresh */}
           <button
             onClick={onRefresh}
@@ -125,6 +159,16 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
             <span className="hidden sm:inline">Refresh</span>
           </button>
 
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExcel}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+            title="Export directly to Excel (.xlsx) with formatting and formulas"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
           {/* Export Dropdown */}
           <div className="relative">
             <button
@@ -132,24 +176,24 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-slate-400" />
-              <span>Export</span>
+              <span>More</span>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
 
             {showExportMenu && (
               <div
-                className="absolute right-0 mt-1.5 w-44 rounded-lg bg-slate-900 border border-slate-800 shadow-xl py-1 z-30 text-xs"
+                className="absolute right-0 mt-1.5 w-52 rounded-lg bg-slate-900 border border-slate-800 shadow-xl py-1 z-30 text-xs"
                 onMouseLeave={() => setShowExportMenu(false)}
               >
                 <button
                   onClick={() => {
                     setShowExportMenu(false);
-                    onExportCsv();
+                    handleExcel();
                   }}
-                  className="w-full text-left px-3 py-2 text-slate-200 hover:bg-slate-800 flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 text-emerald-300 hover:bg-slate-800 flex items-center gap-2 font-medium"
                 >
-                  <Table className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Export CSV</span>
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Download Excel (.xlsx)</span>
                 </button>
                 <button
                   onClick={() => {
@@ -158,31 +202,31 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
                   }}
                   className="w-full text-left px-3 py-2 text-slate-200 hover:bg-slate-800 flex items-center gap-2"
                 >
-                  <FileText className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Export Excel Format</span>
+                  <Table className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Download CSV</span>
                 </button>
                 <button
                   onClick={() => {
                     setShowExportMenu(false);
                     handlePrint();
                   }}
-                  className="w-full text-left px-3 py-2 text-slate-200 hover:bg-slate-800 flex items-center gap-2 border-t border-slate-800"
+                  className="w-full text-left px-3 py-2 text-amber-300 hover:bg-slate-800 flex items-center gap-2 border-t border-slate-800 font-semibold"
                 >
                   <Printer className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Print to PDF</span>
+                  <span>Print to PDF (Save as PDF)</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* Print Direct */}
+          {/* Print / Save to PDF Direct */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
-            title="Print Clean Report"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            title="Print or Save Report to PDF"
           >
-            <Printer className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden sm:inline">Print</span>
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
           </button>
         </div>
       </div>

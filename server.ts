@@ -760,6 +760,22 @@ async function startServer() {
     }
   });
 
+  // Automated Receive Goods & Update Inventory from PO
+  app.post('/api/inventory/purchase-orders/:id/receive', async (req, res) => {
+    try {
+      const userId = String(req.headers['x-user-id'] || req.body.user_id || 'usr-controller-1');
+      const userName = String(req.headers['x-user-name'] || req.body.user_name || 'Procurement Receiving Officer');
+      const result = await inventoryStore.receivePurchaseOrder(req.params.id, {
+        ...req.body,
+        userId,
+        userName,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   // ==========================================
   // ACCOUNTS RECEIVABLE (AR) & ACCOUNTS PAYABLE (AP) APIS
   // ==========================================
@@ -1278,11 +1294,11 @@ async function startServer() {
   });
 
   // 6. Send Single Email Draft (or test preview to user)
-  app.post('/api/owner-pool/email-drafts/:id/send', (req, res) => {
+  app.post('/api/owner-pool/email-drafts/:id/send', async (req, res) => {
     try {
       const sentBy = String(req.body.sent_by || req.headers['x-user-name'] || 'Financial Controller');
       const testEmail = req.body.test_email ? String(req.body.test_email) : undefined;
-      const result = ownerEmailStore.sendSingleEmail(req.params.id, sentBy, testEmail);
+      const result = await ownerEmailStore.sendSingleEmail(req.params.id, sentBy, testEmail);
       res.json(result);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
@@ -1290,14 +1306,14 @@ async function startServer() {
   });
 
   // 7. ONE BUTTON TO EMAIL ALL INVESTORS
-  app.post('/api/owner-pool/email-all', (req, res) => {
+  app.post('/api/owner-pool/email-all', async (req, res) => {
     try {
       const period = String(req.body.period || '2026-09');
       const sentBy = String(req.body.sent_by || req.headers['x-user-name'] || 'Financial Controller');
       const unitIds = Array.isArray(req.body.unit_ids) ? req.body.unit_ids : undefined;
       const testOverride = req.body.test_email ? String(req.body.test_email) : undefined;
 
-      const batchResult = ownerEmailStore.sendBatchEmails(period, sentBy, {
+      const batchResult = await ownerEmailStore.sendBatchEmails(period, sentBy, {
         unitIds,
         testRecipientOverride: testOverride,
       });
@@ -1307,6 +1323,16 @@ async function startServer() {
         message: `Successfully emailed ${batchResult.successful_count} investors for period ${period}.`,
         result: batchResult,
       });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // 7b. Test SMTP Connection
+  app.post('/api/owner-pool/email-test-connection', async (req, res) => {
+    try {
+      const result = await ownerEmailStore.testSmtpConnection(req.body.smtp);
+      res.json(result);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
     }

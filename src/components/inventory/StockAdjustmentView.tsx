@@ -279,7 +279,7 @@ export const StockAdjustmentView: React.FC<StockAdjustmentViewProps> = ({
                 {storeroomStock} {selectedItem?.uom || 'PCS'}
               </span>{' '}
               • Unit Avg Cost:{' '}
-              <span className="text-emerald-400">IDR {(selectedItem?.average_cost ?? 0).toLocaleString()}</span>
+              <span className="text-emerald-400">Rp {(selectedItem?.average_cost ?? 0).toLocaleString('id-ID')}</span>
             </div>
           </div>
 
@@ -299,7 +299,7 @@ export const StockAdjustmentView: React.FC<StockAdjustmentViewProps> = ({
             <div className="text-[11px] font-mono text-slate-400 mt-1 text-right">
               Total Valuation:{' '}
               <span className="text-emerald-400 font-bold">
-                IDR {(((selectedItem?.average_cost || 0) * quantity) || 0).toLocaleString()}
+                Rp {(((selectedItem?.average_cost || 0) * quantity) || 0).toLocaleString('id-ID')}
               </span>
             </div>
           </div>
@@ -348,7 +348,7 @@ export const StockAdjustmentView: React.FC<StockAdjustmentViewProps> = ({
                 <th className="px-4 py-2.5">Item</th>
                 <th className="px-4 py-2.5">Storeroom</th>
                 <th className="px-4 py-2.5 text-right">Quantity</th>
-                <th className="px-4 py-2.5 text-right">Valuation (IDR)</th>
+                <th className="px-4 py-2.5 text-right">Valuation (Rp)</th>
                 <th className="px-4 py-2.5">Reason Code & Notes</th>
                 <th className="px-4 py-2.5">Authorized By</th>
                 <th className="px-4 py-2.5 text-right">Journal</th>
@@ -389,7 +389,7 @@ export const StockAdjustmentView: React.FC<StockAdjustmentViewProps> = ({
                       {adj.type === 'ADJUSTMENT_OUT' ? `-${adj.quantity}` : `+${adj.quantity}`} {adj.uom}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono font-bold text-white">
-                      IDR {(adj.total_cost ?? 0).toLocaleString()}
+                      Rp {(adj.total_cost ?? 0).toLocaleString('id-ID')}
                     </td>
                     <td className="px-4 py-2.5 text-[11px]">
                       <span className="font-mono text-slate-300 font-bold block">{adj.reason_code}</span>

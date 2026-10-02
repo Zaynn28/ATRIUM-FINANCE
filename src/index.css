@@ -6,18 +6,32 @@
 }
 
 @media print {
-  body {
+  html, body {
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100% !important;
   }
 
-  /* Hide app navigation, headers, sidebars, and non-printable elements */
-  nav, header, aside, .no-print {
+  /* Hide app navigation, headers, sidebars, buttons, and non-printable elements */
+  nav,
+  header,
+  aside,
+  footer,
+  .no-print,
+  [class*="no-print"],
+  [class*="print:hidden"],
+  [class*="preview-hidden"] {
     display: none !important;
   }
 
-  /* When printing PO, hide all surrounding modal backdrop/chrome except the printable document */
-  .fixed:has(#po-printable-document) {
+  /* When printing PO, Requisition, or Statement modals, hide surrounding backdrop/chrome */
+  .fixed:has(#po-printable-document),
+  .fixed:has(#requisition-printable-document),
+  .fixed:has(#owner-statement-printable-sheet),
+  .fixed:has(#staff-payslip-printable-area),
+  .fixed:has(#universal-modal-print-content) {
     position: static !important;
     background: transparent !important;
     padding: 0 !important;
@@ -25,26 +39,40 @@
     overflow: visible !important;
   }
 
-  .fixed:has(#po-printable-document) > div {
+  .fixed:has(#po-printable-document) > div,
+  .fixed:has(#requisition-printable-document) > div,
+  .fixed:has(#owner-statement-printable-sheet) > div,
+  .fixed:has(#staff-payslip-printable-area) > div,
+  .fixed:has(#universal-modal-print-content) > div {
     max-width: 100% !important;
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: visible !important;
   }
 
-  /* Hide top action bar and footer in modal during print */
-  .fixed:has(#po-printable-document) .bg-slate-950 {
+  /* Hide modal top action bars and background chrome during print */
+  .fixed:has(#po-printable-document) .bg-slate-950,
+  .fixed:has(#requisition-printable-document) .bg-slate-950,
+  .fixed:has(#universal-modal-print-content) .bg-slate-900,
+  .fixed:has(#universal-modal-print-content) .bg-slate-950 {
     display: none !important;
   }
 
-  #po-printable-document {
+  #po-printable-document,
+  #requisition-printable-document,
+  #owner-statement-printable-sheet,
+  #staff-payslip-printable-area,
+  #universal-modal-print-content {
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 }

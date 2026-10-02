@@ -123,10 +123,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div className="text-2xl font-bold text-emerald-400 font-mono">
-            ${(metrics?.postedRevenueToday || 0).toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            Rp {(metrics?.postedRevenueToday || 0).toLocaleString('id-ID')}
           </div>
           <p className="text-[11px] text-slate-500 font-mono">
             Date: {metrics?.today || 'Today'} (POSTED only)
@@ -138,14 +135,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400 font-medium">Period Posted Revenue</span>
             <div className="p-2 bg-emerald-950/60 rounded-lg text-emerald-400 border border-emerald-900/40">
-              <DollarSign className="w-4 h-4" />
+              <Coins className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl font-bold text-slate-100 font-mono">
-            ${(metrics?.postedRevenuePeriod || 0).toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            Rp {(metrics?.postedRevenuePeriod || 0).toLocaleString('id-ID')}
           </div>
           <p className="text-[11px] text-slate-500 font-mono">
             Period: {metrics?.currentPeriod || 'Current Month'}
@@ -161,13 +155,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div className="text-2xl font-bold text-amber-400 font-mono">
-            ${(metrics?.postedSpendingPeriod || 0).toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            Rp {(metrics?.postedSpendingPeriod || 0).toLocaleString('id-ID')}
           </div>
           <p className="text-[11px] text-slate-500 font-mono">
-            Today: ${(metrics?.postedSpendingToday || 0).toFixed(2)}
+            Today: Rp {(metrics?.postedSpendingToday || 0).toLocaleString('id-ID')}
           </p>
         </div>
 
@@ -190,10 +181,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               netPeriodOperating >= 0 ? 'text-emerald-400' : 'text-rose-400'
             }`}
           >
-            ${netPeriodOperating.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {netPeriodOperating < 0 ? '-Rp ' : 'Rp '}
+            {Math.abs(netPeriodOperating).toLocaleString('id-ID')}
           </div>
           <p className="text-[11px] text-slate-500 font-mono">
             Revenue minus Expense (Period)

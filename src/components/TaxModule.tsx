@@ -26,7 +26,11 @@ import {
   Info,
   Building,
   HelpCircle,
+  FileSpreadsheet,
+  Printer,
+  Eye,
 } from 'lucide-react';
+import { PrintableReportContainer } from './reports/PrintableReportContainer';
 import {
   TaxTypeCode,
   TaxRuleConfig,
@@ -39,6 +43,7 @@ import {
   UserRoleDefinition,
 } from '../types';
 import { api } from '../services/api';
+import { exportReportToExcel } from '../utils/excelExporter';
 
 interface TaxModuleProps {
   currentUser?: SystemUser;
@@ -64,6 +69,7 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
 
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [previewMode, setPreviewMode] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Modals state
@@ -311,6 +317,77 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
 
   const isPeriodClosed = summary?.is_period_closed ?? false;
 
+  const handlePrint = () => {
+    window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+  };
+
+  const handleExportExcel = () => {
+    const obRows: (string | number)[][] = obligations.map((o) => [
+      o.tax_code,
+      o.source_document_ref,
+      o.counterparty_name || '',
+      o.transaction_date,
+      o.tax_base_amount,
+      `${o.tax_rate_pct}%`,
+      o.tax_due_amount,
+      o.payment_status,
+      o.filing_status,
+      o.payment_reference_ntpn || '',
+    ]);
+
+    obRows.push([
+      'TOTAL',
+      '',
+      '',
+      '',
+      obligations.reduce((s, o) => s + (o.tax_base_amount || 0), 0),
+      '',
+      obligations.reduce((s, o) => s + (o.tax_due_amount || 0), 0),
+      '',
+      '',
+      '',
+    ]);
+
+    const kpiRows: (string | number)[][] = [
+      ['Total Tax Accrued', summary?.total_tax_accrued ?? 0],
+      ['Total Tax Paid / Deposited', summary?.total_tax_paid ?? 0],
+      ['Net Outstanding Tax Payable', summary?.total_tax_outstanding ?? 0],
+      ['Period Closed', summary?.is_period_closed ? 'YES (LOCKED)' : 'NO (ACTIVE)'],
+    ];
+
+    exportReportToExcel(
+      `Tax_Compliance_Register_PT_Atrium_Management_Group_${selectedPeriod}.xlsx`,
+      [
+        {
+          name: 'Tax Obligations',
+          title: `STATUTORY TAX COMPLIANCE REGISTER — ${selectedPeriod}`,
+          subtitle: 'PT Atrium Management Group • Withholdings & Hospitality PBJT Subledger',
+          headers: [
+            'Tax Type',
+            'Source Ref',
+            'Counterparty / Vendor',
+            'Date',
+            'DPP / Tax Base (Rp)',
+            'Rate',
+            'Tax Due (Rp)',
+            'Payment Status',
+            'Filing Status',
+            'NTPN / Receipt',
+          ],
+          rows: obRows,
+          colWidths: [15, 18, 25, 12, 20, 10, 20, 15, 15, 20],
+        },
+        {
+          name: 'Period Summary',
+          title: `TAX SUMMARY & STATUS — ${selectedPeriod}`,
+          headers: ['Metric Category', 'Amount / Status'],
+          rows: kpiRows,
+          colWidths: [35, 25],
+        },
+      ]
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header & Period Selector */}
@@ -339,7 +416,41 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
         </div>
 
         {/* Period Control & Close Button */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+            title="Export tax register to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Toggle PDF Preview */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+              previewMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Toggle Paper Print/PDF Preview"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            title="Print Tax Report"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
+          </button>
+
           <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5">
             <Calendar className="w-4 h-4 text-slate-400" />
             <label className="text-xs text-slate-400 font-medium">Period:</label>
@@ -406,8 +517,30 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
         </div>
       )}
 
-      {/* Internal Navigation Tabs (Simple: 5 items) */}
-      <div className="flex items-center gap-2 border-b border-slate-800">
+      {/* Printable Report Wrapper */}
+      <PrintableReportContainer
+        reportTitle={
+          activeTab === 'overview'
+            ? 'Tax Compliance & Statutory Summary Register'
+            : activeTab === 'obligations'
+            ? 'Tax Obligations & Withholding Tax Audit Register'
+            : activeTab === 'filing'
+            ? 'Official Tax Filing & Settlement Schedule'
+            : activeTab === 'reconciliation'
+            ? 'General Ledger to Tax Return Reconciliation'
+            : 'Statutory Tax Master Rules & Rates'
+        }
+        reportSubtitle="Corporate Indonesian Tax Compliance & Double-Entry Ledger Integration"
+        period={selectedPeriod}
+        property="PT Atrium Management Group"
+        orientation="landscape"
+        previewMode={previewMode}
+        onExitPreview={() => setPreviewMode(false)}
+        onExportExcel={handleExportExcel}
+      >
+        <div className="space-y-6">
+          {/* Internal Navigation Tabs (Simple: 5 items) */}
+          <div className="flex items-center gap-2 border-b border-slate-800 print:hidden">
         {[
           { id: 'overview', label: 'Tax Overview', icon: Receipt },
           { id: 'obligations', label: 'Tax Obligations', icon: FileText, count: obligations.length },
@@ -995,6 +1128,8 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
           </div>
         </div>
       )}
+        </div>
+      </PrintableReportContainer>
 
       {/* MODAL: Record Payment */}
       {paymentModalItem && (

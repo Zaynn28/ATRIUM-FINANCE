@@ -108,7 +108,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
 
     if (!isBalanced) {
       setErrorMessage(
-        `Journal is out of balance. Debits ($${totalDebit.toFixed(2)}) must strictly equal Credits ($${totalCredit.toFixed(2)}).`
+        `Journal is out of balance. Debits (Rp ${totalDebit.toLocaleString('id-ID')}) must strictly equal Credits (Rp ${totalCredit.toLocaleString('id-ID')}).`
       );
       return;
     }
@@ -240,8 +240,8 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                     <th className="py-2.5 px-3 w-10 text-center">#</th>
                     <th className="py-2.5 px-3 min-w-[200px]">Account</th>
                     <th className="py-2.5 px-3 min-w-[140px]">Dept</th>
-                    <th className="py-2.5 px-3 min-w-[120px] text-right">Debit ($)</th>
-                    <th className="py-2.5 px-3 min-w-[120px] text-right">Credit ($)</th>
+                    <th className="py-2.5 px-3 min-w-[120px] text-right">Debit (Rp)</th>
+                    <th className="py-2.5 px-3 min-w-[120px] text-right">Credit (Rp)</th>
                     <th className="py-2.5 px-3">Description</th>
                     <th className="py-2.5 px-2 w-10 text-center"></th>
                   </tr>
@@ -329,10 +329,10 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                       Totals &amp; Double-Entry Balance Check:
                     </td>
                     <td className="py-3 px-3 text-right text-emerald-400">
-                      ${totalDebit.toFixed(2)}
+                      Rp {totalDebit.toLocaleString('id-ID')}
                     </td>
                     <td className="py-3 px-3 text-right text-blue-400">
-                      ${totalCredit.toFixed(2)}
+                      Rp {totalCredit.toLocaleString('id-ID')}
                     </td>
                     <td colSpan={2} className="py-3 px-3 font-sans text-xs">
                       {isBalanced ? (
@@ -341,7 +341,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                         </span>
                       ) : (
                         <span className="text-amber-400 flex items-center gap-1 font-medium font-mono text-[11px]">
-                          <AlertTriangle className="w-3.5 h-3.5" /> Diff: ${variance.toFixed(2)}
+                          <AlertTriangle className="w-3.5 h-3.5" /> Diff: Rp {variance.toLocaleString('id-ID')}
                         </span>
                       )}
                     </td>

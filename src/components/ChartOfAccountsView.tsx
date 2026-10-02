@@ -17,9 +17,14 @@ import {
   Edit2,
   Trash2,
   PowerOff,
+  Printer,
+  FileSpreadsheet,
+  Eye,
 } from 'lucide-react';
 import { Account, Department, AccountType, NormalBalance } from '../types';
 import { api } from '../services/api';
+import { exportReportToExcel } from '../utils/excelExporter';
+import { PrintableReportContainer } from './reports/PrintableReportContainer';
 
 interface ChartOfAccountsViewProps {
   accounts: Account[];
@@ -58,6 +63,8 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
   });
 
   const [loading, setLoading] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -179,6 +186,54 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
     }
   };
 
+  const handlePrint = () => {
+    window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+  };
+
+  const handleExportExcel = () => {
+    const accRows = filteredAccounts.map((a) => [
+      a.account_code,
+      a.account_name,
+      a.account_type,
+      a.normal_balance,
+      a.statutory_line || '',
+      a.usali_line || '',
+      a.active === 'Y' ? 'Active' : 'Inactive',
+    ]);
+
+    const deptRows = departments.map((d) => [
+      d.department_code,
+      d.department_name,
+      d.active === 'Y' ? 'Active' : 'Inactive',
+    ]);
+
+    exportReportToExcel('Chart_of_Accounts_PT_Atrium_Management_Group.xlsx', [
+      {
+        name: 'Chart of Accounts',
+        title: 'MASTER CHART OF ACCOUNTS',
+        subtitle: 'Statutory & USALI 12 Compliant General Ledger Architecture',
+        headers: [
+          'Account Code',
+          'Account Name',
+          'Type',
+          'Normal Balance',
+          'Statutory Line',
+          'USALI Line',
+          'Status',
+        ],
+        rows: accRows,
+        colWidths: [15, 35, 15, 15, 25, 25, 12],
+      },
+      {
+        name: 'Operating Departments',
+        title: 'OPERATING DEPARTMENTS MASTER',
+        headers: ['Department Code', 'Department Name', 'Status'],
+        rows: deptRows,
+        colWidths: [18, 35, 12],
+      },
+    ]);
+  };
+
   return (
     <div className="space-y-6">
       {/* View Header */}
@@ -193,7 +248,41 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+            title="Export master chart of accounts to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Toggle PDF Preview */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+              previewMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Toggle Paper Print/PDF Preview"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            title="Print Chart of Accounts"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
+          </button>
+
           {accounts.length === 0 && (
             <button
               id="btn-seed-usali"
@@ -257,31 +346,45 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
         </div>
       )}
 
-      {/* Section Switcher */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
-        <button
-          onClick={() => setActiveTab('accounts')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            activeTab === 'accounts'
-              ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <BookOpen className="w-4 h-4" />
-          <span>General Ledger Accounts ({accounts.length})</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('departments')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            activeTab === 'departments'
-              ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Building2 className="w-4 h-4" />
-          <span>Operating Departments ({departments.length})</span>
-        </button>
-      </div>
+      {/* Printable Report Wrapper */}
+      <PrintableReportContainer
+        reportTitle={activeTab === 'accounts' ? 'Master Chart of Accounts' : 'Operating Departments Master'}
+        reportSubtitle={
+          activeTab === 'accounts'
+            ? 'Statutory & USALI 12 Compliant General Ledger Architecture'
+            : 'Department Hierarchy and Operating Division Taxonomy'
+        }
+        property="PT Atrium Management Group"
+        previewMode={previewMode}
+        onExitPreview={() => setPreviewMode(false)}
+        onExportExcel={handleExportExcel}
+      >
+        <div className="space-y-6">
+          {/* Section Switcher */}
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2 print:hidden">
+            <button
+              onClick={() => setActiveTab('accounts')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                activeTab === 'accounts'
+                  ? 'bg-slate-800 text-emerald-400 border border-slate-700'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>General Ledger Accounts ({accounts.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('departments')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                activeTab === 'departments'
+                  ? 'bg-slate-800 text-emerald-400 border border-slate-700'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Operating Departments ({departments.length})</span>
+            </button>
+          </div>
 
       {/* ACCOUNTS VIEW */}
       {activeTab === 'accounts' && (
@@ -480,6 +583,8 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
           </div>
         </div>
       )}
+        </div>
+      </PrintableReportContainer>
 
       {/* CREATE / EDIT ACCOUNT MODAL */}
       {isAccountModalOpen && (

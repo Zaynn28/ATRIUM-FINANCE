@@ -28,6 +28,7 @@ import {
   Warehouse,
   Coins,
   ShieldCheck,
+  PackageCheck,
 } from 'lucide-react';
 import {
   PurchaseOrder,
@@ -114,6 +115,7 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
   const [notification, setNotification] = useState<{ text: string; journalId?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [receivingPoId, setReceivingPoId] = useState<string | null>(null);
 
   // Load all master and operational data
   const loadData = async () => {
@@ -305,6 +307,40 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
       setError(err.message || 'Failed to journalize purchase order');
     } finally {
       setJournalActionLoading(false);
+    }
+  };
+
+  // Quick Receive Goods & Auto-Update Inventory
+  const handleQuickReceivePo = async (po: PurchaseOrder) => {
+    if (po.status === 'FULFILLED') {
+      setNotification({ text: `PO ${po.po_number} is already fulfilled and stock is updated.` });
+      return;
+    }
+    const confirmed = window.confirm(
+      `Receive goods for PO ${po.po_number} (${po.supplier_name})?\n\nThis will automatically:\n1. Update on-hand inventory stock in ${po.storeroom_name}\n2. Recalculate moving average costs\n3. Generate Goods Receipt document\n4. Post double-entry GL journal (Dr 1080 Inventory, Cr 2010 AP)`
+    );
+    if (!confirmed) return;
+
+    setReceivingPoId(po.po_id);
+    setError(null);
+    try {
+      const res = await api.receivePurchaseOrder(po.po_id, {
+        userName: 'Procurement Specialist',
+        notes: `Delivery received against PO ${po.po_number} from ${po.supplier_name}`,
+      });
+      setNotification({
+        text: `PO ${po.po_number} received successfully! Goods Receipt #${res.receipt.receipt_id} recorded, inventory stock updated automatically.`,
+        journalId: res.journal_id,
+      });
+      await loadData();
+      if (activePoDetail?.po_id === po.po_id) {
+        setActivePoDetail(res.po);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Failed to receive goods for purchase order');
+    } finally {
+      setReceivingPoId(null);
     }
   };
 
@@ -514,7 +550,7 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
                 <th className="px-4 py-3">Supplier / Vendor</th>
                 <th className="px-4 py-3">Dept &amp; Storeroom</th>
                 <th className="px-4 py-3">Requisition Link</th>
-                <th className="px-4 py-3 text-right">Total (IDR)</th>
+                <th className="px-4 py-3 text-right">Total (Rp)</th>
                 <th className="px-4 py-3 text-center">Status</th>
                 <th className="px-4 py-3 text-center">Accounting Journal</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -579,7 +615,7 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
                     </td>
 
                     <td className="px-4 py-3 text-right font-mono font-bold text-white">
-                      IDR {po.total_amount.toLocaleString('id-ID')}
+                      Rp {po.total_amount.toLocaleString('id-ID')}
                     </td>
 
                     <td className="px-4 py-3 text-center">
@@ -627,6 +663,24 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
 
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* Quick Ingest / Receive Stock Button */}
+                        {po.status !== 'FULFILLED' && po.status !== 'CANCELLED' ? (
+                          <button
+                            onClick={() => handleQuickReceivePo(po)}
+                            disabled={receivingPoId === po.po_id}
+                            className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 shadow-sm transition-all"
+                            title="Directly receive shipment and automatically update inventory stock"
+                          >
+                            <PackageCheck className="w-3.5 h-3.5" />
+                            <span>{receivingPoId === po.po_id ? 'Receiving...' : 'Receive Stock'}</span>
+                          </button>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1">
+                            <Check className="w-3 h-3 text-emerald-400" />
+                            <span>Received</span>
+                          </span>
+                        )}
+
                         <button
                           onClick={() => setActivePoDetail(po)}
                           className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold flex items-center gap-1 border border-slate-700"
@@ -894,7 +948,7 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
                         </div>
 
                         <div className="col-span-8 sm:col-span-3">
-                          <label className="text-[10px] text-slate-500 font-mono block mb-0.5">Unit Price (IDR)</label>
+                          <label className="text-[10px] text-slate-500 font-mono block mb-0.5">Unit Price (Rp)</label>
                           <input
                             type="number"
                             min={0}
@@ -936,15 +990,15 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1.5 text-xs font-mono">
                 <div className="flex justify-between text-slate-400">
                   <span>Subtotal Amount:</span>
-                  <span>IDR {subtotal.toLocaleString('id-ID')}</span>
+                  <span>Rp {subtotal.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
                   <span>VAT / PPN ({taxRatePct}%):</span>
-                  <span>IDR {taxAmount.toLocaleString('id-ID')}</span>
+                  <span>Rp {taxAmount.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
                   <span>Total Purchase Order Commitment:</span>
-                  <span className="text-emerald-400">IDR {totalAmount.toLocaleString('id-ID')}</span>
+                  <span className="text-emerald-400">Rp {totalAmount.toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
@@ -986,6 +1040,7 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
           onViewJournal={onViewJournal}
           onNavigateToReceiving={onNavigateToReceiving}
           onGenerateJournal={handleGenerateJournal}
+          onReceivePo={handleQuickReceivePo}
         />
       )}
 
@@ -1011,7 +1066,7 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
             <div className="text-xs text-slate-300 space-y-3">
               <p>
                 Posting an accounting entry for Purchase Order{' '}
-                <span className="text-blue-400 font-mono font-bold">{journalingPo.po_number}</span> (IDR{' '}
+                <span className="text-blue-400 font-mono font-bold">{journalingPo.po_number}</span> (Rp{' '}
                 {journalingPo.total_amount.toLocaleString('id-ID')}). Choose your preferred standard accounting policy:
               </p>
 

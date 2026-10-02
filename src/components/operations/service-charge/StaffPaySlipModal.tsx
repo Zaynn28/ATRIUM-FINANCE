@@ -4,8 +4,10 @@
  */
 
 import React from 'react';
-import { X, Printer, CheckCircle, ShieldCheck, Building2, User, Calendar, Award } from 'lucide-react';
+import { X, Printer, CheckCircle, ShieldCheck, Building2, User, Calendar, Award, FileSpreadsheet } from 'lucide-react';
 import { ServiceChargeStaffAllocationLine, ServiceChargeDistributionCycle } from '../../../types';
+import { exportReportToExcel } from '../../../utils/excelExporter';
+import { printReportElement } from '../../../utils/printManager';
 
 interface StaffPaySlipModalProps {
   line: ServiceChargeStaffAllocationLine;
@@ -15,7 +17,50 @@ interface StaffPaySlipModalProps {
 
 export const StaffPaySlipModal: React.FC<StaffPaySlipModalProps> = ({ line, cycle, onClose }) => {
   const handlePrint = () => {
-    window.print();
+    printReportElement('staff-payslip-printable-area', {
+      title: `Payslip_${line.employee_id}_${line.employee_name}_${cycle.period}`,
+      property: 'PT Atrium Management Group',
+      orientation: 'portrait',
+    });
+  };
+
+  const handleExportExcel = () => {
+    const rows: (string | number)[][] = [
+      ['EMPLOYEE IDENTIFICATION', ''],
+      ['Employee Name', line.employee_name],
+      ['Employee ID', line.employee_id],
+      ['Job Title / Position', line.job_title],
+      ['Department Code', line.department_code],
+      ['Cycle Reference', cycle.cycle_id],
+      ['Period', cycle.period],
+      ['', ''],
+      ['SERVICE CHARGE POINT CALCULATION', ''],
+      ['Base Seniority Points', line.base_points],
+      ['Seniority Multiplier', `${line.seniority_multiplier}x`],
+      ['Attendance Factor', `${(line.attendance_factor * 100).toFixed(0)}%`],
+      ['Effective Allocated Points', line.effective_points],
+      ['Hotel Point Value Rate (IDR)', cycle.point_value_idr],
+      ['', ''],
+      ['PAYOUT & WITHHOLDING TAX SETTLEMENT', ''],
+      ['Gross Service Charge Payout', line.gross_amount],
+      ['PPh 21 Tax Withheld', -line.tax_withheld],
+      ['', ''],
+      ['NET TAKE-HOME SERVICE CHARGE', line.net_payout],
+    ];
+
+    exportReportToExcel(
+      `Service_Charge_Slip_${line.employee_id}_${cycle.period}.xlsx`,
+      [
+        {
+          name: 'Payslip',
+          title: 'OFFICIAL SERVICE CHARGE DISTRIBUTION SLIP',
+          subtitle: `PT Atrium Management Group • Period: ${cycle.period} • Employee: ${line.employee_name} (${line.employee_id})`,
+          headers: ['Breakdown Item', 'Detail / Amount (Rp)'],
+          rows,
+          colWidths: [35, 25],
+        },
+      ]
+    );
   };
 
   return (
@@ -30,6 +75,14 @@ export const StaffPaySlipModal: React.FC<StaffPaySlipModalProps> = ({ line, cycl
             </h3>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportExcel}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium transition-colors border border-emerald-600 shadow-xs"
+              title="Download Slip in Excel"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Excel (.xlsx)</span>
+            </button>
             <button
               onClick={handlePrint}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition-colors border border-slate-700"
@@ -47,7 +100,7 @@ export const StaffPaySlipModal: React.FC<StaffPaySlipModalProps> = ({ line, cycl
         </div>
 
         {/* Printable Slip Content */}
-        <div className="p-8 space-y-6 text-slate-200 print:text-black print:p-0">
+        <div id="staff-payslip-printable-area" className="p-8 space-y-6 text-slate-200 print:text-black print:p-0">
           {/* Hotel & Document Branding */}
           <div className="flex items-start justify-between border-b border-slate-800 print:border-black pb-4">
             <div>
@@ -57,9 +110,12 @@ export const StaffPaySlipModal: React.FC<StaffPaySlipModalProps> = ({ line, cycl
                 </span>
                 <span className="text-xs text-slate-400 print:text-black">Fiduciary Trust Account 2030</span>
               </div>
-              <h1 className="text-xl font-extrabold text-slate-100 print:text-black mt-1">
-                ATRIUM HOTEL &amp; RESORT BALI
+              <h1 className="text-xl font-extrabold text-slate-100 print:text-black mt-1 uppercase">
+                PT ATRIUM MANAGEMENT GROUP
               </h1>
+              <p className="text-xs text-amber-400 print:text-black font-semibold">
+                Atrium Suites &amp; Residences • Lombok
+              </p>
               <p className="text-xs text-slate-400 print:text-black">
                 Staff Service Charge &amp; Gratuities Pool Distribution Voucher
               </p>

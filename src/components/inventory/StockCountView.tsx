@@ -359,8 +359,8 @@ export const StockCountView: React.FC<StockCountViewProps> = ({
                   <th className="px-3 py-2.5 text-right">System Perpetual Qty</th>
                   <th className="px-3 py-2.5 text-right w-36">Physical Counted</th>
                   <th className="px-3 py-2.5 text-right">Qty Variance</th>
-                  <th className="px-3 py-2.5 text-right">Unit Avg Cost</th>
-                  <th className="px-3 py-2.5 text-right">Variance Valuation</th>
+                  <th className="px-3 py-2.5 text-right">Unit Avg Cost (Rp)</th>
+                  <th className="px-3 py-2.5 text-right">Variance Valuation (Rp)</th>
                   <th className="px-3 py-2.5 min-w-[150px]">Auditor Note</th>
                 </tr>
               </thead>
@@ -417,15 +417,15 @@ export const StockCountView: React.FC<StockCountViewProps> = ({
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-right font-mono text-slate-400">
-                        IDR {(it.unit_cost ?? 0).toLocaleString()}
+                        Rp {(it.unit_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-3 py-2.5 text-right font-mono font-bold">
                         {varianceVal === 0 ? (
-                          <span className="text-slate-500">IDR 0</span>
+                          <span className="text-slate-500">Rp 0</span>
                         ) : varianceVal > 0 ? (
-                          <span className="text-emerald-400">+IDR {(varianceVal ?? 0).toLocaleString()}</span>
+                          <span className="text-emerald-400">+Rp {(varianceVal ?? 0).toLocaleString('id-ID')}</span>
                         ) : (
-                          <span className="text-rose-400">-IDR {Math.abs(varianceVal ?? 0).toLocaleString()}</span>
+                          <span className="text-rose-400">-Rp {Math.abs(varianceVal ?? 0).toLocaleString('id-ID')}</span>
                         )}
                       </td>
                       <td className="px-3 py-2.5">

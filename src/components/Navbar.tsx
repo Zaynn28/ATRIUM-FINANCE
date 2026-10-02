@@ -33,6 +33,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { PrimaryNavPillar, SystemUser, UserRoleDefinition } from '../types';
+import { AtriumLogo } from './common/AtriumLogo';
 
 export type NavTab =
   | 'dashboard'
@@ -142,21 +143,20 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Primary Brand & Status Utility Bar */}
       <div className="border-b border-slate-800/80 px-4 lg:px-6">
         <div className="flex items-center justify-between h-14 max-w-7xl mx-auto">
-          {/* Brand: AMG ATRIUM FINANCE / WOLF COMMAND */}
+          {/* Brand: PT ATRIUM MANAGEMENT GROUP */}
           <div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => onSelectPillar('command-centre')}
           >
-            <div className="w-9 h-9 rounded-lg bg-emerald-950 border border-emerald-500/50 flex items-center justify-center text-emerald-400 font-extrabold tracking-wider font-mono text-xs shadow-inner shadow-emerald-950">
-              AMG
+            <div className="shrink-0 group-hover:scale-105 transition-transform duration-200">
+              <AtriumLogo variant="arch-only" size="md" theme="dark" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-slate-100 tracking-tight text-sm uppercase">
-                  AMG <span className="text-slate-500 font-normal">/</span> Atrium Finance <span className="text-slate-500 font-normal">/</span>{' '}
-                  <span className="text-emerald-400">Wolf Command</span>
+                  PT ATRIUM MANAGEMENT GROUP
                 </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700 font-semibold">
+                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-semibold">
                   USALI 12
                 </span>
               </div>

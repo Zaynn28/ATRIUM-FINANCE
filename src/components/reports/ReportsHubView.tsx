@@ -122,7 +122,9 @@ export const ReportsHubView: React.FC<ReportsHubViewProps> = ({
 
       {activeReport === 'trial-balance' && <TrialBalanceView />}
 
-      {activeReport === 'ledger' && <GeneralLedgerView />}
+      {activeReport === 'ledger' && (
+        <GeneralLedgerView onViewJournal={onOpenJournalInWorkbench} />
+      )}
 
       {activeReport === 'owner-pool' && <OwnerPoolModule />}
     </div>

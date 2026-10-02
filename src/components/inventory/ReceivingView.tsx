@@ -17,11 +17,13 @@ import {
   ExternalLink,
   PackageCheck,
   RefreshCw,
+  ShoppingCart,
 } from 'lucide-react';
 import {
   InventoryItem,
   InventoryStoreroom,
   GoodsReceipt,
+  PurchaseOrder,
 } from '../../types';
 import { api } from '../../services/api';
 
@@ -48,14 +50,16 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [storerooms, setStorerooms] = useState<InventoryStoreroom[]>([]);
   const [receipts, setReceipts] = useState<GoodsReceipt[]>([]);
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Form State
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [poReference, setPoReference] = useState(initialPoReference || 'PO-2026-03-042');
+  const [poReference, setPoReference] = useState(initialPoReference || '');
+  const [selectedPoId, setSelectedPoId] = useState('');
   const [vendorName, setVendorName] = useState('PT Sukses Jaya Pangan');
   const [storeroomId, setStoreroomId] = useState('CSR-01');
-  const [notes, setNotes] = useState('Delivered via Delivery Order #DO-9921; temperature inspected & verified.');
+  const [notes, setNotes] = useState('Delivered via Delivery Order; temperature inspected & verified.');
   const [lines, setLines] = useState<ReceiptLineInput[]>([
     {
       item_id: '',
@@ -78,14 +82,17 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
   const loadData = async () => {
     try {
       setLoading(true);
-      const [itemList, roomList, recList] = await Promise.all([
+      const [itemList, roomList, recList, poList] = await Promise.all([
         api.getInventoryItems(),
         api.getInventoryStorerooms(),
         api.getGoodsReceipts(),
+        api.getPurchaseOrders(),
       ]);
       setItems(itemList);
       setStorerooms(roomList);
       setReceipts(recList);
+      setPurchaseOrders(poList);
+
       if (itemList.length > 0 && !lines[0]?.item_id) {
         setLines([
           {
@@ -102,6 +109,35 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectPo = (poIdOrNumber: string) => {
+    setSelectedPoId(poIdOrNumber);
+    if (!poIdOrNumber) return;
+
+    const po = purchaseOrders.find((p) => p.po_id === poIdOrNumber || p.po_number === poIdOrNumber);
+    if (!po) return;
+
+    setPoReference(po.po_number);
+    setVendorName(po.supplier_name);
+    setStoreroomId(po.storeroom_id);
+    setNotes(`Delivery received against PO ${po.po_number} (${po.supplier_name}).`);
+
+    if (po.items && po.items.length > 0) {
+      const newLines: ReceiptLineInput[] = po.items.map((it) => {
+        const itemObj = items.find((i) => i.item_id === it.item_id);
+        const remaining = Math.max(1, it.ordered_quantity - (it.received_quantity || 0));
+        return {
+          item_id: it.item_id,
+          received_quantity: remaining,
+          unit_cost: it.unit_cost,
+          bin_location: itemObj?.default_bin_location || 'A-01',
+          batch_or_lot: `LOT-${new Date().toISOString().replace(/-/g, '').slice(0, 6)}`,
+          expiry_date: '',
+        };
+      });
+      setLines(newLines);
     }
   };
 
@@ -271,6 +307,30 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
 
       {/* Goods Receipt Ingestion Form */}
       <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-5 shadow-xl">
+        {/* Approved Purchase Orders Fast Selector */}
+        {purchaseOrders.filter((p) => p.status !== 'FULFILLED' && p.status !== 'CANCELLED').length > 0 && (
+          <div className="p-3 bg-blue-950/40 border border-blue-800/40 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs text-blue-300 font-semibold">
+              <ShoppingCart className="w-4 h-4 text-blue-400 shrink-0" />
+              <span>Pilih Purchase Order (PO) untuk Penerimaan Cepat &amp; Otomatisasi Stok:</span>
+            </div>
+            <select
+              value={selectedPoId}
+              onChange={(e) => handleSelectPo(e.target.value)}
+              className="bg-slate-950 border border-blue-500/50 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:border-blue-400 outline-none max-w-sm"
+            >
+              <option value="">-- Pilih PO Terbuka / Approved --</option>
+              {purchaseOrders
+                .filter((p) => p.status !== 'FULFILLED' && p.status !== 'CANCELLED')
+                .map((p) => (
+                  <option key={p.po_id} value={p.po_id}>
+                    {p.po_number} - {p.supplier_name} ({p.items.length} items, {p.status})
+                  </option>
+                ))}
+            </select>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="text-xs font-mono text-slate-400 block mb-1">Receipt Date</label>
@@ -345,8 +405,8 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                 <tr>
                   <th className="px-3 py-2.5 min-w-[220px]">Item Description</th>
                   <th className="px-3 py-2.5 w-28 text-right">Received Qty</th>
-                  <th className="px-3 py-2.5 w-36 text-right">Unit Cost (IDR)</th>
-                  <th className="px-3 py-2.5 w-36 text-right">Line Total (IDR)</th>
+                  <th className="px-3 py-2.5 w-36 text-right">Unit Cost (Rp)</th>
+                  <th className="px-3 py-2.5 w-36 text-right">Line Total (Rp)</th>
                   <th className="px-3 py-2.5 w-24">Bin</th>
                   <th className="px-3 py-2.5 w-28">Batch / Lot</th>
                   <th className="px-3 py-2.5 w-32">Expiry Date</th>
@@ -407,7 +467,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                       </td>
 
                       <td className="px-3 py-2 text-right font-mono font-bold text-emerald-400">
-                        {(lineTotal ?? 0).toLocaleString()}
+                        Rp {(lineTotal ?? 0).toLocaleString('id-ID')}
                       </td>
 
                       <td className="px-3 py-2">
@@ -485,7 +545,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
             <div className="text-right">
               <span className="text-[11px] font-mono text-slate-400 block uppercase">Total Receipt Value</span>
               <div className="text-lg font-bold font-mono text-emerald-400">
-                IDR {(calculateTotal() ?? 0).toLocaleString()}
+                Rp {(calculateTotal() ?? 0).toLocaleString('id-ID')}
               </div>
             </div>
 
@@ -499,7 +559,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
               ) : (
                 <PackageCheck className="w-4 h-4" />
               )}
-              <span>Post Goods Receipt & Journal</span>
+              <span>Post Goods Receipt &amp; Auto-Update Stock</span>
             </button>
           </div>
         </div>
@@ -522,7 +582,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                 <th className="px-4 py-2.5">Vendor</th>
                 <th className="px-4 py-2.5">Storeroom</th>
                 <th className="px-4 py-2.5 text-right">Items</th>
-                <th className="px-4 py-2.5 text-right">Total Amount</th>
+                <th className="px-4 py-2.5 text-right">Total Amount (Rp)</th>
                 <th className="px-4 py-2.5 text-center">Status</th>
                 <th className="px-4 py-2.5">Received By</th>
                 <th className="px-4 py-2.5 text-right">Journal</th>
@@ -539,7 +599,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                 receipts.map((rec) => (
                   <tr key={rec.receipt_id} className="hover:bg-slate-800/30 transition-colors">
                     <td className="px-4 py-2.5 font-mono font-bold text-emerald-400">
-                      {rec.receipt_number}
+                      {rec.receipt_number || rec.receipt_id}
                     </td>
                     <td className="px-4 py-2.5 font-mono text-slate-400">{rec.date}</td>
                     <td className="px-4 py-2.5 font-mono text-slate-300">{rec.po_reference}</td>
@@ -547,11 +607,11 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                     <td className="px-4 py-2.5 font-mono text-slate-400">{rec.storeroom_id}</td>
                     <td className="px-4 py-2.5 text-right font-mono">{rec.items.length}</td>
                     <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-400">
-                      IDR {(rec.total_amount ?? 0).toLocaleString()}
+                      Rp {(rec.total_amount ?? 0).toLocaleString('id-ID')}
                     </td>
                     <td className="px-4 py-2.5 text-center">
                       <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300">
-                        {rec.status}
+                        {rec.status || 'RECEIVED'}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 text-slate-400 text-[11px]">{rec.received_by}</td>

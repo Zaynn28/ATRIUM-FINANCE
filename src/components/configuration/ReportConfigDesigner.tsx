@@ -1071,7 +1071,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight">
-                    {config.formatting.header_company_name || 'Atrium Hotel & Resort'}
+                    {config.formatting.header_company_name || 'PT Atrium Management Group'}
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
                     {config.formatting.header_subtitle || 'Summary Operating Statement'}

@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Package,
   Layers,
+  Printer,
 } from 'lucide-react';
 import {
   InventoryItem,
@@ -22,6 +23,8 @@ import {
   StockMovement,
 } from '../../types';
 import { api } from '../../services/api';
+import { exportReportToExcel } from '../../utils/excelExporter';
+import { printReportElement } from '../../utils/printManager';
 
 interface StockCardViewProps {
   initialItemId?: string;
@@ -83,6 +86,55 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
 
   const activeItem = (items || []).find((i) => i.item_id === selectedItemId);
 
+  const handlePrint = () => {
+    printReportElement('stock-card-printable-area', {
+      title: `Stock_Card_${activeItem?.item_code || 'SKU'}_${activeItem?.item_name || ''}`,
+      subtitle: `Perpetual Stock Card & Bin Movement History • Current Stock: ${activeItem?.current_stock || 0} ${activeItem?.uom || ''}`,
+      property: 'PT Atrium Management Group',
+      orientation: 'landscape',
+    });
+  };
+
+  const handleExportExcel = () => {
+    if (!activeItem) return;
+
+    const rows: (string | number)[][] = movements.map((m) => [
+      m.movement_date || m.created_at || '',
+      m.movement_type,
+      m.storeroom_id,
+      m.reference_number || '',
+      m.quantity_change > 0 ? `+${m.quantity_change}` : m.quantity_change,
+      m.balance_after,
+      m.unit_cost,
+      m.balance_after * m.unit_cost,
+      m.notes || '',
+    ]);
+
+    exportReportToExcel(
+      `Stock_Card_${activeItem.item_code}_PT_Atrium_Management_Group.xlsx`,
+      [
+        {
+          name: `Card ${activeItem.item_code}`.slice(0, 31),
+          title: `PERPETUAL STOCK CARD — [${activeItem.item_code}] ${activeItem.item_name}`,
+          subtitle: `PT Atrium Management Group • UOM: ${activeItem.uom} | Current Stock: ${activeItem.current_stock} | Unit Cost: Rp ${activeItem.average_cost.toLocaleString('id-ID')}`,
+          headers: [
+            'Date & Time',
+            'Movement Type',
+            'Store',
+            'Reference #',
+            'Quantity Change',
+            'Balance After',
+            'Unit Cost (Rp)',
+            'Total Value (Rp)',
+            'Notes / Origin',
+          ],
+          rows,
+          colWidths: [18, 16, 12, 18, 16, 15, 16, 18, 25],
+        },
+      ]
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -90,17 +142,38 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-blue-400" />
-            <span>Perpetual Stock Card & Bin Movement History</span>
+            <span>Perpetual Stock Card &amp; Bin Movement History</span>
           </h3>
           <p className="text-xs text-slate-400">
             Audit-ready chronological transaction trail for any SKU across receipts, dispatches, transfers, and counts.
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Filters & Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            disabled={!activeItem}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600 disabled:opacity-50"
+            title="Export stock card ledger to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            title="Print Stock Card"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print</span>
+          </button>
+
           {/* Select Item */}
-          <div className="min-w-[240px]">
+          <div className="min-w-[200px]">
             <select
               value={selectedItemId}
               onChange={(e) => setSelectedItemId(e.target.value)}
@@ -115,7 +188,7 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
           </div>
 
           {/* Select Storeroom */}
-          <div className="min-w-[160px]">
+          <div className="min-w-[140px]">
             <select
               value={selectedStoreroom}
               onChange={(e) => setSelectedStoreroom(e.target.value)}
@@ -155,21 +228,21 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
           <div>
             <span className="text-[10px] font-mono text-slate-400 uppercase block">Moving Avg Cost</span>
             <span className="text-sm font-bold font-mono text-blue-400">
-              IDR {(activeItem.average_cost ?? 0).toLocaleString()}
+              Rp {(activeItem.average_cost ?? 0).toLocaleString('id-ID')}
             </span>
           </div>
 
           <div>
             <span className="text-[10px] font-mono text-slate-400 uppercase block">Valuation Total</span>
             <span className="text-sm font-bold font-mono text-emerald-400">
-              IDR {(((activeItem.current_stock ?? 0) * (activeItem.average_cost ?? 0)) || 0).toLocaleString()}
+              Rp {(((activeItem.current_stock ?? 0) * (activeItem.average_cost ?? 0)) || 0).toLocaleString('id-ID')}
             </span>
           </div>
         </div>
       )}
 
       {/* Ledger Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      <div id="stock-card-printable-area" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
@@ -181,8 +254,8 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
                 <th className="px-4 py-3 text-right">In (Receipt)</th>
                 <th className="px-4 py-3 text-right">Out (Issue)</th>
                 <th className="px-4 py-3 text-right">Balance After</th>
-                <th className="px-4 py-3 text-right">Unit Cost</th>
-                <th className="px-4 py-3 text-right">Total Trans. Value</th>
+                <th className="px-4 py-3 text-right">Unit Cost (Rp)</th>
+                <th className="px-4 py-3 text-right">Trans. Value (Rp)</th>
                 <th className="px-4 py-3">User / Notes</th>
               </tr>
             </thead>
@@ -238,10 +311,10 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
                         {m.balance_after}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono text-slate-400">
-                        IDR {(m.unit_cost ?? 0).toLocaleString()}
+                        Rp {(m.unit_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono font-medium text-slate-200">
-                        IDR {(transValue ?? 0).toLocaleString()}
+                        Rp {(transValue ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-[11px] text-slate-400">
                         <span className="text-slate-300">{m.performed_by}</span>

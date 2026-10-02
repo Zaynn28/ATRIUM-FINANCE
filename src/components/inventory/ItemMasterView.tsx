@@ -258,8 +258,8 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 <th className="px-4 py-3">UOM</th>
                 <th className="px-4 py-3 text-right">Current Stock</th>
                 <th className="px-4 py-3 text-right">Reorder Pt</th>
-                <th className="px-4 py-3 text-right">Moving Avg Cost</th>
-                <th className="px-4 py-3 text-right">Inventory Value</th>
+                <th className="px-4 py-3 text-right">Moving Avg Cost (Rp)</th>
+                <th className="px-4 py-3 text-right">Inventory Value (Rp)</th>
                 <th className="px-4 py-3 text-center">Status</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -322,10 +322,10 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                         {item.reorder_point} {item.uom}
                       </td>
                       <td className="px-4 py-3 text-right font-mono text-slate-300">
-                        IDR {(item.average_cost ?? 0).toLocaleString()}
+                        Rp {(item.average_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-semibold text-white">
-                        IDR {(totalValuation ?? 0).toLocaleString()}
+                        Rp {(totalValuation ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span
@@ -532,7 +532,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
 
                 <div>
                   <label className="text-xs font-mono text-slate-400 block mb-1">
-                    Moving Avg Cost (IDR) {editingItem.item_id ? '(Auto Calculated)' : ''}
+                    Moving Avg Cost (Rp) {editingItem.item_id ? '(Auto Calculated)' : ''}
                   </label>
                   <input
                     type="number"

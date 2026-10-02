@@ -26,6 +26,7 @@ import {
 } from '../../services/firebase';
 import { api } from '../../services/api';
 import { SystemUser, UserRoleDefinition, AccessControlState } from '../../types';
+import { AtriumLogo } from '../common/AtriumLogo';
 
 interface LoginScreenProps {
   onLoginSuccess: (user: SystemUser, role: UserRoleDefinition, state: AccessControlState) => void;
@@ -105,15 +106,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-slate-950 to-slate-950 -z-10 pointer-events-none" />
 
       <div className="w-full max-w-md">
-        {/* Brand Header */}
-        <div className="text-center mb-8 space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-950 border border-emerald-500/40 text-emerald-400 font-extrabold text-lg shadow-xl shadow-emerald-950/40 font-mono mb-3">
-            AMG
+        {/* Brand Header: PT Atrium Management Group */}
+        <div className="text-center mb-8 space-y-3">
+          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-slate-900 border border-amber-500/30 shadow-2xl shadow-amber-950/40 mb-2">
+            <AtriumLogo variant="arch-only" size="lg" theme="dark" />
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-100 uppercase">
-            AMG <span className="text-slate-600 font-light">/</span> Atrium Finance
+            PT ATRIUM MANAGEMENT GROUP
           </h1>
-          <p className="text-xs text-slate-400 font-mono tracking-wide uppercase">
+          <p className="text-xs text-amber-400/90 font-mono tracking-widest uppercase">
             Double-Entry Hotel ERP &bull; USALI 12th Revised Edition
           </p>
         </div>
@@ -247,7 +248,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 </>
               ) : (
                 <>
-                  <span>Buka Sistem Keuangan AMG</span>
+                  <span>Buka Sistem Keuangan PT Atrium Management Group</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

@@ -465,7 +465,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                     <th className="py-3 px-3">Payee / Vendor</th>
                     <th className="py-3 px-3">Dept</th>
                     <th className="py-3 px-3">Account</th>
-                    <th className="py-3 px-3 text-right">Amount</th>
+                    <th className="py-3 px-3 text-right">Amount (Rp)</th>
                     <th className="py-3 px-3 text-center">Linked Journal</th>
                   </tr>
                 </thead>
@@ -504,7 +504,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                             )}
                           </td>
                           <td className="py-3 px-3 text-right font-semibold text-rose-400">
-                            ${(tx.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            Rp {(tx.amount ?? 0).toLocaleString('id-ID')}
                           </td>
                           <td className="py-3 px-3 text-center font-sans">
                             {tx.journal_id ? (

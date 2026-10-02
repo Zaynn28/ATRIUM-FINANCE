@@ -23,9 +23,14 @@ import {
   Info,
   X,
   ArrowRight,
+  FileSpreadsheet,
+  Printer,
+  Eye,
 } from 'lucide-react';
 import { JournalWithLines, JournalStatus, Account, Department } from '../types';
 import { api } from '../services/api';
+import { exportReportToExcel } from '../utils/excelExporter';
+import { PrintableReportContainer } from './reports/PrintableReportContainer';
 
 interface JournalWorkbenchViewProps {
   journals: JournalWithLines[];
@@ -54,6 +59,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
 
   // In-app interactive confirmation modals (No iframe window.confirm or window.prompt)
   const [postingJournal, setPostingJournal] = useState<JournalWithLines | null>(null);
@@ -204,6 +210,84 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
     }
   };
 
+  const handlePrint = () => {
+    window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
+  };
+
+  const handleExportExcel = () => {
+    const rows: (string | number)[][] = [];
+    filteredJournals.forEach((j) => {
+      j.lines.forEach((l) => {
+        const acc = accounts.find((a) => a.account_code === l.account_code);
+        rows.push([
+          j.journal_id,
+          j.journal_date,
+          j.status,
+          j.source_reference,
+          j.period,
+          l.line_no,
+          l.account_code,
+          acc?.account_name || '',
+          l.department_code || '',
+          l.description,
+          l.debit ?? 0,
+          l.credit ?? 0,
+        ]);
+      });
+    });
+
+    const totalDebits = filteredJournals.reduce(
+      (sum, j) => sum + j.lines.reduce((s, l) => s + (l.debit || 0), 0),
+      0
+    );
+    const totalCredits = filteredJournals.reduce(
+      (sum, j) => sum + j.lines.reduce((s, l) => s + (l.credit || 0), 0),
+      0
+    );
+
+    rows.push([
+      'TOTAL',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Grand Totals',
+      '',
+      '',
+      totalDebits,
+      totalCredits,
+    ]);
+
+    exportReportToExcel(
+      `Journal_Entries_PT_Atrium_Management_Group_${statusFilter}.xlsx`,
+      [
+        {
+          name: 'Journal Entries',
+          title: 'GENERAL JOURNAL REGISTER',
+          subtitle: `Filter: ${statusFilter} Status | Search: ${searchQuery || 'None'}`,
+          headers: [
+            'Journal ID',
+            'Date',
+            'Status',
+            'Source Ref',
+            'Period',
+            'Line #',
+            'Account Code',
+            'Account Name',
+            'Dept',
+            'Description',
+            'Debit (Rp)',
+            'Credit (Rp)',
+          ],
+          rows,
+          colWidths: [14, 12, 12, 18, 10, 8, 14, 30, 10, 35, 18, 18],
+        },
+      ]
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -218,14 +302,50 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
           </p>
         </div>
 
-        <button
-          id="btn-new-manual-journal"
-          onClick={onOpenManualJournalModal}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Manual Journal Voucher</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Direct Excel Download Button */}
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
+            title="Export journal register to Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Toggle PDF Preview */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+              previewMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+            }`}
+            title="Toggle Paper Print/PDF Preview"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
+          </button>
+
+          {/* Print Button */}
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            title="Print Journal Entries"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print to PDF</span>
+          </button>
+
+          <button
+            id="btn-new-manual-journal"
+            onClick={onOpenManualJournalModal}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Manual Journal Voucher</span>
+          </button>
+        </div>
       </div>
 
       {/* Notifications */}
@@ -305,8 +425,18 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
         </div>
       </div>
 
-      {/* Journals List */}
-      <div className="space-y-3">
+      {/* Printable Report Wrapper */}
+      <PrintableReportContainer
+        reportTitle="Journal Voucher Register & Audit Log"
+        reportSubtitle="Double-Entry General Journal Transactions with Balanced Debits & Credits"
+        property="PT Atrium Management Group"
+        orientation="landscape"
+        previewMode={previewMode}
+        onExitPreview={() => setPreviewMode(false)}
+        onExportExcel={handleExportExcel}
+      >
+        {/* Journals List */}
+        <div className="space-y-3">
         {filteredJournals.length === 0 ? (
           <div className="bg-slate-900 border border-slate-800 rounded-xl py-14 text-center text-slate-500">
             <Clock className="w-9 h-9 mx-auto text-slate-600 mb-2 opacity-40" />
@@ -388,7 +518,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                     {/* Amount & Balance indicator */}
                     <div className="text-right font-mono">
                       <div className="text-xs text-slate-400">
-                        Total: <span className="text-slate-200 font-semibold">${journal.total_debit.toFixed(2)}</span>
+                        Total: <span className="text-slate-200 font-semibold">Rp {journal.total_debit.toLocaleString('id-ID')}</span>
                       </div>
                       <div className="text-[11px]">
                         {journal.is_balanced ? (
@@ -566,8 +696,8 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             <th className="py-2 px-3">Account Code</th>
                             <th className="py-2 px-3">Account Name</th>
                             <th className="py-2 px-3">Department</th>
-                            <th className="py-2 px-3 text-right">Debit ($)</th>
-                            <th className="py-2 px-3 text-right">Credit ($)</th>
+                            <th className="py-2 px-3 text-right">Debit (Rp)</th>
+                            <th className="py-2 px-3 text-right">Credit (Rp)</th>
                             <th className="py-2 px-3">Description</th>
                           </tr>
                         </thead>
@@ -591,12 +721,12 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                                 </td>
                                 <td className="py-2 px-3 text-right font-semibold text-emerald-400">
                                   {(line.debit ?? 0) > 0
-                                    ? (line.debit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                    ? (line.debit ?? 0).toLocaleString('id-ID')
                                     : '—'}
                                 </td>
                                 <td className="py-2 px-3 text-right font-semibold text-blue-400">
                                   {(line.credit ?? 0) > 0
-                                    ? (line.credit ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                    ? (line.credit ?? 0).toLocaleString('id-ID')
                                     : '—'}
                                 </td>
                                 <td className="py-2 px-3 font-sans text-slate-300">
@@ -612,10 +742,10 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                               Journal Totals:
                             </td>
                             <td className="py-2 px-3 text-right text-emerald-400">
-                              ${journal.total_debit.toFixed(2)}
+                              Rp {journal.total_debit.toLocaleString('id-ID')}
                             </td>
                             <td className="py-2 px-3 text-right text-blue-400">
-                              ${journal.total_credit.toFixed(2)}
+                              Rp {journal.total_credit.toLocaleString('id-ID')}
                             </td>
                             <td className="py-2 px-3">
                               {journal.is_balanced ? (
@@ -659,7 +789,8 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
             );
           })
         )}
-      </div>
+        </div>
+      </PrintableReportContainer>
 
       {/* MODAL: In-app Post Confirmation (Replaces window.confirm) */}
       {postingJournal && (
@@ -699,11 +830,11 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Total Debits:</span>
-                  <span className="text-emerald-400 font-semibold">${postingJournal.total_debit.toFixed(2)}</span>
+                  <span className="text-emerald-400 font-semibold">Rp {postingJournal.total_debit.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Total Credits:</span>
-                  <span className="text-blue-400 font-semibold">${postingJournal.total_credit.toFixed(2)}</span>
+                  <span className="text-blue-400 font-semibold">Rp {postingJournal.total_credit.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-slate-800">
                   <span className="text-slate-400">Double-Entry Status:</span>

@@ -844,6 +844,35 @@ export const api = {
     return res.json();
   },
 
+  async receivePurchaseOrder(
+    poId: string,
+    options?: {
+      received_date?: string;
+      notes?: string;
+      storeroom_id?: string;
+      items?: {
+        item_id: string;
+        received_quantity: number;
+        unit_cost?: number;
+        bin_location?: string;
+        batch_or_lot?: string;
+        expiry_date?: string;
+      }[];
+      userName?: string;
+    }
+  ): Promise<{ receipt: GoodsReceipt; po: PurchaseOrder; journal_id?: string }> {
+    const res = await fetch(`/api/inventory/purchase-orders/${encodeURIComponent(poId)}/receive`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(options || {}),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to receive purchase order');
+    }
+    return res.json();
+  },
+
   // --- ACCOUNTS RECEIVABLE (AR) APIS ---
   async getARItems(): Promise<{ items: ARAgingItem[]; summary: AgingSummary }> {
     const res = await fetch('/api/ar/items');
@@ -1445,6 +1474,15 @@ export const api = {
     const url = `/api/owner-pool/email-dispatches${period ? `?period=${encodeURIComponent(period)}` : ''}`;
     const res = await fetch(url, { method: 'DELETE' });
     if (!res.ok) throw new Error('Failed to clear email logs');
+    return res.json();
+  },
+
+  async testOwnerEmailSmtp(smtp?: any): Promise<{ success: boolean; message: string }> {
+    const res = await fetch('/api/owner-pool/email-test-connection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ smtp }),
+    });
     return res.json();
   },
 

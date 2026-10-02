@@ -442,7 +442,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                     <th className="py-3 px-3">ID</th>
                     <th className="py-3 px-3">Dept</th>
                     <th className="py-3 px-3">Account</th>
-                    <th className="py-3 px-3 text-right">Amount</th>
+                    <th className="py-3 px-3 text-right">Amount (Rp)</th>
                     <th className="py-3 px-3">Description</th>
                     <th className="py-3 px-3 text-center">Linked Journal</th>
                   </tr>
@@ -477,7 +477,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                             )}
                           </td>
                           <td className="py-3 px-3 text-right font-semibold text-emerald-400">
-                            ${(tx.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            Rp {(tx.amount ?? 0).toLocaleString('id-ID')}
                           </td>
                           <td className="py-3 px-3 font-sans text-slate-300 truncate max-w-[180px]">
                             {tx.description || '—'}
