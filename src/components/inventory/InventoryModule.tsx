@@ -167,6 +167,7 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
 
         {activeTab === 'ITEMS' && (
           <ItemMasterView
+            accounts={accounts}
             departments={departments}
             onOpenStockCard={handleOpenStockCard}
             onOpenScanner={() => setScannerOpen(true)}

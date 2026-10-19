@@ -36,13 +36,13 @@ import { exportReport, withTotal } from '../../utils/reportExport';
 interface ItemMasterViewProps {
   onOpenStockCard: (itemId: string) => void;
   onOpenScanner: () => void;
-  accounts: Account[];
+  accounts?: Account[];
 }
 
 export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
   onOpenStockCard,
   onOpenScanner,
-  accounts,
+  accounts = [],
 }) => {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [categories, setCategories] = useState<InventoryCategory[]>([]);
@@ -569,7 +569,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 font-mono"
                   >
                     {accounts
-                      .filter((a) => a.account_type === 'ASSET')
+                      .filter((a) => a.account_type === 'Asset')
                       .map((a) => (
                         <option key={a.account_code} value={a.account_code}>
                           {a.account_code} - {a.account_name}
@@ -586,7 +586,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 font-mono"
                   >
                     {accounts
-                      .filter((a) => a.account_type === 'EXPENSE' || a.account_type === 'COST_OF_SALES')
+                      .filter((a) => a.account_type === 'Expense')
                       .map((a) => (
                         <option key={a.account_code} value={a.account_code}>
                           {a.account_code} - {a.account_name}
