@@ -82,6 +82,54 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
     ]);
   };
 
+  // Auto-Balance feature: automatically append a balancing line for remaining variance
+  const handleAutoBalance = () => {
+    if (variance < 0.005) return;
+    const isDebitNeeded = totalCredit > totalDebit;
+    const balancingAmount = variance.toFixed(2);
+
+    setLines([
+      ...lines,
+      {
+        id: Math.random().toString(),
+        account_code: '',
+        department_code: '',
+        debit: isDebitNeeded ? balancingAmount : '',
+        credit: isDebitNeeded ? '' : balancingAmount,
+        description: 'Penyeimbang Jurnal Otomatis (Balancing Line)',
+      },
+    ]);
+  };
+
+  // Compound template generator
+  const applyPresetTemplate = (templateType: 'PETTY_CASH' | 'OWNER_RETURN' | 'PAYROLL') => {
+    if (templateType === 'PETTY_CASH') {
+      setSourceReference('PCV-BATCH-CLAIM');
+      setLines([
+        { id: '1', account_code: '5210', department_code: '200', debit: '450000', credit: '', description: 'Bumbu Dapur & Es Kristal Uma Blu' },
+        { id: '2', account_code: '6310', department_code: '500', debit: '380000', credit: '', description: 'ATK Kertas HVS & Materai' },
+        { id: '3', account_code: '6420', department_code: '600', debit: '220000', credit: '', description: 'Klem Pipa & Sealant Maintenance' },
+        { id: '4', account_code: '1010', department_code: '500', debit: '', credit: '1050000', description: 'Pengeluaran Kas Kecil Operasional' },
+      ]);
+    } else if (templateType === 'OWNER_RETURN') {
+      setSourceReference('ODB-COMPOUND-PAYOUT');
+      setLines([
+        { id: '1', account_code: '5030', department_code: '100', debit: '25000000', credit: '', description: 'Gross Owner Return Allocation' },
+        { id: '2', account_code: '2070', department_code: '100', debit: '', credit: '2500000', description: 'Withholding Tax PPh Final 4(2) 10%' },
+        { id: '3', account_code: '2080', department_code: '500', debit: '', credit: '8000000', description: 'Cicilan Unit Dialihkan ke PT Keen Eye' },
+        { id: '4', account_code: '2060', department_code: '100', debit: '', credit: '14500000', description: 'Net Cash Disbursed to Owner (15th)' },
+      ]);
+    } else if (templateType === 'PAYROLL') {
+      setSourceReference('PAY-MONTHLY-SALARY');
+      setLines([
+        { id: '1', account_code: '5110', department_code: '100', debit: '18000000', credit: '', description: 'Gaji Pokok Karyawan Rooms' },
+        { id: '2', account_code: '5200', department_code: '200', debit: '15000000', credit: '', description: 'Gaji Pokok Karyawan Uma Blu F&B' },
+        { id: '3', account_code: '2070', department_code: '500', debit: '', credit: '1650000', description: 'PPh 21 Pajak Karyawan' },
+        { id: '4', account_code: '1020', department_code: '500', debit: '', credit: '31350000', description: 'Pembayaran Payroll via Bank Mandiri' },
+      ]);
+    }
+  };
+
   const handleRemoveLine = (idx: number) => {
     if (lines.length <= 2) {
       setErrorMessage('A double-entry journal voucher requires at least two lines.');
@@ -219,18 +267,56 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
 
           {/* Lines Table */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                Journal Lines ({lines.length})
-              </h3>
-              <button
-                type="button"
-                onClick={handleAddLine}
-                className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 font-medium"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Line</span>
-              </button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  Journal Lines ({lines.length})
+                </h3>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  (Compound Split Debit / Split Credit)
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {/* Auto-Balance Button */}
+                {!isBalanced && variance > 0.005 && (
+                  <button
+                    type="button"
+                    onClick={handleAutoBalance}
+                    className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-medium transition-colors"
+                    title="Buat baris penyeimbang otomatis sesuai selisih"
+                  >
+                    <Scale className="w-3 h-3 text-amber-400" />
+                    <span>Auto-Balance (+Rp {variance.toLocaleString('id-ID')})</span>
+                  </button>
+                )}
+
+                {/* Preset Templates */}
+                <select
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      applyPresetTemplate(e.target.value as any);
+                      e.target.value = '';
+                    }
+                  }}
+                  defaultValue=""
+                  className="text-[11px] px-2 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded hover:border-slate-600 focus:outline-hidden"
+                >
+                  <option value="" disabled>-- Preset Transaksi Majemuk --</option>
+                  <option value="PETTY_CASH">Kas Kecil Multi-Beban (3 Dr Biaya / 1 Cr Kas)</option>
+                  <option value="OWNER_RETURN">Distribusi Owner (Gross Dr / Pajak & Cicilan Cr / Kas Cr)</option>
+                  <option value="PAYROLL">Payroll (Rooms & F&B Dr / PPh 21 & Bank Cr)</option>
+                </select>
+
+                <button
+                  type="button"
+                  onClick={handleAddLine}
+                  className="flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-600/40 font-medium"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Line</span>
+                </button>
+              </div>
             </div>
 
             <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">

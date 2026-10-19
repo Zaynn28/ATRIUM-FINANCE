@@ -57,10 +57,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       if (result.authorized) {
         onLoginSuccess(result.user, result.role, result.state);
       } else {
-        setError('Akses ditolak: Email atau kata sandi tidak sesuai.');
+        setError('Access denied: Invalid email or password.');
       }
     } catch (err: any) {
-      setError(err.message || 'Gagal login. Pastikan email dan kata sandi Anda benar.');
+      setError(err.message || 'Login failed. Please verify your email and password.');
     } finally {
       setLoading(false);
     }
@@ -69,11 +69,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
-      setError('Masukkan alamat email corporate Anda.');
+      setError('Please enter your corporate email address.');
       return;
     }
     if (!password.trim()) {
-      setError('Masukkan kata sandi (password) akun Anda.');
+      setError('Please enter your account password.');
       return;
     }
     await handleVerifyEmail(email.trim(), password.trim(), false);
@@ -86,15 +86,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       const res = await signInWithPopup(auth, googleProvider);
       const userEmail = res.user.email;
       if (!userEmail) {
-        throw new Error('Tidak dapat memperoleh email dari akun Google.');
+        throw new Error('Unable to retrieve email from Google account.');
       }
       await handleVerifyEmail(userEmail, undefined, true);
     } catch (err: any) {
       // In preview iframe, popups might require fallback
       if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
-        setError('Popup terblokir oleh peramban/iframe. Silakan gunakan opsi masukan email dan kata sandi di bawah.');
+        setError('Popup was blocked by the browser. Please use the corporate email and password fields below.');
       } else {
-        setError(err.message || 'Gagal melakukan otentikasi dengan Google.');
+        setError(err.message || 'Failed to authenticate with Google.');
       }
       setLoading(false);
     }
@@ -125,10 +125,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             <div>
               <h2 className="text-sm font-bold text-slate-100 flex items-center gap-2">
                 <Lock className="w-4 h-4 text-emerald-400" />
-                Portal Masuk Karyawan & Controller
+                Employee &amp; Financial Controller Portal
               </h2>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                Hanya email yang telah disetujui Administrator yang dapat mengakses.
+                Only administrator-approved corporate accounts are authorized to sign in.
               </p>
             </div>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800 font-semibold">
@@ -140,7 +140,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             <div className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-800/60 text-rose-200 text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <span className="font-semibold block">Akses Ditolak</span>
+                <span className="font-semibold block">Access Denied</span>
                 <span className="text-[11px] text-rose-300 leading-relaxed block">{error}</span>
               </div>
             </div>
@@ -171,13 +171,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>Masuk dengan Google (Akun Terdaftar)</span>
+            <span>Sign in with Google (Authorized Account)</span>
           </button>
 
           <div className="relative flex items-center justify-center">
             <div className="border-t border-slate-800 w-full" />
             <span className="bg-slate-900 px-3 text-[10px] text-slate-500 font-mono uppercase tracking-wider">
-              Atau masukkan email terdaftar
+              Or sign in with corporate credentials
             </span>
           </div>
 
@@ -185,14 +185,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Alamat Email Kantor:
+                Corporate Email Address:
               </label>
               <div className="relative">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="contoh: laluzayen@gmail.com"
+                  placeholder="e.g. laluzayen@gmail.com"
                   required
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
                 />
@@ -203,10 +203,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-medium text-slate-300">
-                  Kata Sandi (Password):
+                  Password:
                 </label>
                 <span className="text-[10px] text-slate-500 font-mono">
-                  Dikelola Controller
+                  Managed by Controller
                 </span>
               </div>
               <div className="relative">
@@ -214,7 +214,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Masukkan kata sandi akun"
+                  placeholder="Enter account password"
                   required
                   className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
                 />
@@ -232,7 +232,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 </button>
               </div>
               <span className="text-[10px] text-slate-500 block mt-1">
-                Kata sandi dapat disetel atau diganti melalui panel Administrator.
+                Passwords can be configured or reset via the Administrator panel.
               </span>
             </div>
 
@@ -244,11 +244,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
               {loading ? (
                 <>
                   <RotateCw className="w-4 h-4 animate-spin" />
-                  <span>Memverifikasi Akses...</span>
+                  <span>Verifying Credentials...</span>
                 </>
               ) : (
                 <>
-                  <span>Buka Sistem Keuangan PT Atrium Management Group</span>
+                  <span>Sign In to PT Atrium Management ERP</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -259,7 +259,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <div className="pt-2 border-t border-slate-800/80">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Email Resmi Terdaftar Saat Ini:
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Authorized Staff Profiles (Demo / Test):
               </span>
             </div>
 
@@ -291,7 +291,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-400 font-medium group-hover:translate-x-0.5 transition-transform shrink-0 ml-2">
-                    Masuk →
+                    Sign In →
                   </span>
                 </button>
               ))}
@@ -302,10 +302,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         {/* Security Notice Footer */}
         <div className="text-center mt-6 space-y-1">
           <p className="text-[11px] text-slate-500 font-mono">
-            Keamanan Berlapis &bull; Role-Based Access Control (RBAC) &bull; Audit Trail Aktif
+            Tiered Security &bull; Role-Based Access Control (RBAC) &bull; Active Audit Trail
           </p>
           <p className="text-[10px] text-slate-600">
-            Untuk mendaftarkan staf baru atau mengubah modul yang dapat diakses, buka menu <strong>Pillar 8: Administration</strong> setelah login.
+            To configure staff roles or module access permissions, access <strong>Pillar 8: Administration</strong> after signing in.
           </p>
         </div>
       </div>

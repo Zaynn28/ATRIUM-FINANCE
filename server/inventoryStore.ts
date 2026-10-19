@@ -643,6 +643,24 @@ export class InventoryStore {
     return this.storerooms.get(id);
   }
 
+  public resolveStoreroom(storeroomId?: string): InventoryStoreroom {
+    if (storeroomId) {
+      const targetId = storeroomId.trim();
+      const direct = this.storerooms.get(targetId);
+      if (direct) return direct;
+      for (const [sId, sRoom] of this.storerooms.entries()) {
+        if (sId.toLowerCase() === targetId.toLowerCase()) {
+          return sRoom;
+        }
+      }
+    }
+    const fallback = this.storerooms.get('STR-MAIN') || Array.from(this.storerooms.values())[0];
+    if (!fallback) {
+      throw new Error('No active storeroom locations available.');
+    }
+    return fallback;
+  }
+
   public saveStoreroom(store: InventoryStoreroom): InventoryStoreroom {
     if (!store.storeroom_id) {
       store.storeroom_id = `STR-${store.name.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)}-${Date.now().toString(36).toUpperCase()}`;
@@ -650,6 +668,35 @@ export class InventoryStore {
     this.storerooms.set(store.storeroom_id, store);
     this.saveToDisk();
     return store;
+  }
+
+  public deleteStoreroom(id: string): { success: boolean; deletedId: string } {
+    const targetId = id?.trim();
+    let foundKey = this.storerooms.has(targetId) ? targetId : undefined;
+    if (!foundKey) {
+      for (const key of this.storerooms.keys()) {
+        if (key.toLowerCase() === targetId?.toLowerCase()) {
+          foundKey = key;
+          break;
+        }
+      }
+    }
+    if (!foundKey) {
+      throw new Error(`Storeroom with ID "${id}" was not found.`);
+    }
+    this.storerooms.delete(foundKey);
+    const fallbackStoreroomId = Array.from(this.storerooms.keys())[0] || 'STR-MAIN';
+    // Clean up stock references and reassign default storeroom pointers
+    for (const item of this.items.values()) {
+      if (item.default_storeroom_id === foundKey) {
+        item.default_storeroom_id = fallbackStoreroomId;
+      }
+      if (item.storeroom_stocks && Array.isArray(item.storeroom_stocks)) {
+        item.storeroom_stocks = item.storeroom_stocks.filter((s) => s.storeroom_id !== foundKey);
+      }
+    }
+    this.saveToDisk();
+    return { success: true, deletedId: foundKey };
   }
 
   public getItems(): InventoryItem[] {
@@ -933,10 +980,7 @@ export class InventoryStore {
       throw new Error('Goods receipt must contain at least one item.');
     }
 
-    const storeroom = this.storerooms.get(data.storeroom_id);
-    if (!storeroom) {
-      throw new Error(`Storeroom ${data.storeroom_id} not found.`);
-    }
+    const storeroom = this.resolveStoreroom(data.storeroom_id);
 
     const now = new Date().toISOString();
     const receiptId = `GR-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Date.now().toString(36).toUpperCase()}`;
@@ -1141,10 +1185,7 @@ export class InventoryStore {
     }
 
     const dept = accountingStore.departments.get(data.department_code);
-    const storeroom = this.storerooms.get(data.storeroom_id);
-    if (!storeroom) {
-      throw new Error(`Storeroom ${data.storeroom_id} not found.`);
-    }
+    const storeroom = this.resolveStoreroom(data.storeroom_id);
 
     const now = new Date().toISOString();
     const reqId = `REQ-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Date.now().toString(36).toUpperCase()}`;
@@ -1386,10 +1427,7 @@ export class InventoryStore {
       throw new Error('Supplier name is required for Purchase Order.');
     }
 
-    const storeroom = this.storerooms.get(data.storeroom_id);
-    if (!storeroom) {
-      throw new Error(`Storeroom ${data.storeroom_id} not found.`);
-    }
+    const storeroom = this.resolveStoreroom(data.storeroom_id);
 
     const dept = accountingStore.departments.get(data.department_code);
     const now = new Date().toISOString();
@@ -1775,11 +1813,8 @@ export class InventoryStore {
       throw new Error(`Cannot receive goods for a CANCELLED purchase order.`);
     }
 
-    const storeroomId = options.storeroom_id || po.storeroom_id;
-    const storeroom = this.storerooms.get(storeroomId);
-    if (!storeroom) {
-      throw new Error(`Target storeroom ${storeroomId} not found.`);
-    }
+    const storeroom = this.resolveStoreroom(options.storeroom_id || po.storeroom_id);
+    const storeroomId = storeroom.storeroom_id;
 
     const userName = options.userName || 'Procurement Receiving Officer';
     const userId = options.userId || 'usr-controller-1';
@@ -1859,8 +1894,7 @@ export class InventoryStore {
     userId: string;
     userName: string;
   }): Promise<{ movements: StockMovement[]; journal_id?: string }> {
-    const storeroom = this.storerooms.get(data.storeroom_id);
-    if (!storeroom) throw new Error(`Storeroom ${data.storeroom_id} not found.`);
+    const storeroom = this.resolveStoreroom(data.storeroom_id);
 
     const dept = accountingStore.departments.get(data.department_code);
     const deptName = dept?.department_name || `Dept ${data.department_code}`;
@@ -1977,11 +2011,8 @@ export class InventoryStore {
       throw new Error('Source and destination storerooms cannot be identical.');
     }
 
-    const fromStore = this.storerooms.get(data.from_storeroom_id);
-    const toStore = this.storerooms.get(data.to_storeroom_id);
-    if (!fromStore || !toStore) {
-      throw new Error('Invalid source or destination storeroom specified.');
-    }
+    const fromStore = this.resolveStoreroom(data.from_storeroom_id);
+    const toStore = this.resolveStoreroom(data.to_storeroom_id);
 
     const now = new Date().toISOString();
     const transferRef = `TRF-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Date.now().toString(36).toUpperCase()}`;
@@ -2078,8 +2109,8 @@ export class InventoryStore {
     storeroom_id: string;
     counted_by: string;
   }): StockCountSession {
-    const storeroom = this.storerooms.get(data.storeroom_id);
-    if (!storeroom) throw new Error(`Storeroom ${data.storeroom_id} not found.`);
+    const storeroom = this.resolveStoreroom(data.storeroom_id);
+    const resolvedStoreroomId = storeroom.storeroom_id;
 
     const now = new Date().toISOString();
     const countId = `CNT-${now.slice(0, 10).replace(/-/g, '')}-${Date.now().toString(36).toUpperCase()}`;
@@ -2091,7 +2122,7 @@ export class InventoryStore {
     for (const item of this.items.values()) {
       if (item.status !== 'ACTIVE') continue;
 
-      const storeStock = item.storeroom_stocks?.find((s) => s.storeroom_id === data.storeroom_id);
+      const storeStock = item.storeroom_stocks?.find((s) => s.storeroom_id === storeroom.storeroom_id);
       const systemQty = storeStock ? storeStock.quantity : 0;
       const bin = storeStock?.bin_location || item.default_bin_location || 'A-01';
       const cost = item.average_cost;
@@ -2335,8 +2366,7 @@ export class InventoryStore {
     userId: string;
     userName: string;
   }): Promise<{ adjustment: StockAdjustmentRecord; journal_id?: string }> {
-    const storeroom = this.storerooms.get(data.storeroom_id);
-    if (!storeroom) throw new Error(`Storeroom ${data.storeroom_id} not found.`);
+    const storeroom = this.resolveStoreroom(data.storeroom_id);
 
     const item = this.items.get(data.item_id);
     if (!item) throw new Error(`Item ${data.item_id} not found.`);
@@ -2347,7 +2377,7 @@ export class InventoryStore {
     const delta = data.type === 'ADJUSTMENT_IN' ? qty : -qty;
     const { before, after } = this.adjustItemStoreroomStock(
       item.item_id,
-      data.storeroom_id,
+      storeroom.storeroom_id,
       undefined,
       delta
     );
@@ -2708,6 +2738,46 @@ export class InventoryStore {
         reconciliation_variance: glVariance,
         is_reconciled: Math.abs(glVariance) < 0.01,
       },
+    };
+  }
+
+  // --- MOCK DATA RESET ---
+  public resetMockData(options?: { clearMaster?: boolean }): {
+    clearedOrders: number;
+    clearedRequisitions: number;
+    clearedReceipts: number;
+    clearedMovements: number;
+  } {
+    const clearedOrders = this.purchaseOrders.size;
+    const clearedRequisitions = this.requisitions.size;
+    const clearedReceipts = this.receipts.size;
+    const clearedMovements = this.movements.length;
+
+    this.requisitions.clear();
+    this.purchaseOrders.clear();
+    this.receipts.clear();
+    this.countSessions.clear();
+    this.adjustments.clear();
+    this.movements = [];
+
+    if (options?.clearMaster) {
+      this.items.clear();
+      this.storerooms.clear();
+      this.categories.clear();
+    } else {
+      // Keep items catalog but zero out stock so user starts with clean stock levels
+      this.items.forEach((item) => {
+        item.current_stock = 0;
+        item.storeroom_stocks = [];
+      });
+    }
+
+    this.saveToDisk();
+    return {
+      clearedOrders,
+      clearedRequisitions,
+      clearedReceipts,
+      clearedMovements,
     };
   }
 }

@@ -26,6 +26,7 @@ import {
   FileSpreadsheet,
   Printer,
   Eye,
+  Download,
 } from 'lucide-react';
 import { APAgingItem, AgingSummary, Account, Department } from '../../types';
 import { api } from '../../services/api';
@@ -59,6 +60,33 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
   const [bucketFilter, setBucketFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [sourceFilter, setSourceFilter] = useState<string>('ALL');
+  const [datePreset, setDatePreset] = useState<string>('ALL');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+
+  const handleDatePresetChange = (preset: string) => {
+    setDatePreset(preset);
+    const now = new Date();
+    if (preset === 'ALL') {
+      setDateFrom('');
+      setDateTo('');
+    } else if (preset === 'THIS_MONTH') {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      setDateFrom(start.toISOString().split('T')[0]);
+      setDateTo(end.toISOString().split('T')[0]);
+    } else if (preset === 'LAST_MONTH') {
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      setDateFrom(start.toISOString().split('T')[0]);
+      setDateTo(end.toISOString().split('T')[0]);
+    } else if (preset === 'THIS_YEAR') {
+      const start = new Date(now.getFullYear(), 0, 1);
+      const end = new Date(now.getFullYear(), 11, 31);
+      setDateFrom(start.toISOString().split('T')[0]);
+      setDateTo(end.toISOString().split('T')[0]);
+    }
+  };
 
   // Disbursement Payment Modal State
   const [paymentModalItem, setPaymentModalItem] = useState<APAgingItem | null>(null);
@@ -106,6 +134,8 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
       if (bucketFilter !== 'ALL' && item.aging_bucket !== bucketFilter) return false;
       if (statusFilter !== 'ALL' && item.status !== statusFilter) return false;
       if (sourceFilter !== 'ALL' && item.source !== sourceFilter) return false;
+      if (dateFrom && item.bill_date < dateFrom) return false;
+      if (dateTo && item.bill_date > dateTo) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchVendor = item.vendor_name.toLowerCase().includes(q);
@@ -116,7 +146,19 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
       }
       return true;
     });
-  }, [items, bucketFilter, statusFilter, sourceFilter, searchQuery]);
+  }, [items, bucketFilter, statusFilter, sourceFilter, dateFrom, dateTo, searchQuery]);
+
+  const dynamicSummary = useMemo(() => {
+    return {
+      total_outstanding: filteredItems.reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      current: filteredItems.filter((i) => i.aging_bucket === 'CURRENT').reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      bucket_1_30: filteredItems.filter((i) => i.aging_bucket === '1_30').reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      bucket_31_60: filteredItems.filter((i) => i.aging_bucket === '31_60').reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      bucket_61_90: filteredItems.filter((i) => i.aging_bucket === '61_90').reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      bucket_over_90: filteredItems.filter((i) => i.aging_bucket === 'OVER_90').reduce((s, i) => s + (i.outstanding_amount || 0), 0),
+      count: filteredItems.length,
+    };
+  }, [filteredItems]);
 
   const handleOpenPayModal = (item: APAgingItem) => {
     setPaymentModalItem(item);
@@ -199,6 +241,47 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
     }
   };
 
+  const handleExportCSV = () => {
+    const headers = [
+      'Bill ID',
+      'Vendor / Supplier',
+      'PO Ref',
+      'Department',
+      'Bill Date',
+      'Due Date',
+      'Original Amount (Rp)',
+      'Outstanding Amount (Rp)',
+      'Days Overdue',
+      'Aging Bucket',
+      'Status',
+      'Origin Journal Ref',
+    ];
+
+    const rows = filteredItems.map((item) => [
+      `"${item.bill_id}"`,
+      `"${item.vendor_name}"`,
+      `"${item.po_id || ''}"`,
+      `"${item.department_name}"`,
+      item.bill_date,
+      item.due_date,
+      item.original_amount,
+      item.outstanding_amount,
+      item.days_overdue,
+      item.aging_bucket,
+      item.status,
+      `"${item.origin_journal_id || ''}"`,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `AP_Vendor_Bills_Schedule_${dateFrom || 'all'}_to_${dateTo || 'all'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handlePrint = () => {
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
@@ -234,19 +317,19 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
     ]);
 
     const summaryRows: (string | number)[][] = [
-      ['Total AP Due', summary.total_outstanding],
-      ['Current (Not Due)', summary.current],
-      ['1 - 30 Days Overdue', summary.bucket_1_30],
-      ['31 - 60 Days Overdue', summary.bucket_31_60],
-      ['61 - 90 Days Overdue', summary.bucket_61_90],
-      ['Over 90 Days (Critical)', summary.bucket_over_90],
+      ['Total AP Due', dynamicSummary.total_outstanding],
+      ['Current (Not Due)', dynamicSummary.current],
+      ['1 - 30 Days Overdue', dynamicSummary.bucket_1_30],
+      ['31 - 60 Days Overdue', dynamicSummary.bucket_31_60],
+      ['61 - 90 Days Overdue', dynamicSummary.bucket_61_90],
+      ['Over 90 Days (Critical)', dynamicSummary.bucket_over_90],
     ];
 
     exportReportToExcel('AP_Aging_Schedule_PT_Atrium_Management_Group.xlsx', [
       {
         name: 'AP Vendor Bills',
         title: 'ACCOUNTS PAYABLE AGING & VENDOR BILLS SCHEDULE',
-        subtitle: 'PT Atrium Management Group • Trade Creditors & Procurement Subledger',
+        subtitle: `PT Atrium Management Group • Trade Creditors & Procurement Subledger${dateFrom ? ` (From: ${dateFrom} To: ${dateTo || 'Present'})` : ''}`,
         headers: [
           'Bill ID',
           'Vendor / Supplier',
@@ -295,6 +378,16 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Direct CSV Download Button */}
+          <button
+            onClick={handleExportCSV}
+            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-700 shadow-xs"
+            title="Export AP Aging schedule to CSV"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>CSV</span>
+          </button>
+
           {/* Direct Excel Download Button */}
           <button
             onClick={handleExportExcel}
@@ -360,10 +453,10 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
             <Coins className="w-3.5 h-3.5 text-blue-400" />
           </div>
           <div className="text-lg font-bold font-mono text-white">
-            Rp {(summary.total_outstanding / 1_000_000).toFixed(1)}M
+            Rp {(dynamicSummary.total_outstanding / 1_000_000).toFixed(1)}M
           </div>
           <div className="text-[10px] text-slate-500 mt-1 font-mono">
-            {summary.count} Active Supplier Bills
+            {dynamicSummary.count} Active Supplier Bills
           </div>
         </div>
 
@@ -374,11 +467,11 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
           </div>
           <div className="text-lg font-bold font-mono text-emerald-300">
-            Rp {(summary.current / 1_000_000).toFixed(1)}M
+            Rp {(dynamicSummary.current / 1_000_000).toFixed(1)}M
           </div>
           <div className="text-[10px] text-emerald-500/70 mt-1 font-mono">
-            {summary.total_outstanding > 0
-              ? `${Math.round((summary.current / summary.total_outstanding) * 100)}% on term`
+            {dynamicSummary.total_outstanding > 0
+              ? `${Math.round((dynamicSummary.current / dynamicSummary.total_outstanding) * 100)}% on term`
               : '0%'}
           </div>
         </div>
@@ -390,7 +483,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
             <Clock className="w-3.5 h-3.5 text-blue-400" />
           </div>
           <div className="text-lg font-bold font-mono text-blue-300">
-            Rp {(summary.bucket_1_30 / 1_000_000).toFixed(1)}M
+            Rp {(dynamicSummary.bucket_1_30 / 1_000_000).toFixed(1)}M
           </div>
           <div className="text-[10px] text-blue-500/70 mt-1 font-mono">Next payment batch</div>
         </div>
@@ -402,7 +495,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
             <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
           </div>
           <div className="text-lg font-bold font-mono text-amber-300">
-            Rp {(summary.bucket_31_60 / 1_000_000).toFixed(1)}M
+            Rp {(dynamicSummary.bucket_31_60 / 1_000_000).toFixed(1)}M
           </div>
           <div className="text-[10px] text-amber-500/70 mt-1 font-mono">Vendor payment warning</div>
         </div>
@@ -414,7 +507,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
             <AlertTriangle className="w-3.5 h-3.5 text-orange-400" />
           </div>
           <div className="text-lg font-bold font-mono text-orange-300">
-            Rp {(summary.bucket_61_90 / 1_000_000).toFixed(1)}M
+            Rp {(dynamicSummary.bucket_61_90 / 1_000_000).toFixed(1)}M
           </div>
           <div className="text-[10px] text-orange-500/70 mt-1 font-mono">Supply hold risk</div>
         </div>
@@ -426,7 +519,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
             <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
           </div>
           <div className="text-lg font-bold font-mono text-rose-300">
-            Rp {(summary.bucket_over_90 / 1_000_000).toFixed(1)}M
+            Rp {(dynamicSummary.bucket_over_90 / 1_000_000).toFixed(1)}M
           </div>
           <div className="text-[10px] text-rose-500/70 mt-1 font-mono">Critical vendor escalation</div>
         </div>
@@ -434,7 +527,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
 
       {/* Filter & Search Bar */}
       <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+        <div className="flex items-center gap-2 flex-1 min-w-[220px]">
           <Search className="w-4 h-4 text-slate-500 ml-1" />
           <input
             type="text"
@@ -446,6 +539,59 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* Date / Period Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
+            <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+            <select
+              value={datePreset}
+              onChange={(e) => handleDatePresetChange(e.target.value)}
+              className="bg-transparent text-xs text-slate-300 focus:outline-none cursor-pointer pr-1"
+            >
+              <option value="ALL">All Periods</option>
+              <option value="THIS_MONTH">This Month</option>
+              <option value="LAST_MONTH">Last Month</option>
+              <option value="THIS_YEAR">This Year</option>
+              <option value="CUSTOM">Custom Range</option>
+            </select>
+
+            <span className="text-slate-600">|</span>
+
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => {
+                setDateFrom(e.target.value);
+                setDatePreset('CUSTOM');
+              }}
+              style={{ colorScheme: 'dark' }}
+              title="From Date"
+              placeholder="From"
+              className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+            />
+            <span className="text-slate-500 text-[11px]">to</span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => {
+                setDateTo(e.target.value);
+                setDatePreset('CUSTOM');
+              }}
+              style={{ colorScheme: 'dark' }}
+              title="To Date"
+              placeholder="To"
+              className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+            />
+            {(dateFrom || dateTo) && (
+              <button
+                onClick={() => handleDatePresetChange('ALL')}
+                className="text-slate-400 hover:text-slate-200 text-xs px-1 font-bold"
+                title="Clear date filter"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
           {/* Bucket Filter */}
           <select
             value={bucketFilter}

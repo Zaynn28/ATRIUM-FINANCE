@@ -14,6 +14,7 @@ import { ownerPoolStore } from './server/ownerPoolStore';
 import { ownerEmailStore } from './server/ownerEmailStore';
 import { taxStore } from './server/taxStore';
 import { arapStore } from './server/arapStore';
+import { pettyCashStore } from './server/pettyCashStore';
 
 dotenv.config();
 
@@ -204,6 +205,91 @@ async function startServer() {
       res.json(state);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
+    }
+  });
+
+  // Mock Data Reset & Testing Environment
+  app.get('/api/admin/mock-data/status', (req, res) => {
+    try {
+      const stats = {
+        journalHeadersCount: store.journalHeaders.size,
+        journalLinesCount: store.journalLines.length,
+        revenueTxCount: store.revenueTransactions.size,
+        spendingTxCount: store.spendingTransactions.size,
+        purchaseOrdersCount: inventoryStore.purchaseOrders.size,
+        requisitionsCount: inventoryStore.requisitions.size,
+        receiptsCount: inventoryStore.receipts.size,
+        inventoryMovementsCount: inventoryStore.movements.length,
+        ownerBatchesCount: ownerPoolStore.batches.size,
+        serviceChargeCyclesCount: serviceChargeStore.cycles.size,
+        serviceChargeCollectionsCount: serviceChargeStore.collections.size,
+        taxObligationsCount: taxStore.obligations.size,
+        dispatchesCount: ownerEmailStore.dispatches.length,
+        isCleanSlate:
+          store.journalHeaders.size === 0 &&
+          store.revenueTransactions.size === 0 &&
+          store.spendingTransactions.size === 0 &&
+          inventoryStore.purchaseOrders.size === 0 &&
+          ownerPoolStore.batches.size === 0 &&
+          serviceChargeStore.cycles.size === 0,
+        isMockDataCleared: store.isMockDataCleared,
+      };
+      res.json(stats);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/admin/mock-data/reset', (req, res) => {
+    try {
+      const { clearMaster = false } = req.body || {};
+
+      const storeRes = store.resetMockData();
+      const invRes = inventoryStore.resetMockData({ clearMaster });
+      const opRes = ownerPoolStore.resetMockData({ clearUnits: clearMaster });
+      const scRes = serviceChargeStore.resetMockData({ clearEmployees: clearMaster });
+      const taxRes = taxStore.resetMockData();
+      const arapRes = arapStore.resetMockData();
+      const emailRes = ownerEmailStore.resetMockData();
+
+      res.json({
+        success: true,
+        message: 'Mock data successfully reset. Clean slate ready for custom testing data.',
+        cleared: {
+          journals: storeRes.clearedJournals,
+          revenue_tx: storeRes.clearedRevenue,
+          spending_tx: storeRes.clearedSpending,
+          purchase_orders: invRes.clearedOrders,
+          requisitions: invRes.clearedRequisitions,
+          receipts: invRes.clearedReceipts,
+          movements: invRes.clearedMovements,
+          owner_batches: opRes.clearedBatches,
+          sc_collections: scRes.clearedCollections,
+          sc_cycles: scRes.clearedCycles,
+          tax_obligations: taxRes.clearedObligations,
+          dispatches: emailRes.clearedDispatches,
+          ar_payments: arapRes.clearedARPayments,
+          ap_payments: arapRes.clearedAPPayments,
+        },
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/admin/mock-data/seed-demo', async (req, res) => {
+    try {
+      await store.seedDemoData();
+      inventoryStore.seedDefaults();
+      ownerPoolStore.reseedDefaults();
+      serviceChargeStore.seedDefaults();
+
+      res.json({
+        success: true,
+        message: 'Demo dataset re-seeded successfully.',
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
   });
 
@@ -551,6 +637,15 @@ async function startServer() {
     try {
       const room = inventoryStore.saveStoreroom(req.body);
       res.json(room);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/inventory/storerooms/:id', (req, res) => {
+    try {
+      const result = inventoryStore.deleteStoreroom(req.params.id);
+      res.json(result);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
     }
@@ -1239,6 +1334,38 @@ async function startServer() {
     }
   });
 
+  // Pak Scott's Executive Owner Matrix API
+  app.get('/api/owner-pool/scotts-matrix', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : '2026-09';
+      const matrix = ownerPoolStore.getScottExecutiveMatrix(period);
+      res.json(matrix);
+    } catch (err: any) {
+      console.error('[API /api/owner-pool/scotts-matrix error]:', err);
+      res.status(500).json({ error: err.message || 'Failed to generate Scott executive matrix' });
+    }
+  });
+
+  // Owner Stays & Quota API
+  app.get('/api/owner-pool/stays', (req, res) => {
+    try {
+      const period = req.query.period ? String(req.query.period) : undefined;
+      const stays = ownerPoolStore.getStays(period);
+      res.json(stays);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/owner-pool/stays', (req, res) => {
+    try {
+      const stay = ownerPoolStore.recordStay(req.body);
+      res.json(stay);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   // --- APARTMENT OWNER RETURN DISTRIBUTION EMAIL AUTOMATION API ROUTES ---
 
   // 1. Get Email Configuration & Template
@@ -1403,6 +1530,25 @@ async function startServer() {
     }
   });
 
+  app.post('/api/tax/rules', (req, res) => {
+    try {
+      const user = String(req.headers['x-user-name'] || req.body.updated_by || 'Financial Controller');
+      const created = taxStore.createTaxRule(req.body, user);
+      res.status(201).json(created);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/tax/rules/:code', (req, res) => {
+    try {
+      const result = taxStore.deleteTaxRule(req.params.code);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   // 2. Tax Overview / Summary KPIs
   app.get('/api/tax/summary', (req, res) => {
     try {
@@ -1536,6 +1682,71 @@ async function startServer() {
       const user = String(req.headers['x-user-name'] || req.body.user || 'Financial Controller');
       const result = taxStore.reopenPeriod(period, user);
       res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  // --- KAS KECIL OPERASIONAL (OPERATIONAL PETTY CASH) API ROUTES ---
+
+  app.get('/api/petty-cash/balance', (req, res) => {
+    try {
+      const balance = pettyCashStore.getBalanceSummary();
+      res.json(balance);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/petty-cash/transactions', (req, res) => {
+    try {
+      const txs = pettyCashStore.getTransactions();
+      res.json(txs);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/petty-cash/transactions', (req, res) => {
+    try {
+      const createdBy = String(req.headers['x-user-name'] || req.body.created_by || 'Cashier / Admin');
+      const tx = pettyCashStore.addTransaction({
+        ...req.body,
+        created_by: createdBy,
+      });
+      res.json(tx);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/petty-cash/transactions/:id', (req, res) => {
+    try {
+      const result = pettyCashStore.deleteTransaction(req.params.id);
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/petty-cash/replenish', async (req, res) => {
+    try {
+      const approvedBy = String(req.headers['x-user-name'] || req.body.approved_by || 'Financial Controller');
+      const result = await pettyCashStore.replenish({
+        approved_by: approvedBy,
+        notes: req.body.notes,
+        bank_account_code: req.body.bank_account_code,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/petty-cash/config', (req, res) => {
+    try {
+      const updated = pettyCashStore.updateConfig(req.body);
+      res.json(updated);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
     }

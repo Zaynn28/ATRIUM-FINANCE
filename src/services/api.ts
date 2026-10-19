@@ -53,6 +53,12 @@ import {
   ARAgingItem,
   APAgingItem,
   AgingSummary,
+  ScottExecutiveMatrixSummary,
+  OwnerStayRecord,
+  PettyCashTransaction,
+  PettyCashBalanceSummary,
+  PettyCashReplenishmentClaim,
+  PettyCashFloatConfig,
 } from '../types';
 
 export const api = {
@@ -366,6 +372,61 @@ export const api = {
     return res.json();
   },
 
+  async getMockDataStatus(): Promise<{
+    journalHeadersCount: number;
+    journalLinesCount: number;
+    revenueTxCount: number;
+    spendingTxCount: number;
+    purchaseOrdersCount: number;
+    requisitionsCount: number;
+    receiptsCount: number;
+    inventoryMovementsCount: number;
+    ownerBatchesCount: number;
+    serviceChargeCyclesCount: number;
+    serviceChargeCollectionsCount: number;
+    taxObligationsCount: number;
+    dispatchesCount: number;
+    isCleanSlate: boolean;
+    isMockDataCleared: boolean;
+  }> {
+    const res = await fetch('/api/admin/mock-data/status');
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to fetch mock data status');
+    }
+    return res.json();
+  },
+
+  async resetMockData(options?: { clearMaster?: boolean }): Promise<{
+    success: boolean;
+    message: string;
+    cleared: Record<string, number>;
+  }> {
+    const res = await fetch('/api/admin/mock-data/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(options || {}),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to reset mock data');
+    }
+    return res.json();
+  },
+
+  async seedDemoData(): Promise<{ success: boolean; message: string }> {
+    const res = await fetch('/api/admin/mock-data/seed-demo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to seed demo data');
+    }
+    return res.json();
+  },
+
   async updateAdminSettings(settings: any): Promise<any> {
     const res = await fetch('/api/admin/settings', {
       method: 'POST',
@@ -580,6 +641,17 @@ export const api = {
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Failed to save storeroom');
+    }
+    return res.json();
+  },
+
+  async deleteInventoryStoreroom(id: string): Promise<{ success: boolean; deletedId: string }> {
+    const res = await fetch(`/api/inventory/storerooms/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete storeroom');
     }
     return res.json();
   },
@@ -1383,6 +1455,40 @@ export const api = {
     return res.json();
   },
 
+  async getScottExecutiveMatrix(period: string = '2026-09'): Promise<ScottExecutiveMatrixSummary> {
+    const res = await fetch(`/api/owner-pool/scotts-matrix?period=${encodeURIComponent(period)}`);
+    if (!res.ok) throw new Error('Failed to fetch Scott Executive Matrix');
+    return res.json();
+  },
+
+  async getOwnerStays(period?: string): Promise<OwnerStayRecord[]> {
+    const url = `/api/owner-pool/stays${period ? `?period=${encodeURIComponent(period)}` : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch owner stays');
+    return res.json();
+  },
+
+  async recordOwnerStay(data: {
+    unit_id: string;
+    check_in_date: string;
+    check_out_date: string;
+    nights_count: number;
+    period: string;
+    market_rate_per_night: number;
+    notes?: string;
+  }): Promise<OwnerStayRecord> {
+    const res = await fetch('/api/owner-pool/stays', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to record owner stay');
+    }
+    return res.json();
+  },
+
   // --- OWNER RETURN DISTRIBUTION EMAIL AUTOMATION API ---
 
   async getOwnerEmailConfig(): Promise<OwnerDistributionEmailConfig> {
@@ -1510,6 +1616,33 @@ export const api = {
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Failed to update tax rule');
+    }
+    return res.json();
+  },
+
+  async createTaxRule(data: Partial<TaxRuleConfig>, createdBy?: string): Promise<TaxRuleConfig> {
+    const res = await fetch('/api/tax/rules', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(createdBy ? { 'x-user-name': createdBy } : {}),
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to create tax rule');
+    }
+    return res.json();
+  },
+
+  async deleteTaxRule(taxCode: string): Promise<{ success: boolean; deletedCode: string }> {
+    const res = await fetch(`/api/tax/rules/${encodeURIComponent(taxCode)}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete tax rule');
     }
     return res.json();
   },
@@ -1652,6 +1785,87 @@ export const api = {
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Failed to reopen tax period');
+    }
+    return res.json();
+  },
+
+  // --- KAS KECIL OPERASIONAL (OPERATIONAL PETTY CASH) API METHODS ---
+
+  async getPettyCashBalance(): Promise<PettyCashBalanceSummary> {
+    const res = await fetch('/api/petty-cash/balance');
+    if (!res.ok) throw new Error('Failed to fetch petty cash balance');
+    return res.json();
+  },
+
+  async getPettyCashTransactions(): Promise<PettyCashTransaction[]> {
+    const res = await fetch('/api/petty-cash/transactions');
+    if (!res.ok) throw new Error('Failed to fetch petty cash transactions');
+    return res.json();
+  },
+
+  async createPettyCashTransaction(data: {
+    date: string;
+    category: string;
+    department_code?: string;
+    department_name?: string;
+    account_code?: string;
+    account_name?: string;
+    amount: number;
+    paid_to: string;
+    description: string;
+    receipt_image_url?: string;
+    receipt_filename?: string;
+    created_by?: string;
+  }): Promise<PettyCashTransaction> {
+    const res = await fetch('/api/petty-cash/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to record petty cash expense');
+    }
+    return res.json();
+  },
+
+  async deletePettyCashTransaction(id: string): Promise<{ success: boolean }> {
+    const res = await fetch(`/api/petty-cash/transactions/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to delete petty cash voucher');
+    }
+    return res.json();
+  },
+
+  async replenishPettyCash(params: {
+    approved_by?: string;
+    notes?: string;
+    bank_account_code?: string;
+  }): Promise<{ claim: PettyCashReplenishmentClaim; journalId: string }> {
+    const res = await fetch('/api/petty-cash/replenish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to process petty cash replenishment');
+    }
+    return res.json();
+  },
+
+  async updatePettyCashConfig(config: Partial<PettyCashFloatConfig>): Promise<PettyCashFloatConfig> {
+    const res = await fetch('/api/petty-cash/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to update petty cash config');
     }
     return res.json();
   },

@@ -56,6 +56,16 @@ export const UnitsRegistryView: React.FC = () => {
     unit_sqm: 48.5,
     purchase_price: 1750000000,
     vat_amount: 175000000,
+    
+    // Contract Options & 3 Installment Columns
+    return_option_type: 'GUARANTEED_10_PCT' as const,
+    contract_payment_type: 'FULLY_PAID' as const,
+    total_purchase_price: 1750000000,
+    total_paid_to_date: 1750000000,
+    monthly_installment_due: 0,
+    stay_days_quota_annual: 28,
+    stay_days_used_ytd: 0,
+
     contract_start_date: '2024-01-01',
     contract_end_date: '2034-01-01',
     ownership_status: 'Active' as const,
@@ -97,6 +107,13 @@ export const UnitsRegistryView: React.FC = () => {
       unit_sqm: 48.5,
       purchase_price: 1750000000,
       vat_amount: 175000000,
+      return_option_type: 'GUARANTEED_10_PCT',
+      contract_payment_type: 'FULLY_PAID',
+      total_purchase_price: 1750000000,
+      total_paid_to_date: 1750000000,
+      monthly_installment_due: 0,
+      stay_days_quota_annual: 28,
+      stay_days_used_ytd: 0,
       contract_start_date: '2024-01-01',
       contract_end_date: '2034-01-01',
       ownership_status: 'Active',
@@ -123,6 +140,13 @@ export const UnitsRegistryView: React.FC = () => {
       unit_sqm: unit.unit_sqm,
       purchase_price: unit.purchase_price,
       vat_amount: unit.vat_amount,
+      return_option_type: unit.return_option_type || 'GUARANTEED_10_PCT',
+      contract_payment_type: unit.contract_payment_type || 'FULLY_PAID',
+      total_purchase_price: unit.total_purchase_price || unit.purchase_price,
+      total_paid_to_date: unit.total_paid_to_date !== undefined ? unit.total_paid_to_date : unit.purchase_price,
+      monthly_installment_due: unit.monthly_installment_due || 0,
+      stay_days_quota_annual: unit.stay_days_quota_annual || 28,
+      stay_days_used_ytd: unit.stay_days_used_ytd || 0,
       contract_start_date: unit.contract_start_date,
       contract_end_date: unit.contract_end_date || '',
       ownership_status: unit.ownership_status,
@@ -149,6 +173,11 @@ export const UnitsRegistryView: React.FC = () => {
         unit_sqm: Number(formData.unit_sqm),
         purchase_price: Number(formData.purchase_price),
         vat_amount: Number(formData.vat_amount),
+        total_purchase_price: Number(formData.total_purchase_price || formData.purchase_price),
+        total_paid_to_date: Number(formData.total_paid_to_date),
+        monthly_installment_due: Number(formData.monthly_installment_due),
+        stay_days_quota_annual: Number(formData.stay_days_quota_annual || 28),
+        stay_days_used_ytd: Number(formData.stay_days_used_ytd || 0),
         floor_number: Number(formData.floor_number),
         bank_account_name: formData.bank_account_name || formData.owner_name,
       });
@@ -305,16 +334,16 @@ export const UnitsRegistryView: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold">
-                <th className="py-2.5 px-3">Unit</th>
-                <th className="py-2.5 px-3">Type & Floor</th>
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold text-[11px] font-mono uppercase tracking-wider">
+                <th className="py-2.5 px-3">Unit &amp; Type</th>
                 <th className="py-2.5 px-3">Owner / Investor</th>
-                <th className="py-2.5 px-3 text-right">Floor Area (SQM)</th>
-                <th className="py-2.5 px-3 text-right">Purchase Price (Net VAT)</th>
-                <th className="py-2.5 px-3">Contract Window</th>
-                <th className="py-2.5 px-3">Tax Treatment</th>
-                <th className="py-2.5 px-3">Status</th>
-                <th className="py-2.5 px-3 text-center">Actions</th>
+                <th className="py-2.5 px-3">Opsi &amp; Tipe Kontrak</th>
+                <th className="py-2.5 px-3 text-right">Luas (SQM)</th>
+                <th className="py-2.5 px-3 text-right">Harga Pokok (Net VAT)</th>
+                <th className="py-2.5 px-3">Status Cicilan ke Keen Eye</th>
+                <th className="py-2.5 px-3 text-center">Jatah Stay</th>
+                <th className="py-2.5 px-3">Pajak &amp; Status</th>
+                <th className="py-2.5 px-3 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -333,19 +362,47 @@ export const UnitsRegistryView: React.FC = () => {
               ) : (
                 filteredUnits.map((unit) => {
                   const netBasis = unit.purchase_price - unit.vat_amount;
+                  const is10PctGuaranteed = unit.return_option_type !== 'POOLED_OPTION';
+                  const remainingDue = Math.max(0, (unit.total_purchase_price || unit.purchase_price) - (unit.total_paid_to_date || 0));
+
                   return (
                     <tr key={unit.unit_id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-2.5 px-3 font-bold text-slate-900">
-                        {unit.unit_number}
-                      </td>
                       <td className="py-2.5 px-3">
-                        <span className="font-medium text-slate-800">{unit.unit_type}</span>
-                        <span className="block text-[11px] text-slate-400">Floor {unit.floor_number}</span>
+                        <span className="font-bold text-slate-900 block font-mono">Unit {unit.unit_number}</span>
+                        <span className="text-[11px] text-slate-500">{unit.unit_type} (Lt {unit.floor_number})</span>
                       </td>
                       <td className="py-2.5 px-3">
                         <div className="font-semibold text-slate-900">{unit.owner_name}</div>
-                        <div className="text-[11px] text-slate-500 truncate max-w-[180px]">
-                          {unit.owner_email || unit.bank_name}
+                        <div className="text-[11px] text-slate-500 truncate max-w-[170px]">
+                          {unit.bank_name} {unit.bank_account_number}
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-3 space-y-1">
+                        <div>
+                          {is10PctGuaranteed ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              Guaranteed 10%
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                              Pooled Option (65%)
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          {unit.contract_payment_type === 'FULLY_PAID' ? (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-slate-100 text-slate-700">
+                              Fully Paid
+                            </span>
+                          ) : unit.contract_payment_type === 'PARTIALLY_PAID_GUARANTEED_INSTALLMENT' ? (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                              Cicilan ke Keen Eye
+                            </span>
+                          ) : (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-slate-100 text-slate-500">
+                              No Return Until Full
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-blue-900">
@@ -353,38 +410,41 @@ export const UnitsRegistryView: React.FC = () => {
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono text-[11px]">
                         <div className="font-semibold text-slate-900">{formatIDR(netBasis)}</div>
-                        <div className="text-slate-400">Gross: {formatIDR(unit.purchase_price)}</div>
+                        <div className="text-slate-400 font-sans text-[10px]">Basis Return 10%</div>
                       </td>
-                      <td className="py-2.5 px-3 text-[11px]">
-                        <div className="font-medium text-slate-800">{unit.contract_start_date}</div>
-                        <div className="text-slate-400">to {unit.contract_end_date || 'N/A'}</div>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        {unit.tax_treatment === 'WHT_FINAL_10_PCT' ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            PPh Final 10%
-                          </span>
-                        ) : unit.tax_treatment === 'WHT_PPh23_2_PCT' ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                            PPh 23 (2%)
-                          </span>
-                        ) : unit.tax_treatment === 'TAX_EXEMPT' ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600">
-                            Exempt (0%)
-                          </span>
+                      <td className="py-2.5 px-3 font-mono text-[11px]">
+                        {unit.contract_payment_type === 'PARTIALLY_PAID_GUARANTEED_INSTALLMENT' ? (
+                          <div className="space-y-0.5">
+                            <div className="text-amber-800 font-bold">
+                              Cicilan: {formatIDR(unit.monthly_installment_due || 0)}/bln
+                            </div>
+                            <div className="text-slate-500 text-[10px]">
+                              Terbayar: {formatIDR(unit.total_paid_to_date || 0)}
+                            </div>
+                            <div className="text-slate-400 text-[10px]">
+                              Sisa: {formatIDR(remainingDue)}
+                            </div>
+                          </div>
+                        ) : unit.contract_payment_type === 'FULLY_PAID' ? (
+                          <span className="text-emerald-700 font-semibold text-[11px]">Lunas 100% (No Cicilan)</span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                            Unconfigured
-                          </span>
+                          <span className="text-slate-500 text-[11px]">Belum Lunas (Sisa: {formatIDR(remainingDue)})</span>
                         )}
                       </td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className="font-mono font-semibold text-slate-800 text-xs">
+                          {unit.stay_days_used_ytd || 0} / {unit.stay_days_quota_annual || 28}
+                        </span>
+                        <span className="block text-[10px] text-slate-400">Hari Terpakai</span>
+                      </td>
                       <td className="py-2.5 px-3">
+                        <div className="text-[11px] font-semibold text-slate-800">
+                          {unit.tax_treatment === 'WHT_FINAL_10_PCT' ? 'PPh Final 10%' : unit.tax_treatment === 'WHT_PPh23_2_PCT' ? 'PPh 23 (2%)' : 'Tax Exempt'}
+                        </div>
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[11px] font-semibold inline-block ${
+                          className={`px-1.5 py-0.2 rounded-full text-[10px] font-semibold inline-block mt-0.5 ${
                             unit.distribution_status === 'Eligible'
                               ? 'bg-emerald-100 text-emerald-800'
-                              : unit.distribution_status === 'Suspended'
-                              ? 'bg-amber-100 text-amber-800'
                               : 'bg-slate-100 text-slate-600'
                           }`}
                         >
@@ -554,6 +614,101 @@ export const UnitsRegistryView: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, owner_phone: e.target.value })}
                     className="w-full px-3 py-1.5 border border-slate-300 rounded-lg"
                   />
+                </div>
+              </div>
+
+              {/* Program Return & Tipe Kontrak Pembayaran */}
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <span className="text-[11px] font-mono uppercase font-bold text-slate-700 block tracking-wider">
+                  Program Return &amp; Skema Pembayaran Unit (PT Keen Eye)
+                </span>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">Opsi Return *</label>
+                    <select
+                      value={formData.return_option_type}
+                      onChange={(e) => setFormData({ ...formData, return_option_type: e.target.value as any })}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-white"
+                    >
+                      <option value="GUARANTEED_10_PCT">Guaranteed 10% (Fixed Floor by PT Keen Eye)</option>
+                      <option value="POOLED_OPTION">Pooled Option (Pure Revenue Share 65%)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">Tipe Kontrak Pembayaran *</label>
+                    <select
+                      value={formData.contract_payment_type}
+                      onChange={(e) => setFormData({ ...formData, contract_payment_type: e.target.value as any })}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-white"
+                    >
+                      <option value="FULLY_PAID">Fully Paid (Lunas Penuh - Payout Cash 15th)</option>
+                      <option value="PARTIALLY_PAID_GUARANTEED_INSTALLMENT">Partially Paid + 10% Garansi (Cicilan via Return)</option>
+                      <option value="PARTIALLY_PAID_NO_RETURN">Partially Paid (No Return Until Fully Paid)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* 3 Kolom Pelacak Cicilan Keen Eye */}
+                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-200">
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">Total Harga Pokok (IDR) *</label>
+                    <input
+                      type="number"
+                      value={formData.total_purchase_price}
+                      onChange={(e) => setFormData({ ...formData, total_purchase_price: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">Pokok Terbayar to Date (IDR) *</label>
+                    <input
+                      type="number"
+                      value={formData.total_paid_to_date}
+                      onChange={(e) => setFormData({ ...formData, total_paid_to_date: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">Cicilan Bulanan ke Keen Eye *</label>
+                    <input
+                      type="number"
+                      value={formData.monthly_installment_due}
+                      onChange={(e) => setFormData({ ...formData, monthly_installment_due: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono text-amber-800 font-bold"
+                    />
+                  </div>
+                </div>
+                <div className="text-[11px] text-slate-500 flex justify-between font-mono">
+                  <span>Sisa Hutang Pokok ke PT Keen Eye:</span>
+                  <span className="font-bold text-slate-800">
+                    Rp {Math.max(0, (formData.total_purchase_price || 0) - (formData.total_paid_to_date || 0)).toLocaleString('id-ID')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Jatah Menginap Owner (Owner Stay Privilege) */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Jatah Stay Tahunan (Hari) *</label>
+                  <input
+                    type="number"
+                    value={formData.stay_days_quota_annual}
+                    onChange={(e) => setFormData({ ...formData, stay_days_quota_annual: parseInt(e.target.value, 10) || 28 })}
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
+                  />
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Default: 28 hari per tahun (10% market rate)</span>
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Hari Terpakai Tahun Ini</label>
+                  <input
+                    type="number"
+                    value={formData.stay_days_used_ytd}
+                    onChange={(e) => setFormData({ ...formData, stay_days_used_ytd: parseInt(e.target.value, 10) || 0 })}
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
+                  />
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Hari ke-29+ dikenakan tarif 75% tanpa potong return</span>
                 </div>
               </div>
 

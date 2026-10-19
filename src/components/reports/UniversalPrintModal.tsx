@@ -50,7 +50,6 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
   defaultOrientation = 'portrait',
 }) => {
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>(defaultOrientation);
-  const [showSignatures, setShowSignatures] = useState(true);
   const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -172,20 +171,6 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
               </button>
             </div>
 
-            {/* Toggle Signatures */}
-            <button
-              type="button"
-              onClick={() => setShowSignatures(!showSignatures)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                showSignatures
-                  ? 'bg-emerald-950/50 text-emerald-300 border-emerald-800/50'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
-              }`}
-              title="Toggle Statutory Signatures Block"
-            >
-              <span>Signatures: {showSignatures ? 'ON' : 'OFF'}</span>
-            </button>
-
             {/* Excel Export (if supported) */}
             {onExportExcel && (
               <button
@@ -288,26 +273,22 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
               font-size: 8.5pt !important;
             }
 
-            /* Purge interactive clutter from the on-screen modal preview */
-            #universal-modal-print-content .print\\:hidden,
+            /* Purge interactive clutter and non-printable elements from the on-screen modal preview */
+            #universal-modal-print-content .print\:hidden,
             #universal-modal-print-content [class*="print:hidden"],
             #universal-modal-print-content .no-print,
             #universal-modal-print-content [class*="no-print"],
             #universal-modal-print-content .preview-hidden,
             #universal-modal-print-content [class*="preview-hidden"],
+            #universal-modal-print-content .non-printable-col,
+            #universal-modal-print-content [data-non-printable="true"],
+            #universal-modal-print-content .header-col-inspect,
+            #universal-modal-print-content [class*="inspect"],
             #universal-modal-print-content button,
             #universal-modal-print-content input,
             #universal-modal-print-content select,
-            #universal-modal-print-content svg.lucide,
+            #universal-modal-print-content svg,
             #universal-modal-print-content .lucide {
-              display: none !important;
-            }
-
-            /* Hide Accounts and Drill-Down columns on the preview paper */
-            #universal-modal-print-content table th:nth-child(3),
-            #universal-modal-print-content table th:nth-child(4),
-            #universal-modal-print-content table td:nth-child(3),
-            #universal-modal-print-content table td:nth-child(4) {
               display: none !important;
             }
 
@@ -394,49 +375,6 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
           <div className="print-content-clean-body text-black">
             {children}
           </div>
-
-          {/* Statutory 4-Tier Governance Signatures */}
-          {showSignatures && (
-            <div className="mt-10 pt-4 border-t border-black page-break-avoid">
-              <div className="text-[9px] font-mono uppercase font-bold text-black tracking-wider mb-3">
-                STATUTORY &amp; EXECUTIVE GOVERNANCE SIGN-OFF:
-              </div>
-
-              <div className="grid grid-cols-4 gap-3 text-center">
-                <div className="border border-black p-2 flex flex-col justify-between h-24">
-                  <div className="text-[8px] font-bold uppercase text-black">1. PREPARED BY</div>
-                  <div className="my-auto">
-                    <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                    <div className="text-[10px] font-bold text-black">Chief Accountant</div>
-                  </div>
-                </div>
-
-                <div className="border border-black p-2 flex flex-col justify-between h-24">
-                  <div className="text-[8px] font-bold uppercase text-black">2. REVIEWED BY</div>
-                  <div className="my-auto">
-                    <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                    <div className="text-[10px] font-bold text-black">Financial Controller</div>
-                  </div>
-                </div>
-
-                <div className="border border-black p-2 flex flex-col justify-between h-24">
-                  <div className="text-[8px] font-bold uppercase text-black">3. APPROVED BY</div>
-                  <div className="my-auto">
-                    <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                    <div className="text-[10px] font-bold text-black">General Manager</div>
-                  </div>
-                </div>
-
-                <div className="border border-black p-2 flex flex-col justify-between h-24">
-                  <div className="text-[8px] font-bold uppercase text-black">4. ACKNOWLEDGED BY</div>
-                  <div className="my-auto">
-                    <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                    <div className="text-[10px] font-bold text-black">Director / Representative</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Running Footer Rule */}
           <div className="mt-8 pt-2 border-t border-black flex justify-between items-center text-[10px] text-black font-sans">

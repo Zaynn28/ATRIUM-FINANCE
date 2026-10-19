@@ -13,6 +13,11 @@ import {
   Clock,
   Settings2,
   ArrowRight,
+  Calendar,
+  Download,
+  FileSpreadsheet,
+  Printer,
+  Search,
 } from 'lucide-react';
 import {
   RevenueTransaction,
@@ -22,6 +27,8 @@ import {
 } from '../types';
 import { api } from '../services/api';
 import { AccountsReceivableModule } from './ar/AccountsReceivableModule';
+import { exportReportToExcel } from '../utils/excelExporter';
+import { printReportElement } from '../utils/printManager';
 
 interface RevenueCycleViewProps {
   transactions: RevenueTransaction[];
@@ -71,6 +78,86 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
     txId: string;
     journalId: string;
   } | null>(null);
+
+  // Revenue Log Filter & Export States
+  const [logDateFrom, setLogDateFrom] = useState('');
+  const [logDateTo, setLogDateTo] = useState('');
+  const [logSearch, setLogSearch] = useState('');
+  const [logDept, setLogDept] = useState('ALL');
+
+  const filteredTransactions = transactions.filter((tx) => {
+    if (logDateFrom && tx.date < logDateFrom) return false;
+    if (logDateTo && tx.date > logDateTo) return false;
+    if (logDept !== 'ALL' && tx.department_code !== logDept) return false;
+    if (logSearch.trim()) {
+      const q = logSearch.toLowerCase();
+      const matchId = tx.transaction_id.toLowerCase().includes(q);
+      const matchDesc = (tx.description || '').toLowerCase().includes(q);
+      const matchAcc = tx.account_code.toLowerCase().includes(q);
+      if (!matchId && !matchDesc && !matchAcc) return false;
+    }
+    return true;
+  });
+
+  const totalFilteredAmount = filteredTransactions.reduce((sum, tx) => sum + (tx.amount || 0), 0);
+
+  const handleExportCSV = () => {
+    const headers = [
+      'Date',
+      'Transaction ID',
+      'Department',
+      'Revenue Account',
+      'Amount (IDR)',
+      'Description',
+      'Journal ID',
+    ];
+    const rows = filteredTransactions.map((tx) => [
+      tx.date,
+      `"${tx.transaction_id}"`,
+      `"${tx.department_code}"`,
+      `"${tx.account_code}"`,
+      tx.amount,
+      `"${(tx.description || '').replace(/"/g, '""')}"`,
+      `"${tx.journal_id || ''}"`,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Revenue_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportExcel = () => {
+    exportReportToExcel(`Revenue_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}`, [
+      {
+        name: 'Revenue Log',
+        title: 'REVENUE INGESTION & AUDIT LOG',
+        subtitle: `PT Atrium Management Group • Period: ${logDateFrom || 'Start'} to ${logDateTo || 'Present'}`,
+        period: logDateFrom ? `${logDateFrom} to ${logDateTo || 'Present'}` : 'All Recorded',
+        headers: ['Date', 'Transaction ID', 'Department', 'Account Code', 'Amount (Rp)', 'Description', 'Journal ID'],
+        rows: filteredTransactions.map((tx) => [
+          tx.date,
+          tx.transaction_id,
+          tx.department_code,
+          tx.account_code,
+          tx.amount,
+          tx.description || '',
+          tx.journal_id || '',
+        ]),
+        colWidths: [14, 18, 12, 14, 18, 32, 18],
+      },
+    ]);
+  };
+
+  const handlePrint = () => {
+    printReportElement('revenue-transactions-printable-area', {
+      title: 'Revenue Ingestion & Transactions Audit Log',
+      subtitle: `PT Atrium Management Group • Total Revenue: Rp ${totalFilteredAmount.toLocaleString('id-ID')}`,
+    });
+  };
 
   // Active Revenue accounts
   const revenueAccounts = accounts.filter(
@@ -279,13 +366,36 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             {/* Transaction Date */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Transaction Date *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-slate-300 font-medium">Transaction Date *</label>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, date: new Date().toISOString().split('T')[0] })}
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                  >
+                    Today
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() - 1);
+                      setFormData({ ...formData, date: d.toISOString().split('T')[0] });
+                    }}
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                  >
+                    Yesterday
+                  </button>
+                </div>
+              </div>
               <input
                 type="date"
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                style={{ colorScheme: 'dark' }}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-emerald-500 outline-none cursor-pointer"
               />
             </div>
 
@@ -371,17 +481,20 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
             {/* Amount */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Transaction Amount ($) *</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0.01"
-                required
-                placeholder="0.00"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono text-sm focus:border-emerald-500 outline-none"
-              />
+              <label className="block text-slate-300 font-medium mb-1">Transaction Amount (IDR / Rp) *</label>
+              <div className="relative">
+                <span className="absolute left-3 top-2 text-slate-400 font-mono font-bold text-xs">Rp</span>
+                <input
+                  type="number"
+                  step="1"
+                  min="1"
+                  required
+                  placeholder="0"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-slate-100 font-mono text-sm focus:border-emerald-500 outline-none"
+                />
+              </div>
             </div>
 
             {/* Description */}
@@ -400,12 +513,12 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
             <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 space-y-1 font-mono text-[11px]">
               <div className="text-slate-400 font-sans font-medium">Double-Entry Preview:</div>
               <div className="text-emerald-400">
-                DR: [{formData.debit_account_code || mappingConfig?.revenue_default_debit_account || 'Asset Pending'}] $
-                {formData.amount || '0.00'}
+                DR: [{formData.debit_account_code || mappingConfig?.revenue_default_debit_account || 'Asset Pending'}] Rp{' '}
+                {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
               <div className="text-blue-400">
-                CR: [{formData.account_code || 'Revenue Pending'}] $
-                {formData.amount || '0.00'}
+                CR: [{formData.account_code || 'Revenue Pending'}] Rp{' '}
+                {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
             </div>
 
@@ -423,17 +536,110 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
         {/* Transactions History Table */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-slate-400" />
-              <span>Revenue Transactions Log ({transactions.length})</span>
-            </h2>
-            <span className="text-xs text-slate-500">
-              Only POSTED journals appear in financial reporting
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-400" />
+                <span>Revenue Transactions Log ({filteredTransactions.length})</span>
+              </h2>
+              <span className="text-xs text-slate-500">
+                Total Ingested: <span className="font-mono text-emerald-400 font-semibold">Rp {totalFilteredAmount.toLocaleString('id-ID')}</span>
+              </span>
+            </div>
+
+            {/* Export Toolbar */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+                title="Export to CSV"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>CSV</span>
+              </button>
+              <button
+                onClick={handleExportExcel}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors"
+                title="Export to Excel (.xlsx)"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Excel</span>
+              </button>
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+                title="Print Log / Save to PDF"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>PDF</span>
+              </button>
+            </div>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          {/* Period & Filter Controls */}
+          <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+              <Search className="w-3.5 h-3.5 text-slate-500" />
+              <input
+                type="text"
+                placeholder="Search reference, description, account..."
+                value={logSearch}
+                onChange={(e) => setLogSearch(e.target.value)}
+                className="bg-transparent text-xs text-slate-200 outline-none w-full placeholder-slate-500"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
+                <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-slate-400 text-[11px]">Period:</span>
+                <input
+                  type="date"
+                  value={logDateFrom}
+                  onChange={(e) => setLogDateFrom(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  title="From Date"
+                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                />
+                <span className="text-slate-500 text-[11px]">to</span>
+                <input
+                  type="date"
+                  value={logDateTo}
+                  onChange={(e) => setLogDateTo(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  title="To Date"
+                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                />
+                {(logDateFrom || logDateTo) && (
+                  <button
+                    onClick={() => {
+                      setLogDateFrom('');
+                      setLogDateTo('');
+                    }}
+                    className="text-slate-400 hover:text-slate-200 text-xs px-1 font-bold"
+                    title="Clear date filter"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+
+              <select
+                value={logDept}
+                onChange={(e) => setLogDept(e.target.value)}
+                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 text-xs outline-none"
+              >
+                <option value="ALL">All Departments</option>
+                {activeDepartments.map((d) => (
+                  <option key={d.department_code} value={d.department_code}>
+                    {d.department_code} - {d.department_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div id="revenue-transactions-printable-area" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
@@ -448,7 +654,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {transactions.length === 0 ? (
+                  {filteredTransactions.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-500 font-sans">
                         <ArrowDownLeft className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
@@ -459,7 +665,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                       </td>
                     </tr>
                   ) : (
-                    transactions.map((tx) => {
+                    filteredTransactions.map((tx) => {
                       const acc = (accounts || []).find((a) => a.account_code === tx.account_code);
                       return (
                         <tr key={tx.transaction_id} className="hover:bg-slate-800/40">

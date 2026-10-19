@@ -1011,6 +1011,15 @@ th { background: #f1f5f9; font-weight: 700; text-align: left; }
       content: html,
     };
   }
+
+  // --- MOCK DATA RESET ---
+  public resetMockData(): { clearedDispatches: number } {
+    const clearedDispatches = this.dispatches.length;
+    this.dispatches = [];
+    this.savedDrafts.clear();
+    this.saveToDisk();
+    return { clearedDispatches };
+  }
 }
 
 export const ownerEmailStore = new OwnerEmailStore();

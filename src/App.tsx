@@ -23,6 +23,7 @@ import { MappingModal } from './components/MappingModal';
 import { DbStatusModal } from './components/DbStatusModal';
 import { ManualJournalModal } from './components/ManualJournalModal';
 import { LoginScreen } from './components/auth/LoginScreen';
+import { PettyCashView } from './components/PettyCashView';
 import {
   Account,
   Department,
@@ -48,7 +49,7 @@ export default function App() {
   const [activePillar, setActivePillar] = useState<PrimaryNavPillar>('command-centre');
 
   // Sub-navigation within multi-view pillars
-  const [operationsSubTab, setOperationsSubTab] = useState<'revenue' | 'spending' | 'inventory' | 'service-charge'>('revenue');
+  const [operationsSubTab, setOperationsSubTab] = useState<'revenue' | 'spending' | 'inventory' | 'service-charge' | 'petty-cash'>('revenue');
   const [accountingCoreSubTab, setAccountingCoreSubTab] = useState<'workbench' | 'ledger' | 'trial-balance'>('workbench');
   const [reportsSubTab, setReportsSubTab] = useState<'usali' | 'financial' | 'trial-balance' | 'ledger' | 'owner-pool'>('usali');
 
@@ -151,7 +152,7 @@ export default function App() {
     setActivePillar(pillar);
     if (
       pillar === 'operations' &&
-      (subView === 'revenue' || subView === 'spending' || subView === 'inventory' || subView === 'service-charge')
+      (subView === 'revenue' || subView === 'spending' || subView === 'inventory' || subView === 'service-charge' || subView === 'petty-cash')
     ) {
       setOperationsSubTab(subView as any);
     } else if (
@@ -341,6 +342,13 @@ export default function App() {
                 accounts={accounts}
                 onViewJournal={handleViewJournal}
                 onRefreshStore={refreshAll}
+              />
+            )}
+
+            {activePillar === 'operations' && operationsSubTab === 'petty-cash' && (
+              <PettyCashView
+                onRefresh={refreshAll}
+                onViewJournal={handleViewJournal}
               />
             )}
 

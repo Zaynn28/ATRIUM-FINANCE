@@ -29,6 +29,7 @@ import {
   FileSpreadsheet,
   Printer,
   Eye,
+  Trash2,
 } from 'lucide-react';
 import { PrintableReportContainer } from './reports/PrintableReportContainer';
 import {
@@ -118,6 +119,31 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
   }>({
     rate: 0,
     glAccount: '',
+    filingDueDay: 20,
+    paymentDueDay: 10,
+    active: 'Y',
+    taxBaseDesc: '',
+    notes: '',
+  });
+
+  const [isAddRuleModalOpen, setIsAddRuleModalOpen] = useState<boolean>(false);
+  const [newRuleForm, setNewRuleForm] = useState<{
+    code: string;
+    name: string;
+    category: any;
+    rate: number;
+    glAccount: string;
+    filingDueDay: number;
+    paymentDueDay: number;
+    active: 'Y' | 'N';
+    taxBaseDesc: string;
+    notes: string;
+  }>({
+    code: '',
+    name: '',
+    category: 'NATIONAL_WHT',
+    rate: 2.0,
+    glAccount: '2080',
     filingDueDay: 20,
     paymentDueDay: 10,
     active: 'Y',
@@ -280,6 +306,67 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
       await loadData();
     } catch (err: any) {
       setStatusMessage({ type: 'error', text: err.message || 'Failed to update tax rule.' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Action: Create New Tax Rule
+  const handleCreateRule = async () => {
+    if (!newRuleForm.code.trim() || !newRuleForm.name.trim()) {
+      setStatusMessage({ type: 'error', text: 'Tax code and tax name are required.' });
+      return;
+    }
+    try {
+      setActionLoading(true);
+      await api.createTaxRule(
+        {
+          tax_code: newRuleForm.code.toUpperCase().replace(/\s+/g, '_') as any,
+          tax_name: newRuleForm.name,
+          tax_category: newRuleForm.category,
+          tax_rate_pct: Number(newRuleForm.rate),
+          gl_liability_account: newRuleForm.glAccount,
+          filing_due_day: Number(newRuleForm.filingDueDay),
+          payment_due_day: Number(newRuleForm.paymentDueDay),
+          active: newRuleForm.active,
+          tax_base_description: newRuleForm.taxBaseDesc,
+          notes: newRuleForm.notes,
+        },
+        currentUser?.name
+      );
+      setIsAddRuleModalOpen(false);
+      setStatusMessage({ type: 'success', text: `Tax rule ${newRuleForm.code} added successfully.` });
+      // Reset form
+      setNewRuleForm({
+        code: '',
+        name: '',
+        category: 'NATIONAL_WHT',
+        rate: 2.0,
+        glAccount: '2080',
+        filingDueDay: 20,
+        paymentDueDay: 10,
+        active: 'Y',
+        taxBaseDesc: '',
+        notes: '',
+      });
+      await loadData();
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message || 'Failed to create tax rule.' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Action: Delete Tax Rule
+  const handleDeleteRule = async (taxCode: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete tax rule "${taxCode}"?`)) return;
+    try {
+      setActionLoading(true);
+      await api.deleteTaxRule(taxCode);
+      setStatusMessage({ type: 'success', text: `Tax rule ${taxCode} removed successfully.` });
+      await loadData();
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message || 'Failed to delete tax rule.' });
     } finally {
       setActionLoading(false);
     }
@@ -1053,9 +1140,16 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
                   Master Tax Rules & Statutory Configuration
                 </h3>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Tax rates and deadlines are configurable by authorized controllers. Historical calculated periods will not mutate.
+                  Tax rates and statutory rules are configurable by authorized controllers. Historical closed periods will not mutate.
                 </p>
               </div>
+              <button
+                onClick={() => setIsAddRuleModalOpen(true)}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>New Tax Rule</span>
+              </button>
             </div>
 
             <div className="overflow-x-auto">
@@ -1102,23 +1196,32 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-center font-sans">
-                        <button
-                          onClick={() => {
-                            setRuleModalItem(rule);
-                            setRuleForm({
-                              rate: rule.tax_rate_pct,
-                              glAccount: rule.gl_liability_account,
-                              filingDueDay: rule.filing_due_day,
-                              paymentDueDay: rule.payment_due_day,
-                              active: rule.active,
-                              taxBaseDesc: rule.tax_base_description,
-                              notes: rule.notes || '',
-                            });
-                          }}
-                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs border border-slate-700 font-medium"
-                        >
-                          Edit Rule
-                        </button>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            onClick={() => {
+                              setRuleModalItem(rule);
+                              setRuleForm({
+                                rate: rule.tax_rate_pct,
+                                glAccount: rule.gl_liability_account,
+                                filingDueDay: rule.filing_due_day,
+                                paymentDueDay: rule.payment_due_day,
+                                active: rule.active,
+                                taxBaseDesc: rule.tax_base_description,
+                                notes: rule.notes || '',
+                              });
+                            }}
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs border border-slate-700 font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteRule(rule.tax_code)}
+                            className="p-1 rounded bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-800 text-xs transition-colors"
+                            title={`Delete tax rule ${rule.tax_code}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1455,6 +1558,148 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
                 className="px-4 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs shadow"
               >
                 Save Rule
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Add New Tax Rule */}
+      {isAddRuleModalOpen && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider font-mono flex items-center gap-2">
+                <Plus className="w-4 h-4 text-emerald-400" />
+                <span>Add Statutory Tax Rule</span>
+              </h3>
+              <button
+                onClick={() => setIsAddRuleModalOpen(false)}
+                className="text-slate-400 hover:text-slate-200 text-lg font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-slate-400 mb-1">Tax Code *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. PPH_4_2_RENT"
+                    value={newRuleForm.code}
+                    onChange={(e) => setNewRuleForm({ ...newRuleForm, code: e.target.value.toUpperCase() })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 font-mono uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Category</label>
+                  <select
+                    value={newRuleForm.category}
+                    onChange={(e) => setNewRuleForm({ ...newRuleForm, category: e.target.value as any })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200"
+                  >
+                    <option value="LOCAL_PBJT">Local PBJT Hotel & F&B</option>
+                    <option value="NATIONAL_WHT">National Withholding Tax</option>
+                    <option value="CORPORATE_TAX">Corporate Tax (PPh 25 / Badan)</option>
+                    <option value="VAT">Value Added Tax (PPN)</option>
+                    <option value="OWNER_RETURN_TAX">Owner Pool Withholding</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Tax Name / Title *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. PPh 4(2) Building Rent Withholding"
+                  value={newRuleForm.name}
+                  onChange={(e) => setNewRuleForm({ ...newRuleForm, name: e.target.value })}
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-slate-400 mb-1">Tax Rate (%)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={newRuleForm.rate}
+                    onChange={(e) => setNewRuleForm({ ...newRuleForm, rate: parseFloat(e.target.value) || 0 })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">GL Account Code</label>
+                  <input
+                    type="text"
+                    placeholder="2080"
+                    value={newRuleForm.glAccount}
+                    onChange={(e) => setNewRuleForm({ ...newRuleForm, glAccount: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-slate-400 mb-1">Filing Due (Day of Month)</label>
+                  <input
+                    type="number"
+                    value={newRuleForm.filingDueDay}
+                    onChange={(e) => setNewRuleForm({ ...newRuleForm, filingDueDay: parseInt(e.target.value, 10) || 20 })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Payment Due (Day of Month)</label>
+                  <input
+                    type="number"
+                    value={newRuleForm.paymentDueDay}
+                    onChange={(e) => setNewRuleForm({ ...newRuleForm, paymentDueDay: parseInt(e.target.value, 10) || 10 })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Tax Base Description</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Gross rental invoice amount before VAT"
+                  value={newRuleForm.taxBaseDesc}
+                  onChange={(e) => setNewRuleForm({ ...newRuleForm, taxBaseDesc: e.target.value })}
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Statutory Notes</label>
+                <textarea
+                  rows={2}
+                  placeholder="Regulatory notes or article reference"
+                  value={newRuleForm.notes}
+                  onChange={(e) => setNewRuleForm({ ...newRuleForm, notes: e.target.value })}
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-slate-200"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <button
+                onClick={() => setIsAddRuleModalOpen(false)}
+                className="px-3 py-1.5 rounded text-xs text-slate-400 hover:text-slate-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateRule}
+                disabled={actionLoading || !newRuleForm.code.trim() || !newRuleForm.name.trim()}
+                className="px-4 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs shadow disabled:opacity-50"
+              >
+                {actionLoading ? 'Creating...' : 'Create Rule'}
               </button>
             </div>
           </div>

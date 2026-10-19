@@ -35,6 +35,8 @@ import {
   Send,
   FileSpreadsheet,
   Printer,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { exportReportToExcel } from '../../../utils/excelExporter';
 import { printReportElement } from '../../../utils/printManager';
@@ -91,6 +93,20 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
   useEffect(() => {
     loadData(period);
   }, [period]);
+
+  const navigatePeriod = (deltaMonths: number) => {
+    try {
+      const parts = period.split('-').map(Number);
+      const y = parts[0] || 2026;
+      const m = parts[1] || 9;
+      const date = new Date(y, m - 1 + deltaMonths, 1);
+      const nextY = date.getFullYear();
+      const nextM = String(date.getMonth() + 1).padStart(2, '0');
+      setPeriod(`${nextY}-${nextM}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleCalculate = async () => {
     setActionLoading(true);
@@ -264,16 +280,30 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
               Accounting Period:
             </span>
           </div>
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
-          >
-            <option value="2026-09">2026-09 (September 2026 - Active)</option>
-            <option value="2026-08">2026-08 (August 2026 - Closed)</option>
-            <option value="2026-07">2026-07 (July 2026)</option>
-            <option value="2026-06">2026-06 (June 2026)</option>
-          </select>
+          <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg p-0.5 shadow-xs">
+            <button
+              onClick={() => navigatePeriod(-1)}
+              className="p-1 rounded hover:bg-slate-200 text-slate-600 transition-colors"
+              title="Previous Month"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <div className="flex items-center gap-1.5 px-2 py-0.5">
+              <input
+                type="month"
+                value={period}
+                onChange={(e) => e.target.value && setPeriod(e.target.value)}
+                className="bg-transparent text-xs font-bold text-slate-800 outline-none cursor-pointer font-mono"
+              />
+            </div>
+            <button
+              onClick={() => navigatePeriod(1)}
+              className="p-1 rounded hover:bg-slate-200 text-slate-600 transition-colors"
+              title="Next Month"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {currentBatch && (
             <span

@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import fs from 'fs';
+import path from 'path';
 import {
   Account,
   Department,
@@ -34,6 +36,9 @@ import { GoogleSheetsClient, REQUIRED_TABS } from './sheets';
 
 export class AccountingStore {
   public sheetsClient: GoogleSheetsClient;
+
+  // Persistent mock data status flag
+  public isMockDataCleared: boolean = false;
 
   // In-memory active dataset (mirrored with Google Sheets when connected)
   public accounts: Map<string, Account> = new Map();
@@ -239,6 +244,18 @@ export class AccountingStore {
   }
 
   public async init(): Promise<void> {
+    const stateFile = path.join(process.cwd(), 'data', 'system_state.json');
+    if (fs.existsSync(stateFile)) {
+      try {
+        const state = JSON.parse(fs.readFileSync(stateFile, 'utf-8'));
+        if (state.mock_data_cleared) {
+          this.isMockDataCleared = true;
+        }
+      } catch (e) {
+        console.warn('Failed to parse system_state.json', e);
+      }
+    }
+
     const connected = await this.sheetsClient.initialize();
     if (connected) {
       await this.loadFromSheets();
@@ -349,7 +366,7 @@ export class AccountingStore {
   }
 
   public async seedInitialPostedNightAuditRevenueIfEmpty(): Promise<void> {
-    if (this.journalHeaders.has('JRN-PMS-202609-CLOSE')) return;
+    if (this.isMockDataCleared || this.journalHeaders.has('JRN-PMS-202609-CLOSE')) return;
 
     // Seed realistic posted Night Audit revenues for 2026-08 and 2026-09
     const seedBatches = [
@@ -2549,6 +2566,66 @@ export class AccountingStore {
     this.currentUserId = 'usr-controller-1';
     this.initDefaultAccessControl();
     return this.getAccessControlState();
+  }
+
+  // --- MOCK DATA LIFECYCLE & RESET UTILITIES ---
+
+  public resetMockData(): { clearedJournals: number; clearedRevenue: number; clearedSpending: number } {
+    const clearedJournals = this.journalHeaders.size;
+    const clearedRevenue = this.revenueTransactions.size;
+    const clearedSpending = this.spendingTransactions.size;
+
+    this.journalHeaders.clear();
+    this.journalLines = [];
+    this.revenueTransactions.clear();
+    this.spendingTransactions.clear();
+    this.isMockDataCleared = true;
+
+    try {
+      const dataDir = path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      const stateFile = path.join(dataDir, 'system_state.json');
+      fs.writeFileSync(
+        stateFile,
+        JSON.stringify({ mock_data_cleared: true, cleared_at: new Date().toISOString() }, null, 2),
+        'utf-8'
+      );
+    } catch (e) {
+      console.error('Failed to write system_state.json:', e);
+    }
+
+    return { clearedJournals, clearedRevenue, clearedSpending };
+  }
+
+  public async seedDemoData(): Promise<void> {
+    this.isMockDataCleared = false;
+    try {
+      const stateFile = path.join(process.cwd(), 'data', 'system_state.json');
+      if (fs.existsSync(stateFile)) {
+        fs.unlinkSync(stateFile);
+      }
+    } catch (e) {
+      console.warn('Could not remove system_state.json:', e);
+    }
+    await this.seedInitialPostedNightAuditRevenueIfEmpty();
+  }
+
+  public getMockDataStats(): {
+    journalHeadersCount: number;
+    journalLinesCount: number;
+    revenueTxCount: number;
+    spendingTxCount: number;
+    isMockDataCleared: boolean;
+  } {
+    return {
+      journalHeadersCount: this.journalHeaders.size,
+      journalLinesCount: this.journalLines.length,
+      revenueTxCount: this.revenueTransactions.size,
+      spendingTxCount: this.spendingTransactions.size,
+      isMockDataCleared: this.isMockDataCleared || (this.journalHeaders.size === 0 && this.revenueTransactions.size === 0),
+    };
   }
 }
 

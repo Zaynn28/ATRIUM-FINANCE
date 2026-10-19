@@ -911,6 +911,19 @@ export class ServiceChargeStore {
 
     this.saveToDisk();
   }
+
+  // --- MOCK DATA RESET ---
+  public resetMockData(options?: { clearEmployees?: boolean }): { clearedCollections: number; clearedCycles: number } {
+    const clearedCollections = this.collections.size;
+    const clearedCycles = this.cycles.size;
+    this.collections.clear();
+    this.cycles.clear();
+    if (options?.clearEmployees) {
+      this.employees.clear();
+    }
+    this.saveToDisk();
+    return { clearedCollections, clearedCycles };
+  }
 }
 
 export const serviceChargeStore = new ServiceChargeStore();

@@ -312,14 +312,14 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
           <div className="p-3 bg-blue-950/40 border border-blue-800/40 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs text-blue-300 font-semibold">
               <ShoppingCart className="w-4 h-4 text-blue-400 shrink-0" />
-              <span>Pilih Purchase Order (PO) untuk Penerimaan Cepat &amp; Otomatisasi Stok:</span>
+              <span>Select Purchase Order (PO) for Fast Goods Receiving &amp; Auto-Stock:</span>
             </div>
             <select
               value={selectedPoId}
               onChange={(e) => handleSelectPo(e.target.value)}
               className="bg-slate-950 border border-blue-500/50 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:border-blue-400 outline-none max-w-sm"
             >
-              <option value="">-- Pilih PO Terbuka / Approved --</option>
+              <option value="">-- Select Open / Approved PO --</option>
               {purchaseOrders
                 .filter((p) => p.status !== 'FULFILLED' && p.status !== 'CANCELLED')
                 .map((p) => (

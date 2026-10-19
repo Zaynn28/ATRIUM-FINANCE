@@ -13,6 +13,11 @@ import {
   Clock,
   Settings2,
   ArrowRight,
+  Calendar,
+  Download,
+  FileSpreadsheet,
+  Printer,
+  Search,
 } from 'lucide-react';
 import {
   SpendingTransaction,
@@ -23,6 +28,8 @@ import {
 } from '../types';
 import { api } from '../services/api';
 import { AccountsPayableModule } from './ap/AccountsPayableModule';
+import { exportReportToExcel } from '../utils/excelExporter';
+import { printReportElement } from '../utils/printManager';
 
 interface SpendingCycleViewProps {
   transactions: SpendingTransaction[];
@@ -86,6 +93,95 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
   };
 
   const currentDefaultCredit = getDefaultCreditAccount(formData.type);
+
+  // Spending Log Filter & Export States
+  const [logDateFrom, setLogDateFrom] = useState('');
+  const [logDateTo, setLogDateTo] = useState('');
+  const [logSearch, setLogSearch] = useState('');
+  const [logDept, setLogDept] = useState('ALL');
+  const [logType, setLogType] = useState('ALL');
+
+  const filteredTransactions = transactions.filter((tx) => {
+    if (logDateFrom && tx.date < logDateFrom) return false;
+    if (logDateTo && tx.date > logDateTo) return false;
+    if (logDept !== 'ALL' && tx.department_code !== logDept) return false;
+    if (logType !== 'ALL' && tx.type !== logType) return false;
+    if (logSearch.trim()) {
+      const q = logSearch.toLowerCase();
+      const matchId = tx.transaction_id.toLowerCase().includes(q);
+      const matchPayee = tx.vendor_or_employee.toLowerCase().includes(q);
+      const matchDesc = (tx.description || '').toLowerCase().includes(q);
+      const matchAcc = tx.account_code.toLowerCase().includes(q);
+      if (!matchId && !matchPayee && !matchDesc && !matchAcc) return false;
+    }
+    return true;
+  });
+
+  const totalFilteredAmount = filteredTransactions.reduce((sum, tx) => sum + (tx.amount || 0), 0);
+
+  const handleExportCSV = () => {
+    const headers = [
+      'Date',
+      'Transaction ID',
+      'Category',
+      'Payee / Vendor',
+      'Department',
+      'Expense Account',
+      'Amount (IDR)',
+      'Description',
+      'Journal ID',
+    ];
+    const rows = filteredTransactions.map((tx) => [
+      tx.date,
+      `"${tx.transaction_id}"`,
+      `"${tx.type}"`,
+      `"${tx.vendor_or_employee}"`,
+      `"${tx.department_code}"`,
+      `"${tx.account_code}"`,
+      tx.amount,
+      `"${(tx.description || '').replace(/"/g, '""')}"`,
+      `"${tx.journal_id || ''}"`,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Spending_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportExcel = () => {
+    exportReportToExcel(`Spending_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}`, [
+      {
+        name: 'Spending Log',
+        title: 'OPERATIONAL SPENDING & DISBURSEMENT LOG',
+        subtitle: `PT Atrium Management Group • Period: ${logDateFrom || 'Start'} to ${logDateTo || 'Present'}`,
+        period: logDateFrom ? `${logDateFrom} to ${logDateTo || 'Present'}` : 'All Recorded',
+        headers: ['Date', 'Transaction ID', 'Category', 'Payee / Vendor', 'Department', 'Expense Account', 'Amount (Rp)', 'Description', 'Journal ID'],
+        rows: filteredTransactions.map((tx) => [
+          tx.date,
+          tx.transaction_id,
+          tx.type,
+          tx.vendor_or_employee,
+          tx.department_code,
+          tx.account_code,
+          tx.amount,
+          tx.description || '',
+          tx.journal_id || '',
+        ]),
+        colWidths: [14, 18, 14, 24, 12, 14, 18, 30, 18],
+      },
+    ]);
+  };
+
+  const handlePrint = () => {
+    printReportElement('spending-transactions-printable-area', {
+      title: 'Operational Spending & Disbursement Audit Log',
+      subtitle: `PT Atrium Management Group • Total Outflow: Rp ${totalFilteredAmount.toLocaleString('id-ID')}`,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -277,13 +373,36 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             {/* Date */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Transaction Date *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-slate-300 font-medium">Transaction Date *</label>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, date: new Date().toISOString().split('T')[0] })}
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                  >
+                    Today
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() - 1);
+                      setFormData({ ...formData, date: d.toISOString().split('T')[0] });
+                    }}
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                  >
+                    Yesterday
+                  </button>
+                </div>
+              </div>
               <input
                 type="date"
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                style={{ colorScheme: 'dark' }}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-amber-500 outline-none cursor-pointer"
               />
             </div>
 
@@ -393,17 +512,20 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
 
             {/* Amount */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Amount ($) *</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0.01"
-                required
-                placeholder="0.00"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono text-sm focus:border-emerald-500 outline-none"
-              />
+              <label className="block text-slate-300 font-medium mb-1">Amount (IDR / Rp) *</label>
+              <div className="relative">
+                <span className="absolute left-3 top-2 text-slate-400 font-mono font-bold text-xs">Rp</span>
+                <input
+                  type="number"
+                  step="1"
+                  min="1"
+                  required
+                  placeholder="0"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-slate-100 font-mono text-sm focus:border-amber-500 outline-none"
+                />
+              </div>
             </div>
 
             {/* Description */}
@@ -414,7 +536,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                 placeholder="e.g. Monthly guest amenities replenishment, Meat & poultry kitchen supplies"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-amber-500"
               />
             </div>
 
@@ -422,12 +544,12 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
             <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 space-y-1 font-mono text-[11px]">
               <div className="text-slate-400 font-sans font-medium">Double-Entry Preview:</div>
               <div className="text-rose-400">
-                DR: [{formData.account_code || 'Expense Pending'}] $
-                {formData.amount || '0.00'}
+                DR: [{formData.account_code || 'Expense Pending'}] Rp{' '}
+                {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
               <div className="text-amber-400">
-                CR: [{formData.credit_account_code || currentDefaultCredit || 'Payable Pending'}] $
-                {formData.amount || '0.00'}
+                CR: [{formData.credit_account_code || currentDefaultCredit || 'Payable Pending'}] Rp{' '}
+                {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
             </div>
 
@@ -445,17 +567,121 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
 
         {/* Spending Transactions Table */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-slate-400" />
-              <span>Spending Transactions Log ({transactions.length})</span>
-            </h2>
-            <span className="text-xs text-slate-500 font-mono">
-              Only POSTED journals appear in financial reporting
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-400" />
+                <span>Spending Transactions Log ({filteredTransactions.length})</span>
+              </h2>
+              <span className="text-xs text-slate-500">
+                Total Outflow: <span className="font-mono text-rose-400 font-semibold">Rp {totalFilteredAmount.toLocaleString('id-ID')}</span>
+              </span>
+            </div>
+
+            {/* Export Toolbar */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+                title="Export to CSV"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>CSV</span>
+              </button>
+              <button
+                onClick={handleExportExcel}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors"
+                title="Export to Excel (.xlsx)"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Excel</span>
+              </button>
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+                title="Print Log / Save to PDF"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>PDF</span>
+              </button>
+            </div>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          {/* Period & Filter Controls */}
+          <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+              <Search className="w-3.5 h-3.5 text-slate-500" />
+              <input
+                type="text"
+                placeholder="Search vendor, payee, reference, account..."
+                value={logSearch}
+                onChange={(e) => setLogSearch(e.target.value)}
+                className="bg-transparent text-xs text-slate-200 outline-none w-full placeholder-slate-500"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
+                <Calendar className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-slate-400 text-[11px]">Period:</span>
+                <input
+                  type="date"
+                  value={logDateFrom}
+                  onChange={(e) => setLogDateFrom(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  title="From Date"
+                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                />
+                <span className="text-slate-500 text-[11px]">to</span>
+                <input
+                  type="date"
+                  value={logDateTo}
+                  onChange={(e) => setLogDateTo(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  title="To Date"
+                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                />
+                {(logDateFrom || logDateTo) && (
+                  <button
+                    onClick={() => {
+                      setLogDateFrom('');
+                      setLogDateTo('');
+                    }}
+                    className="text-slate-400 hover:text-slate-200 text-xs px-1 font-bold"
+                    title="Clear date filter"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+
+              <select
+                value={logType}
+                onChange={(e) => setLogType(e.target.value)}
+                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 text-xs outline-none"
+              >
+                <option value="ALL">All Categories</option>
+                <option value="Procurement">Procurement</option>
+                <option value="Payroll">Payroll</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <select
+                value={logDept}
+                onChange={(e) => setLogDept(e.target.value)}
+                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 text-xs outline-none"
+              >
+                <option value="ALL">All Departments</option>
+                {activeDepartments.map((d) => (
+                  <option key={d.department_code} value={d.department_code}>
+                    {d.department_code} - {d.department_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div id="spending-transactions-printable-area" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
@@ -470,7 +696,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {transactions.length === 0 ? (
+                  {filteredTransactions.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-500 font-sans">
                         <ArrowUpRight className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
@@ -481,7 +707,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                       </td>
                     </tr>
                   ) : (
-                    transactions.map((tx) => {
+                    filteredTransactions.map((tx) => {
                       const acc = (accounts || []).find((a) => a.account_code === tx.account_code);
                       return (
                         <tr key={tx.transaction_id} className="hover:bg-slate-800/40">

@@ -461,6 +461,15 @@ class ARAPStore {
 
     return { payment_id: paymentId, journal_id: journalId };
   }
+
+  // --- MOCK DATA RESET ---
+  public resetMockData(): { clearedARPayments: number; clearedAPPayments: number } {
+    const clearedARPayments = this.arSettlements.size;
+    const clearedAPPayments = this.apPayments.size;
+    this.arSettlements.clear();
+    this.apPayments.clear();
+    return { clearedARPayments, clearedAPPayments };
+  }
 }
 
 export const arapStore = new ARAPStore();

@@ -22,11 +22,13 @@ export function sanitizeReportHtml(rawHtml: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(rawHtml, 'text/html');
 
-  // 1. Remove all elements with print-hidden, no-print, preview-hidden classes, buttons, and inputs
+  // 1. Remove non-printable elements by explicit selectors
   const selectorsToRemove = [
     '.print-hidden',
     '.no-print',
     '.preview-hidden',
+    '.non-printable-col',
+    '[data-non-printable="true"]',
     '[class*="print:hidden"]',
     '[class*="no-print"]',
     '[class*="preview-hidden"]',
@@ -42,12 +44,65 @@ export function sanitizeReportHtml(rawHtml: string): string {
 
   doc.querySelectorAll(selectorsToRemove.join(',')).forEach((el) => el.remove());
 
-  // 2. Remove table columns specifically meant for on-screen inspection:
+  // 1b. Remove any elements with class containing 'print:hidden' or 'no-print' directly via attribute check
+  doc.querySelectorAll('*').forEach((el) => {
+    const cls = el.getAttribute('class') || '';
+    if (
+      cls.includes('print:hidden') ||
+      cls.includes('no-print') ||
+      cls.includes('preview-hidden') ||
+      cls.includes('non-printable-col') ||
+      el.getAttribute('data-non-printable') === 'true'
+    ) {
+      el.remove();
+    }
+  });
+
+  // 2. Remove all signature boxes, governance sign-off blocks, and empty file/signature placeholders
+  doc.querySelectorAll('div, section, footer, p, span').forEach((el) => {
+    const text = (el.textContent || '').trim().toLowerCase();
+    const isSignBlock =
+      text.includes('statutory & executive governance') ||
+      text.includes('executive governance certification') ||
+      text.includes('governance certification') ||
+      text.includes('governance sign-off') ||
+      (text.includes('prepared by') && text.includes('reviewed by')) ||
+      (text.includes('chief accountant') && text.includes('financial controller')) ||
+      (text.includes('prepared by') && text.includes('approved by')) ||
+      (text.includes('supporting document') && text.includes('not attached')) ||
+      (text.includes('folio pdf') && text.includes('attached')) ||
+      text.includes('no electronic voucher');
+
+    if (isSignBlock) {
+      el.remove();
+    }
+  });
+
+  // Also remove any remaining placeholder/dashed boxes (e.g. dashed borders, h-24 with border)
+  doc.querySelectorAll('.grid-cols-4, [class*="h-24"], [class*="border-dashed"], [class*="border-dotted"]').forEach((el) => {
+    const text = (el.textContent || '').toLowerCase();
+    if (
+      text.includes('chief accountant') ||
+      text.includes('general manager') ||
+      text.includes('prepared by') ||
+      text.includes('reviewed by') ||
+      text.includes('approved by') ||
+      text.includes('director') ||
+      text.includes('supporting document') ||
+      text.includes('not attached') ||
+      text.includes('voucher') ||
+      text.includes('file')
+    ) {
+      el.remove();
+    }
+  });
+
+  // 3. Remove table columns specifically meant for on-screen inspection or file placeholders:
   // e.g. "Accounts", "Drill-Down", "Inspect", "Actions", "Voucher Slip"
   doc.querySelectorAll('table').forEach((table) => {
     const colsToDelete = new Set<number>();
 
-    // Inspect headers and cells to identify non-printable column indices
+    // Inspect headers and all cells to identify non-printable column indices
     table.querySelectorAll('tr').forEach((row) => {
       Array.from(row.children).forEach((cell, idx) => {
         const text = (cell.textContent || '').trim().toLowerCase();
@@ -55,11 +110,14 @@ export function sanitizeReportHtml(rawHtml: string): string {
           text === 'accounts' ||
           text === 'drill-down' ||
           text === 'drilldown' ||
-          text === 'inspect' ||
-          text.startsWith('inspect') ||
+          text.includes('inspect') ||
           text === 'actions' ||
           text === 'action' ||
-          text === 'voucher slip'
+          text === 'voucher slip' ||
+          text === 'voucher' ||
+          text.includes('attachment') ||
+          cell.classList.contains('non-printable-col') ||
+          cell.getAttribute('data-non-printable') === 'true'
         ) {
           colsToDelete.add(idx);
         }
@@ -79,12 +137,25 @@ export function sanitizeReportHtml(rawHtml: string): string {
       });
     }
 
-    // 3. Fix colSpan on category rows (e.g., CURRENT & NON-CURRENT ASSETS, LIABILITIES, etc.)
-    // After removing Accounts and Drill-Down, standard balance sheet and income statement have 2 columns.
+    // Determine the actual remaining table column count
+    let actualColCount = 2;
+    const firstRowWithCells = table.querySelector('thead tr, tbody tr');
+    if (firstRowWithCells) {
+      let count = 0;
+      Array.from(firstRowWithCells.children).forEach((c) => {
+        const span = parseInt(c.getAttribute('colspan') || '1', 10);
+        count += isNaN(span) || span < 1 ? 1 : span;
+      });
+      if (count > 0 && count <= 10) {
+        actualColCount = count;
+      }
+    }
+
+    // Fix colSpan on category and subtotal rows to match actual column count
     table.querySelectorAll('td[colspan], th[colspan]').forEach((cell) => {
       const span = parseInt(cell.getAttribute('colspan') || '1', 10);
-      if (span > 2) {
-        cell.setAttribute('colspan', '2');
+      if (span > actualColCount) {
+        cell.setAttribute('colspan', String(actualColCount));
       }
     });
   });
@@ -97,7 +168,9 @@ export function sanitizeReportHtml(rawHtml: string): string {
       text.includes('balance sheet out of balance') ||
       text.includes('double-entry in balance') ||
       text.includes('trial balance is out of balance') ||
-      text.includes('audit verification')
+      text.includes('critical audit exception') ||
+      text.includes('audit verification') ||
+      text.includes('supporting document: not attached')
     ) {
       div.remove();
     }
@@ -110,18 +183,33 @@ export function sanitizeReportHtml(rawHtml: string): string {
       text === 'statement of financial position' ||
       text === 'statement of profit and loss' ||
       text === 'balance sheet' ||
-      text === 'income statement'
+      text === 'income statement' ||
+      text.startsWith('usali 12')
     ) {
       const parent = heading.closest('div.border-b, div.bg-slate-950, div.bg-slate-900') || heading;
       parent.remove();
     }
   });
 
-  // 6. Remove any remaining stray elements with text "Inspect" or arrow icons
-  doc.querySelectorAll('td, span, a, p').forEach((el) => {
+  // 6. Remove any remaining stray elements with text containing "Inspect" or arrow icons
+  doc.querySelectorAll('td, th, span, a, p, div, button').forEach((el) => {
     const text = (el.textContent || '').trim();
-    if (text === 'Inspect' || text === 'Inspect >' || text.startsWith('Inspect')) {
-      el.remove();
+    if (
+      text.toLowerCase().includes('inspect') ||
+      text.toLowerCase() === 'drill-down' ||
+      text.toLowerCase() === 'drilldown'
+    ) {
+      // If it's a td/th, remove the whole cell; otherwise remove the element
+      if (el.tagName === 'TD' || el.tagName === 'TH') {
+        el.remove();
+      } else {
+        const parentCell = el.closest('td, th');
+        if (parentCell && (parentCell.textContent || '').trim().toLowerCase().includes('inspect')) {
+          parentCell.remove();
+        } else {
+          el.remove();
+        }
+      }
     }
   });
 
@@ -216,6 +304,13 @@ export function getReportPrintStyles(orientation: 'portrait' | 'landscape' = 'po
     .print-hidden,
     .no-print,
     .preview-hidden,
+    .non-printable-col,
+    [data-non-printable="true"],
+    .header-col-inspect,
+    [class*="inspect"],
+    [class*="drilldown"],
+    .screen-toolbar,
+    .screen-instructions,
     [class*="print:hidden"],
     [class*="no-print"],
     [class*="preview-hidden"],
@@ -436,7 +531,7 @@ export function generatePrintableHtml(
   </style>
 </head>
 <body>
-  <div class="screen-toolbar no-print">
+  <div class="screen-toolbar no-print" style="margin-bottom: 20px;">
     <div style="font-size: 13px;">
       <strong>PT ATRIUM MANAGEMENT GROUP</strong> &bull; Official A4 Financial Statement
     </div>
@@ -444,10 +539,6 @@ export function generatePrintableHtml(
       <button onclick="window.print()">Print / Save as PDF</button>
       <button style="background: #475569;" onclick="window.close()">Close Window</button>
     </div>
-  </div>
-
-  <div class="screen-instructions no-print">
-    <span><strong>Tip for Clean PDF:</strong> When printing in Chrome or Edge, set Destination to <em>"Save as PDF"</em> and uncheck <em>"Headers and footers"</em> in print options to eliminate browser URL footer text.</span>
   </div>
 
   <div class="paper-container printable-report-wrapper">

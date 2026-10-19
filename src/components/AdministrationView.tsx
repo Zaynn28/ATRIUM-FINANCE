@@ -17,6 +17,8 @@ import {
   RotateCw,
   Sparkles,
   Users,
+  Trash2,
+  Database,
 } from 'lucide-react';
 import { api } from '../services/api';
 import {
@@ -29,6 +31,7 @@ import {
   UserRoleDefinition,
 } from '../types';
 import { UserAccessManager } from './administration/UserAccessManager';
+import { ResetMockDataModal } from './administration/ResetMockDataModal';
 
 interface AdministrationViewProps {
   accounts?: Account[];
@@ -48,6 +51,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
   onRefreshAccessControl,
 }) => {
   const [activeTab, setActiveTab] = useState<'access-control' | 'policies-profile'>('access-control');
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
@@ -223,6 +227,16 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsResetModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 rounded-lg text-xs font-semibold border border-rose-800/60 transition-colors"
+              title="Reset Mock Data untuk Uji Coba Data Sendiri"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+              <span>Reset Mock Data</span>
+            </button>
+
             {activeTab === 'policies-profile' && (
               <>
                 <button
@@ -540,6 +554,13 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         </div>
       </div>
       )}
+
+      {/* Reset Mock Data Modal */}
+      <ResetMockDataModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onDataChanged={onRefresh}
+      />
     </div>
   );
 };

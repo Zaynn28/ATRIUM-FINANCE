@@ -1,0 +1,922 @@
+{
+  "categories": [
+    {
+      "category_id": "CAT-FB-FOOD",
+      "name": "F&B Food",
+      "subcategories": [
+        "Meat & Poultry",
+        "Seafood",
+        "Dairy",
+        "Fresh Produce",
+        "Dry Goods",
+        "Oils & Condiments",
+        "Bakery"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "5010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-FB-BEV",
+      "name": "F&B Beverage",
+      "subcategories": [
+        "Soft Drinks & Water",
+        "Coffee & Tea",
+        "Juices & Syrups",
+        "Wine & Spirits",
+        "Beer"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "5020",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-HK-SUP",
+      "name": "Housekeeping Supplies",
+      "subcategories": [
+        "Cleaning Chemicals",
+        "Disinfectants",
+        "Mops & Brooms",
+        "Vacuum Bags & Accessories",
+        "Trash Bags",
+        "Gloves & PPE"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "7010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-GST-AMEN",
+      "name": "Guest Amenities",
+      "subcategories": [
+        "Dental Kits",
+        "Shampoo & Shower Gel",
+        "Soap Bars",
+        "Sewing Kits",
+        "Shower Caps",
+        "Slippers",
+        "Sanitary Bags"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "7010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-LINEN",
+      "name": "Linen",
+      "subcategories": [
+        "Bed Sheets King/Twin",
+        "Duvet Covers",
+        "Pillowcases",
+        "Bath Towels",
+        "Hand Towels",
+        "Bath Mats",
+        "Pool Towels"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "7020",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-UNIFORM",
+      "name": "Uniforms",
+      "subcategories": [
+        "Front Desk Suits",
+        "Housekeeping Sets",
+        "Kitchen Chef Coats",
+        "F&B Service Vests",
+        "Engineering Overalls"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "6010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-ENG-PARTS",
+      "name": "Engineering Spare Parts",
+      "subcategories": [
+        "HVAC & Chiller Spares",
+        "Plumbing Valves & Pipes",
+        "Electrical Switches & Breakers",
+        "Lighting & LED Bulbs",
+        "Door Hardware & Locks"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "8510",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-MAINT-CONS",
+      "name": "Maintenance Consumables",
+      "subcategories": [
+        "Paints & Primers",
+        "Sealants & Silicone",
+        "Lubricants & Grease",
+        "Filters",
+        "Batteries",
+        "Welding Materials"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "8510",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-OFFICE",
+      "name": "Office Supplies",
+      "subcategories": [
+        "Copier Paper A4/A3",
+        "Inks & Toners",
+        "Pens & Stationery",
+        "Folders & Binders",
+        "Accounting Vouchers"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "8010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-GUEST-SUP",
+      "name": "Guest Supplies",
+      "subcategories": [
+        "Complimentary Mineral Water",
+        "Tea Bags & Instant Coffee",
+        "Sugar & Creamer Sachets",
+        "Notepads & Pencils"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "7010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    },
+    {
+      "category_id": "CAT-OPER-SUP",
+      "name": "Operating Supplies",
+      "subcategories": [
+        "Keycards RFID",
+        "Luggage Tags",
+        "Laundry Bags",
+        "POS Thermal Paper Rolls",
+        "Coasters & Napkins"
+      ],
+      "default_inventory_account": "1080",
+      "default_expense_account": "7010",
+      "is_fixed_asset": false,
+      "active": "Y"
+    }
+  ],
+  "storerooms": [
+    {
+      "storeroom_id": "STR-MAIN",
+      "name": "Main Central Store",
+      "department_code": "700",
+      "manager_name": "Bambang Soediro (Purchasing Manager)",
+      "bins": [
+        "A-01",
+        "A-02",
+        "B-01",
+        "B-02",
+        "RACK-01",
+        "RACK-02",
+        "BULK-01"
+      ],
+      "active": "Y"
+    },
+    {
+      "storeroom_id": "STR-FB",
+      "name": "F&B Store & Kitchen Cold Room",
+      "department_code": "200",
+      "manager_name": "Chef Alessandro (Executive Chef)",
+      "bins": [
+        "DRY-01",
+        "DRY-02",
+        "CHILL-01",
+        "FREEZE-01",
+        "BEV-01",
+        "SPICE-01"
+      ],
+      "active": "Y"
+    },
+    {
+      "storeroom_id": "STR-HK",
+      "name": "Housekeeping Supplies Store",
+      "department_code": "100",
+      "manager_name": "Siti Rahma (Executive Housekeeper)",
+      "bins": [
+        "AMEN-01",
+        "AMEN-02",
+        "CHEM-01",
+        "CHEM-02",
+        "TOOL-01"
+      ],
+      "active": "Y"
+    },
+    {
+      "storeroom_id": "STR-ENG",
+      "name": "Engineering Workshop Store",
+      "department_code": "800",
+      "manager_name": "Agus Pratama (Chief Engineer)",
+      "bins": [
+        "ELEC-01",
+        "ELEC-02",
+        "PLUMB-01",
+        "HVAC-01",
+        "TOOL-ENG",
+        "PAINT-01"
+      ],
+      "active": "Y"
+    },
+    {
+      "storeroom_id": "STR-LINEN",
+      "name": "Central Linen Room",
+      "department_code": "100",
+      "manager_name": "Nurul Hidayati (Linen Supervisor)",
+      "bins": [
+        "BED-KING",
+        "BED-TWIN",
+        "TOWEL-01",
+        "TOWEL-POOL",
+        "UNIFORM-01"
+      ],
+      "active": "Y"
+    },
+    {
+      "storeroom_id": "STR-GEN",
+      "name": "General & Stationery Store",
+      "department_code": "700",
+      "manager_name": "Dewi Sartika (General Accountant)",
+      "bins": [
+        "OFF-01",
+        "OFF-02",
+        "PRNT-01",
+        "DOC-ARCHIVE"
+      ],
+      "active": "Y"
+    }
+  ],
+  "items": [
+    {
+      "item_id": "ITEM-FB-001",
+      "item_code": "FB-RICE-01",
+      "item_name": "Jasmine Rice 20kg Sack",
+      "category_id": "CAT-FB-FOOD",
+      "subcategory": "Dry Goods",
+      "uom": "KG",
+      "barcode": "8992753110201",
+      "supplier": "PT Pangan Nusantara Prima",
+      "default_storeroom_id": "STR-FB",
+      "default_bin_location": "DRY-01",
+      "min_stock": 100,
+      "reorder_point": 200,
+      "max_stock": 600,
+      "current_stock": 320,
+      "last_purchase_cost": 18500,
+      "average_cost": 18500,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-18T10:30:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-FB-001",
+          "storeroom_id": "STR-FB",
+          "bin_location": "DRY-01",
+          "quantity": 240
+        },
+        {
+          "item_id": "ITEM-FB-001",
+          "storeroom_id": "STR-MAIN",
+          "bin_location": "BULK-01",
+          "quantity": 80
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-FB-002",
+      "item_code": "FB-OIL-01",
+      "item_name": "Pure Palm Cooking Oil 5L Jerrycan",
+      "category_id": "CAT-FB-FOOD",
+      "subcategory": "Oils & Condiments",
+      "uom": "L",
+      "barcode": "8998866200115",
+      "supplier": "PT Sinar Mas Agribusiness",
+      "default_storeroom_id": "STR-FB",
+      "default_bin_location": "DRY-02",
+      "min_stock": 50,
+      "reorder_point": 100,
+      "max_stock": 300,
+      "current_stock": 140,
+      "last_purchase_cost": 22000,
+      "average_cost": 21800,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-17T11:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-FB-002",
+          "storeroom_id": "STR-FB",
+          "bin_location": "DRY-02",
+          "quantity": 90
+        },
+        {
+          "item_id": "ITEM-FB-002",
+          "storeroom_id": "STR-MAIN",
+          "bin_location": "B-01",
+          "quantity": 50
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-FB-003",
+      "item_code": "FB-CHICK-01",
+      "item_name": "Fresh Chicken Breast Fillet Boneless",
+      "category_id": "CAT-FB-FOOD",
+      "subcategory": "Meat & Poultry",
+      "uom": "KG",
+      "barcode": "ATR-FB-CHK01",
+      "supplier": "CV Unggas Jaya Makmur",
+      "default_storeroom_id": "STR-FB",
+      "default_bin_location": "CHILL-01",
+      "min_stock": 30,
+      "reorder_point": 60,
+      "max_stock": 150,
+      "current_stock": 75,
+      "last_purchase_cost": 48000,
+      "average_cost": 47500,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-19T06:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-FB-003",
+          "storeroom_id": "STR-FB",
+          "bin_location": "CHILL-01",
+          "quantity": 75
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-GST-001",
+      "item_code": "GST-WTR-600",
+      "item_name": "Natural Spring Mineral Water 600ml Bottle",
+      "category_id": "CAT-GUEST-SUP",
+      "subcategory": "Complimentary Mineral Water",
+      "uom": "BTL",
+      "barcode": "8991234567890",
+      "supplier": "PT Tirta Investama (Aqua Danone)",
+      "default_storeroom_id": "STR-MAIN",
+      "default_bin_location": "A-01",
+      "min_stock": 300,
+      "reorder_point": 600,
+      "max_stock": 2500,
+      "current_stock": 840,
+      "last_purchase_cost": 3200,
+      "average_cost": 3200,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-18T14:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-GST-001",
+          "storeroom_id": "STR-MAIN",
+          "bin_location": "A-01",
+          "quantity": 600
+        },
+        {
+          "item_id": "ITEM-GST-001",
+          "storeroom_id": "STR-HK",
+          "bin_location": "AMEN-02",
+          "quantity": 240
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-HK-001",
+      "item_code": "HK-DENT-01",
+      "item_name": "Hotel Dental Kit (Bamboo Toothbrush + Mint Paste)",
+      "category_id": "CAT-GST-AMEN",
+      "subcategory": "Dental Kits",
+      "uom": "SET",
+      "barcode": "ATR-HK-DENT01",
+      "supplier": "CV Amenindo Prima Mandiri",
+      "default_storeroom_id": "STR-HK",
+      "default_bin_location": "AMEN-01",
+      "min_stock": 600,
+      "reorder_point": 1200,
+      "max_stock": 5000,
+      "current_stock": 1850,
+      "last_purchase_cost": 2400,
+      "average_cost": 2400,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-16T09:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-HK-001",
+          "storeroom_id": "STR-HK",
+          "bin_location": "AMEN-01",
+          "quantity": 1850
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-HK-002",
+      "item_code": "HK-SHMP-30",
+      "item_name": "Botanical Hair & Body Wash 30ml Bottle",
+      "category_id": "CAT-GST-AMEN",
+      "subcategory": "Shampoo & Shower Gel",
+      "uom": "BTL",
+      "barcode": "ATR-HK-SHMP30",
+      "supplier": "CV Amenindo Prima Mandiri",
+      "default_storeroom_id": "STR-HK",
+      "default_bin_location": "AMEN-01",
+      "min_stock": 500,
+      "reorder_point": 1000,
+      "max_stock": 4500,
+      "current_stock": 1240,
+      "last_purchase_cost": 3100,
+      "average_cost": 3100,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-16T09:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-HK-002",
+          "storeroom_id": "STR-HK",
+          "bin_location": "AMEN-01",
+          "quantity": 1240
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-HK-003",
+      "item_code": "HK-DISN-05",
+      "item_name": "Hospital-Grade Floor Disinfectant Cleaner 5L",
+      "category_id": "CAT-HK-SUP",
+      "subcategory": "Cleaning Chemicals",
+      "uom": "CAN",
+      "barcode": "8993005120011",
+      "supplier": "PT Ecolab Indonesia",
+      "default_storeroom_id": "STR-HK",
+      "default_bin_location": "CHEM-01",
+      "min_stock": 15,
+      "reorder_point": 30,
+      "max_stock": 100,
+      "current_stock": 22,
+      "last_purchase_cost": 145000,
+      "average_cost": 144000,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-15T15:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-HK-003",
+          "storeroom_id": "STR-HK",
+          "bin_location": "CHEM-01",
+          "quantity": 14
+        },
+        {
+          "item_id": "ITEM-HK-003",
+          "storeroom_id": "STR-MAIN",
+          "bin_location": "B-02",
+          "quantity": 8
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-LIN-001",
+      "item_code": "LIN-BTH-01",
+      "item_name": "Luxury Bath Towel 70x140cm 600gsm White Cotton",
+      "category_id": "CAT-LINEN",
+      "subcategory": "Bath Towels",
+      "uom": "PCS",
+      "barcode": "ATR-LIN-BT01",
+      "supplier": "PT Indotextile Hotelier Mandiri",
+      "default_storeroom_id": "STR-LINEN",
+      "default_bin_location": "TOWEL-01",
+      "min_stock": 150,
+      "reorder_point": 300,
+      "max_stock": 900,
+      "current_stock": 420,
+      "last_purchase_cost": 95000,
+      "average_cost": 95000,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-17T13:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-LIN-001",
+          "storeroom_id": "STR-LINEN",
+          "bin_location": "TOWEL-01",
+          "quantity": 420
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-ENG-001",
+      "item_code": "ENG-LED-09",
+      "item_name": "LED Bulb 9W Warm White 3000K E27",
+      "category_id": "CAT-ENG-PARTS",
+      "subcategory": "Lighting & LED Bulbs",
+      "uom": "PCS",
+      "barcode": "8718696700123",
+      "supplier": "PT Signify Commercial Indonesia (Philips)",
+      "default_storeroom_id": "STR-ENG",
+      "default_bin_location": "ELEC-01",
+      "min_stock": 60,
+      "reorder_point": 120,
+      "max_stock": 500,
+      "current_stock": 92,
+      "last_purchase_cost": 28000,
+      "average_cost": 28000,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-14T10:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-ENG-001",
+          "storeroom_id": "STR-ENG",
+          "bin_location": "ELEC-01",
+          "quantity": 92
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-ENG-002",
+      "item_code": "ENG-AC-FLTR",
+      "item_name": "Split AC Washable Mesh Air Filter 2PK",
+      "category_id": "CAT-ENG-PARTS",
+      "subcategory": "HVAC & Chiller Spares",
+      "uom": "PCS",
+      "barcode": "ATR-ENG-FLTR01",
+      "supplier": "Daikin Engineering Parts Supply",
+      "default_storeroom_id": "STR-ENG",
+      "default_bin_location": "HVAC-01",
+      "min_stock": 20,
+      "reorder_point": 40,
+      "max_stock": 120,
+      "current_stock": 35,
+      "last_purchase_cost": 65000,
+      "average_cost": 65000,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-12T11:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-ENG-002",
+          "storeroom_id": "STR-ENG",
+          "bin_location": "HVAC-01",
+          "quantity": 35
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-OFF-001",
+      "item_code": "OFF-A4-70",
+      "item_name": "Multipurpose Copier Paper A4 70gsm (Box of 5 Reams)",
+      "category_id": "CAT-OFFICE",
+      "subcategory": "Copier Paper A4/A3",
+      "uom": "BOX",
+      "barcode": "8992775010022",
+      "supplier": "PT PaperOne Indonesia",
+      "default_storeroom_id": "STR-GEN",
+      "default_bin_location": "OFF-01",
+      "min_stock": 15,
+      "reorder_point": 30,
+      "max_stock": 150,
+      "current_stock": 45,
+      "last_purchase_cost": 230000,
+      "average_cost": 230000,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-10T16:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-OFF-001",
+          "storeroom_id": "STR-GEN",
+          "bin_location": "OFF-01",
+          "quantity": 45
+        }
+      ]
+    },
+    {
+      "item_id": "ITEM-HK-004",
+      "item_code": "HK-SLIP-01",
+      "item_name": "Guest Closed-Toe Waffle Slippers (Pair)",
+      "category_id": "CAT-GST-AMEN",
+      "subcategory": "Slippers",
+      "uom": "PAIR",
+      "barcode": "ATR-HK-SLIP01",
+      "supplier": "CV Amenindo Prima Mandiri",
+      "default_storeroom_id": "STR-HK",
+      "default_bin_location": "AMEN-01",
+      "min_stock": 300,
+      "reorder_point": 600,
+      "max_stock": 3000,
+      "current_stock": 650,
+      "last_purchase_cost": 4200,
+      "average_cost": 4200,
+      "status": "ACTIVE",
+      "created_at": "2026-09-01T08:00:00Z",
+      "updated_at": "2026-09-18T10:00:00Z",
+      "created_by": "System Seed",
+      "storeroom_stocks": [
+        {
+          "item_id": "ITEM-HK-004",
+          "storeroom_id": "STR-HK",
+          "bin_location": "AMEN-01",
+          "quantity": 650
+        }
+      ]
+    }
+  ],
+  "movements": [
+    {
+      "movement_id": "MOV-INIT-1000",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-FB-001",
+      "item_code": "FB-RICE-01",
+      "item_name": "Jasmine Rice 20kg Sack",
+      "storeroom_id": "STR-FB",
+      "storeroom_name": "F&B Store & Kitchen Cold Room",
+      "bin_location": "DRY-01",
+      "quantity": 320,
+      "before_quantity": 0,
+      "after_quantity": 320,
+      "unit_cost": 18500,
+      "total_cost": 5920000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1001",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-FB-002",
+      "item_code": "FB-OIL-01",
+      "item_name": "Pure Palm Cooking Oil 5L Jerrycan",
+      "storeroom_id": "STR-FB",
+      "storeroom_name": "F&B Store & Kitchen Cold Room",
+      "bin_location": "DRY-02",
+      "quantity": 140,
+      "before_quantity": 0,
+      "after_quantity": 140,
+      "unit_cost": 21800,
+      "total_cost": 3052000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1002",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-FB-003",
+      "item_code": "FB-CHICK-01",
+      "item_name": "Fresh Chicken Breast Fillet Boneless",
+      "storeroom_id": "STR-FB",
+      "storeroom_name": "F&B Store & Kitchen Cold Room",
+      "bin_location": "CHILL-01",
+      "quantity": 75,
+      "before_quantity": 0,
+      "after_quantity": 75,
+      "unit_cost": 47500,
+      "total_cost": 3562500,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1003",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-GST-001",
+      "item_code": "GST-WTR-600",
+      "item_name": "Natural Spring Mineral Water 600ml Bottle",
+      "storeroom_id": "STR-MAIN",
+      "storeroom_name": "Main Central Store",
+      "bin_location": "A-01",
+      "quantity": 840,
+      "before_quantity": 0,
+      "after_quantity": 840,
+      "unit_cost": 3200,
+      "total_cost": 2688000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1004",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-HK-001",
+      "item_code": "HK-DENT-01",
+      "item_name": "Hotel Dental Kit (Bamboo Toothbrush + Mint Paste)",
+      "storeroom_id": "STR-HK",
+      "storeroom_name": "Housekeeping Supplies Store",
+      "bin_location": "AMEN-01",
+      "quantity": 1850,
+      "before_quantity": 0,
+      "after_quantity": 1850,
+      "unit_cost": 2400,
+      "total_cost": 4440000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1005",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-HK-002",
+      "item_code": "HK-SHMP-30",
+      "item_name": "Botanical Hair & Body Wash 30ml Bottle",
+      "storeroom_id": "STR-HK",
+      "storeroom_name": "Housekeeping Supplies Store",
+      "bin_location": "AMEN-01",
+      "quantity": 1240,
+      "before_quantity": 0,
+      "after_quantity": 1240,
+      "unit_cost": 3100,
+      "total_cost": 3844000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1006",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-HK-003",
+      "item_code": "HK-DISN-05",
+      "item_name": "Hospital-Grade Floor Disinfectant Cleaner 5L",
+      "storeroom_id": "STR-HK",
+      "storeroom_name": "Housekeeping Supplies Store",
+      "bin_location": "CHEM-01",
+      "quantity": 22,
+      "before_quantity": 0,
+      "after_quantity": 22,
+      "unit_cost": 144000,
+      "total_cost": 3168000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1007",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-LIN-001",
+      "item_code": "LIN-BTH-01",
+      "item_name": "Luxury Bath Towel 70x140cm 600gsm White Cotton",
+      "storeroom_id": "STR-LINEN",
+      "storeroom_name": "Central Linen Room",
+      "bin_location": "TOWEL-01",
+      "quantity": 420,
+      "before_quantity": 0,
+      "after_quantity": 420,
+      "unit_cost": 95000,
+      "total_cost": 39900000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1008",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-ENG-001",
+      "item_code": "ENG-LED-09",
+      "item_name": "LED Bulb 9W Warm White 3000K E27",
+      "storeroom_id": "STR-ENG",
+      "storeroom_name": "Engineering Workshop Store",
+      "bin_location": "ELEC-01",
+      "quantity": 92,
+      "before_quantity": 0,
+      "after_quantity": 92,
+      "unit_cost": 28000,
+      "total_cost": 2576000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1009",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-ENG-002",
+      "item_code": "ENG-AC-FLTR",
+      "item_name": "Split AC Washable Mesh Air Filter 2PK",
+      "storeroom_id": "STR-ENG",
+      "storeroom_name": "Engineering Workshop Store",
+      "bin_location": "HVAC-01",
+      "quantity": 35,
+      "before_quantity": 0,
+      "after_quantity": 35,
+      "unit_cost": 65000,
+      "total_cost": 2275000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1010",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-OFF-001",
+      "item_code": "OFF-A4-70",
+      "item_name": "Multipurpose Copier Paper A4 70gsm (Box of 5 Reams)",
+      "storeroom_id": "STR-GEN",
+      "storeroom_name": "General & Stationery Store",
+      "bin_location": "OFF-01",
+      "quantity": 45,
+      "before_quantity": 0,
+      "after_quantity": 45,
+      "unit_cost": 230000,
+      "total_cost": 10350000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    },
+    {
+      "movement_id": "MOV-INIT-1011",
+      "timestamp": "2026-09-01T08:00:00Z",
+      "date": "2026-09-01",
+      "movement_type": "RECEIPT",
+      "reference_type": "INITIAL_BALANCE",
+      "reference_id": "OPENING-BALANCE-2026",
+      "item_id": "ITEM-HK-004",
+      "item_code": "HK-SLIP-01",
+      "item_name": "Guest Closed-Toe Waffle Slippers (Pair)",
+      "storeroom_id": "STR-HK",
+      "storeroom_name": "Housekeeping Supplies Store",
+      "bin_location": "AMEN-01",
+      "quantity": 650,
+      "before_quantity": 0,
+      "after_quantity": 650,
+      "unit_cost": 4200,
+      "total_cost": 2730000,
+      "user_id": "usr-controller-1",
+      "user_name": "Zayen Lalu (Financial Controller)",
+      "notes": "Initial fiscal period opening stock verification"
+    }
+  ],
+  "requisitions": [],
+  "purchaseOrders": [],
+  "receipts": [],
+  "countSessions": [],
+  "adjustments": []
+}

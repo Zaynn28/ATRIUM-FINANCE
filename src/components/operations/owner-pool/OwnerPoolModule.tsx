@@ -9,6 +9,7 @@ import { UnitsRegistryView } from './UnitsRegistryView';
 import { OwnerStatementView } from './OwnerStatementView';
 import { PoolPolicyConfigView } from './PoolPolicyConfigView';
 import { EmailDistributionView } from './EmailDistributionView';
+import { ScottExecutiveMatrixView } from './ScottExecutiveMatrixView';
 import {
   PieChart,
   Building2,
@@ -17,11 +18,12 @@ import {
   ShieldCheck,
   TrendingUp,
   Mail,
+  Briefcase,
 } from 'lucide-react';
 
 export const OwnerPoolModule: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
-    'distribution' | 'units' | 'statements' | 'email' | 'policy'
+    'distribution' | 'units' | 'statements' | 'email' | 'policy' | 'scotts-matrix'
   >('distribution');
   const [selectedUnitForStatement, setSelectedUnitForStatement] = useState<string | null>(null);
   const [selectedPeriodForEmail, setSelectedPeriodForEmail] = useState<string>('2026-09');
@@ -124,6 +126,21 @@ export const OwnerPoolModule: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveTab('scotts-matrix')}
+          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors whitespace-nowrap ${
+            activeTab === 'scotts-matrix'
+              ? 'border-amber-600 text-amber-700 font-bold bg-amber-50/60 rounded-t-lg'
+              : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+          }`}
+        >
+          <Briefcase className="w-4 h-4 text-amber-600" />
+          <span>Scott's Executive Matrix</span>
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+            PT Keen Eye
+          </span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('policy')}
           className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition-colors whitespace-nowrap ${
             activeTab === 'policy'
@@ -144,6 +161,7 @@ export const OwnerPoolModule: React.FC = () => {
             onNavigateToEmail={handleNavigateToEmail}
           />
         )}
+        {activeTab === 'scotts-matrix' && <ScottExecutiveMatrixView />}
         {activeTab === 'units' && <UnitsRegistryView />}
         {activeTab === 'statements' && <OwnerStatementView />}
         {activeTab === 'email' && (

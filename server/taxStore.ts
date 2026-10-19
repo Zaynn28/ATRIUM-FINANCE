@@ -248,6 +248,47 @@ export class TaxStore {
     return updated;
   }
 
+  public createTaxRule(newRule: Partial<TaxRuleConfig>, createdBy: string): TaxRuleConfig {
+    if (!newRule.tax_code) {
+      throw new Error('Tax code is required');
+    }
+    const code = newRule.tax_code.toUpperCase().replace(/\s+/g, '_') as TaxTypeCode;
+    if (this.rules.has(code)) {
+      throw new Error(`Tax rule with code ${code} already exists`);
+    }
+
+    const rule: TaxRuleConfig = {
+      tax_code: code,
+      tax_name: newRule.tax_name || code,
+      tax_category: newRule.tax_category || 'NATIONAL_WHT',
+      tax_rate_pct: typeof newRule.tax_rate_pct === 'number' ? newRule.tax_rate_pct : 0,
+      is_rate_configured: typeof newRule.tax_rate_pct === 'number',
+      tax_base_description: newRule.tax_base_description || 'General taxable base',
+      gl_liability_account: newRule.gl_liability_account || '2080',
+      source_data_type: newRule.source_data_type || 'SPENDING_AP',
+      filing_due_day: newRule.filing_due_day || 20,
+      payment_due_day: newRule.payment_due_day || 10,
+      active: newRule.active || 'Y',
+      notes: newRule.notes || '',
+      updated_at: new Date().toISOString(),
+      updated_by: createdBy || 'Financial Controller',
+    };
+
+    this.rules.set(code, rule);
+    this.persist();
+    return rule;
+  }
+
+  public deleteTaxRule(taxCode: string): { success: boolean; deletedCode: string } {
+    const code = taxCode as TaxTypeCode;
+    if (!this.rules.has(code)) {
+      throw new Error(`Tax rule with code ${taxCode} not found`);
+    }
+    this.rules.delete(code);
+    this.persist();
+    return { success: true, deletedCode: taxCode };
+  }
+
   // --- 2. SOURCE DATA RESOLUTION ENGINE (READS REAL ERP DATA ONLY) ---
   /**
    * Reads existing ERP data without duplication:
@@ -1006,6 +1047,16 @@ export class TaxStore {
 
     this.persist();
     return { success: true, period };
+  }
+
+  // --- MOCK DATA RESET ---
+  public resetMockData(): { clearedObligations: number; clearedClosedPeriods: number } {
+    const clearedObligations = this.obligations.size;
+    const clearedClosedPeriods = this.closedPeriods.size;
+    this.obligations.clear();
+    this.closedPeriods.clear();
+    this.persist();
+    return { clearedObligations, clearedClosedPeriods };
   }
 }
 

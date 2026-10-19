@@ -616,10 +616,15 @@ export interface InventoryCategory {
 export interface InventoryStoreroom {
   storeroom_id: string;
   name: string;
+  storeroom_name?: string;
   department_code: string;
   manager_name: string;
+  in_charge?: string;
   bins: string[];
+  default_bin_prefix?: string;
   active: ActiveStatus;
+  is_active?: boolean;
+  description?: string;
 }
 
 export interface ItemStoreroomStock {
@@ -1035,6 +1040,34 @@ export type OwnerTaxTreatment =
   | 'TAX_EXEMPT'                // Tax Exempt (0%)
   | 'NOT_CONFIGURED';           // Requires Configuration
 
+export type OwnerReturnOptionType = 'GUARANTEED_10_PCT' | 'POOLED_OPTION';
+
+export type OwnerContractPaymentType =
+  | 'FULLY_PAID'
+  | 'PARTIALLY_PAID_GUARANTEED_INSTALLMENT'
+  | 'PARTIALLY_PAID_NO_RETURN';
+
+export interface OwnerStayRecord {
+  stay_id: string;
+  unit_id: string;
+  unit_number: string;
+  owner_id: string;
+  owner_name: string;
+  check_in_date: string;
+  check_out_date: string;
+  nights_count: number;
+  period: string; // e.g. "2026-09"
+  market_rate_per_night: number; // BAR (Best Available Rate)
+  owner_rate_pct: number; // 10% if within 28 days quota, 75% if 29+ days
+  total_room_charge_billed: number; // nights * market_rate * (owner_rate_pct / 100)
+  return_deduction_applied: number; // (Monthly Return / 30) * nights if within 28 days; 0 if 29+ days
+  quota_day_from: number; // e.g. 1
+  quota_day_to: number; // e.g. 4
+  status: 'RESERVED' | 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED';
+  notes?: string;
+  created_at: string;
+}
+
 export interface OwnerUnit {
   unit_id: string;              // e.g. "UNIT-0301"
   unit_number: string;          // e.g. "301"
@@ -1047,6 +1080,21 @@ export interface OwnerUnit {
   unit_sqm: number;             // Required: e.g. 45.50 SQM
   purchase_price: number;       // Required: Purchase price in IDR
   vat_amount: number;           // Required: VAT amount in IDR (Purchase Price - VAT = Return Basis)
+
+  // Contract & Payment Classification
+  return_option_type: OwnerReturnOptionType; // 'GUARANTEED_10_PCT' | 'POOLED_OPTION'
+  contract_payment_type: OwnerContractPaymentType; // 'FULLY_PAID' | 'PARTIALLY_PAID_GUARANTEED_INSTALLMENT' | 'PARTIALLY_PAID_NO_RETURN'
+  
+  // 3 Requested Installment Tracking Columns
+  total_purchase_price: number;       // Total harga jual unit
+  total_paid_to_date: number;         // Total pembayaran pokok yang sudah disetor ke Keen Eye
+  monthly_installment_due: number;    // Tagihan cicilan bulanan yang wajib dibayar ke Keen Eye
+  remaining_payable_to_keen_eye: number; // Sisa pokok hutang ke Keen Eye (total_purchase_price - total_paid_to_date)
+
+  // Owner Stay Privilege (28 days quota per calendar year)
+  stay_days_quota_annual: number;     // Default 28 days
+  stay_days_used_ytd: number;         // Tracked stay days used this year
+  
   contract_start_date: string;  // Required: YYYY-MM-DD
   contract_end_date: string;    // Required: YYYY-MM-DD
   ownership_status: OwnershipStatus;
@@ -1074,6 +1122,17 @@ export interface OwnerDistributionRuleConfig {
   guaranteed_return_basis: GuaranteedReturnBasisType; // Default: 'PURCHASE_PRICE_LESS_VAT'
   distribution_basis: DistributionBasisType;          // Default: 'UNIT_SQM'
   guarantee_difference_rule: 'FLAG_FOR_REVIEW' | 'AUTO_TOP_UP' | 'NO_ADJUSTMENT'; // Default: 'FLAG_FOR_REVIEW'
+  
+  // Configurable Facility Discount & Stay Rules
+  facility_discount_pct: number; // Default: 10.0 (%) on all facilities (Spa, Uma Blu, etc.)
+  payout_day_of_month: number;   // Default: 15 (Setiap tanggal 15)
+  stay_annual_quota_days: number; // Default: 28 days
+  stay_rate_pct_within_quota: number; // Default: 10% of market rate
+  stay_rate_pct_excess: number;       // Default: 75% of market rate for day 29+
+  developer_entity_name: string;      // Default: "PT Keen Eye"
+  developer_md_name: string;          // Default: "Scott"
+  operator_entity_name: string;       // Default: "PT Atrium Management Group"
+
   updated_at: string;
   updated_by: string;
   revision_notes?: string;
@@ -1089,14 +1148,24 @@ export interface OwnerPoolAllocationLine {
   unit_sqm: number;
   allocation_pct: number;       // Unit SQM / Total Eligible SQM
 
+  // Options & Contract Types
+  return_option_type: OwnerReturnOptionType;
+  contract_payment_type: OwnerContractPaymentType;
+  
+  // 3 Installment Columns
+  total_purchase_price: number;
+  total_paid_to_date: number;
+  monthly_installment_due: number;
+  remaining_payable_to_keen_eye: number;
+
   // Pool-Based SQM Allocation
   pool_allocation_amount: number; // Owner Pool * allocation_pct
 
   // Guaranteed Return Calculation
   purchase_price: number;
   vat_amount: number;
-  return_basis_amount: number;  // e.g. purchase_price - vat_amount
-  annual_guaranteed_return: number; // return_basis_amount * rate (10%)
+  return_basis_amount: number;  // purchase_price - vat_amount
+  annual_guaranteed_return: number; // return_basis_amount * 10%
   monthly_guaranteed_return: number; // annual / 12
   contract_start_date: string;
   contract_end_date: string;
@@ -1104,12 +1173,22 @@ export interface OwnerPoolAllocationLine {
   contract_year_number: number; // 1, 2, 3, or >3
 
   // Comparison & Applicable Return
-  applicable_return_basis_type: 'GUARANTEED_RETURN' | 'POOL_ALLOCATION';
+  applicable_return_basis_type: 'GUARANTEED_RETURN' | 'POOL_ALLOCATION' | 'ZERO_RETURN';
   gross_return_amount: number;
   rule_applied_description: string;
   guarantee_pool_difference: number; // monthly_guaranteed_return - pool_allocation_amount
   difference_flag: 'NONE' | 'SHORTFALL' | 'SURPLUS';
   difference_note: string;
+
+  // Shortfall & Excess Mechanisms
+  shortfall_from_keen_eye: number;        // Subsidized by PT Keen Eye when pool < 10%
+  excess_to_atrium_management: number;    // Absorbed by PT Atrium Management when pool > 10%
+
+  // Stay Deductions (28 days @ 10% vs 29+ days @ 75%)
+  stay_days_count: number;
+  daily_return_rate: number;              // Monthly Return / 30
+  stay_deduction_amount: number;          // Daily Rate * days (only deducted for days <= 28)
+  stay_charge_billed: number;             // Market room fee charged to owner
 
   // Tax Withholding Breakdown
   tax_treatment: OwnerTaxTreatment;
@@ -1119,8 +1198,16 @@ export interface OwnerPoolAllocationLine {
   tax_withheld_amount: number;
   tax_status: 'CONFIGURED' | 'REQUIRES_CONFIGURATION';
 
-  // Net Payout
-  net_distribution_amount: number; // gross_return_amount - tax_withheld_amount
+  // Net Return before Offset
+  net_return_amount: number;              // gross_return_amount - stay_deduction_amount - tax_withheld_amount
+
+  // Installment Offset to PT Keen Eye (for Partially Paid with Guaranteed 10%)
+  installment_offset_to_keen_eye: number; // Deducted from return to pay Keen Eye installment
+  remaining_installment_unpaid: number;   // If installment due > net return
+
+  // Net Cash Payout transferred on the 15th
+  net_distribution_amount: number;        // Actual cash payout to owner bank account
+  payout_date: string;                    // e.g. "2026-10-15"
 
   // Bank & Audit Snapshot
   bank_name: string;
@@ -1555,6 +1642,160 @@ export interface AgingSummary {
   bucket_61_90: number;
   bucket_over_90: number;
   count: number;
+}
+
+// ==========================================
+// PAK SCOTT'S EXECUTIVE OWNER MATRIX
+// ==========================================
+
+export type ScottMatrixGroupCategory =
+  | '10_PCT_GUARANTEED_FULLY_PAID'
+  | '10_PCT_GUARANTEED_PARTIALLY_PAID_KEEN_EYE'
+  | 'POOLED_OWNERS_REVENUE_SHARE'
+  | 'WHO_GETS_NOTHING_ZERO_RETURN';
+
+export interface ScottMatrixUnitItem {
+  unit_id: string;
+  unit_number: string;
+  floor_number: number;
+  owner_name: string;
+  unit_sqm: number;
+  category: ScottMatrixGroupCategory;
+  category_label: string;
+  category_badge: string;
+  
+  // Financial specifics
+  purchase_price: number;
+  vat_amount: number;
+  return_basis: number; // Purchase Price - VAT
+  monthly_guaranteed_return: number;
+  sqm_pool_share_amount: number;
+  
+  // Shortfall & Excess
+  shortfall_covered_by_keen_eye: number; // If pool < 10%
+  excess_to_atrium_management: number;   // If pool > 10%
+  
+  // Stay Deductions
+  stay_days_month: number;
+  stay_deduction_amount: number; // (Monthly return / 30) * stay days
+  
+  // Tax & Net
+  tax_withheld: number;
+  net_return_after_tax: number;
+  
+  // Installment to Keen Eye
+  total_purchase_price: number;
+  total_paid_to_date: number;
+  monthly_installment_due: number;
+  installment_offset_to_keen_eye: number; // Offset against return
+  remaining_payable_to_keen_eye: number;
+  
+  // Final Cash Disbursed to Owner
+  cash_payout_amount: number; // Disbursed every 15th
+  payout_date: string;
+  bank_name: string;
+  bank_account_number: string;
+  notes: string;
+}
+
+export interface ScottExecutiveMatrixSummary {
+  period: string; // e.g. "2026-09"
+  payout_date: string; // e.g. "2026-10-15" (every 15th)
+  generated_at: string;
+  developer_name: string; // "PT Keen Eye"
+  developer_md: string;   // "Scott"
+  operator_name: string;  // "PT Atrium Management Group"
+  
+  // High-Level Executive KPIs
+  total_units: number;
+  group1_fully_paid_count: number;
+  group2_keen_eye_installment_count: number;
+  group3_pool_owners_count: number;
+  group4_zero_return_count: number;
+
+  // Financial Aggregates
+  total_room_revenue: number;
+  total_owner_pool_65_pct: number;
+  total_atrium_base_35_pct: number;
+  total_atrium_excess_absorbed: number;
+  total_atrium_gross_revenue: number; // 35% base + excess
+
+  total_gross_return_accrued: number;
+  total_shortfall_covered_by_keen_eye: number; // Kas masuk dari Keen Eye
+  total_installments_collected_by_keen_eye: number; // Return dialihkan ke Keen Eye
+  total_tax_withheld: number;
+  total_cash_payout_to_owners: number; // Uang cash keluar ke rekening owner
+  total_stay_deductions_applied: number;
+
+  units: ScottMatrixUnitItem[];
+}
+
+// ==========================================
+// KAS KECIL OPERASIONAL (OPERATIONAL PETTY CASH)
+// ==========================================
+
+export type PettyCashExpenseCategory =
+  | 'KITCHEN_EMERGENCY'
+  | 'HOUSEKEEPING_GUEST_SUPPLIES'
+  | 'ENGINEERING_MAINTENANCE'
+  | 'FRONT_DESK_GUEST_RELATIONS'
+  | 'OFFICE_STATIONERY_ADMIN'
+  | 'TRANSPORT_COURIER'
+  | 'OTHER_OPERATIONAL';
+
+export interface PettyCashTransaction {
+  id: string;
+  voucher_number: string; // e.g. "PCV-2026-001"
+  date: string; // YYYY-MM-DD
+  category: PettyCashExpenseCategory;
+  category_label: string;
+  department_code: string; // e.g. "100" (Rooms), "200" (F&B)
+  department_name: string;
+  account_code: string; // USALI Expense account
+  account_name: string;
+  amount: number;
+  paid_to: string; // Penerima uang / Toko / Vendor
+  description: string;
+  receipt_image_url?: string; // Data URL or URL for physical receipt / nota
+  receipt_filename?: string;
+  status: 'PENDING_REIMBURSEMENT' | 'REIMBURSED' | 'VOIDED';
+  reimbursement_id?: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface PettyCashFloatConfig {
+  account_name: string; // "Kas Kecil Operasional Atrium"
+  gl_account_code: string; // "1010" (Cash on Hand)
+  bank_replenishment_account: string; // "1020" (Mandiri Operating)
+  float_limit: number; // Plafon tetap (misal Rp 10.000.000)
+  low_balance_threshold: number; // Peringatan saldo rendah (misal Rp 2.000.000)
+  updated_at: string;
+}
+
+export interface PettyCashBalanceSummary {
+  float_limit: number;
+  current_balance: number;
+  pending_expenses_total: number;
+  pending_vouchers_count: number;
+  is_low_balance: boolean;
+  total_reimbursed_ytd: number;
+  config: PettyCashFloatConfig;
+}
+
+export interface PettyCashReplenishmentClaim {
+  claim_id: string; // e.g. "PCR-2026-001"
+  claim_date: string;
+  claim_period: string;
+  total_amount: number;
+  vouchers_count: number;
+  voucher_ids: string[];
+  bank_source_account: string;
+  journal_id?: string;
+  approved_by: string;
+  status: 'POSTED';
+  notes?: string;
+  created_at: string;
 }
 
 

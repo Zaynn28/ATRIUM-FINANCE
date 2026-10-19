@@ -45,6 +45,13 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
   const [loading, setLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
+  // Listen for atrium-open-print-preview event to switch into print mode
+  useEffect(() => {
+    const handleOpenPreview = () => setPreviewMode(true);
+    window.addEventListener('atrium-open-print-preview', handleOpenPreview);
+    return () => window.removeEventListener('atrium-open-print-preview', handleOpenPreview);
+  }, []);
+
   // Drilldown modal state
   const [drilldownLineId, setDrilldownLineId] = useState<string | null>(null);
   const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
@@ -370,19 +377,21 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onExportExcel={handleExportExcel}
         >
           <div className="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-xl print:border-none print:shadow-none print:rounded-none">
-            <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between print:hidden">
-              <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                  {property}
+            {!previewMode && (
+              <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between print:hidden no-print preview-hidden">
+                <div>
+                  <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
+                    {property}
+                  </div>
+                  <h2 className="text-base font-bold text-slate-100">
+                    {getStatementTitle()}
+                  </h2>
                 </div>
-                <h2 className="text-base font-bold text-slate-100">
-                  {getStatementTitle()}
-                </h2>
+                <span className="text-xs font-mono text-slate-400">
+                  Period: <strong className="text-slate-200">{period || 'All Available Posted Periods'}</strong>
+                </span>
               </div>
-              <span className="text-xs font-mono text-slate-400">
-                Period: <strong className="text-slate-200">{period || 'All Available Posted Periods'}</strong>
-              </span>
-            </div>
+            )}
 
             <div className="p-6 overflow-x-auto print:p-0">
               {activeTab === 'summary-operator' && (
@@ -392,21 +401,25 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       <th className="py-2.5 px-4 text-left">USALI 12 Line Description</th>
                       <th className="py-2.5 px-4 text-right">Amount (Rp)</th>
                       <th className="py-2.5 px-4 text-right">% Revenue</th>
-                      <th className="py-2.5 px-4 text-center print:hidden">Drill-Down</th>
+                      {!previewMode && (
+                        <th data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
+                          Drill-Down
+                        </th>
+                      )}
                     </tr>
                   </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {/* OPERATING REVENUE */}
                   <tr className="bg-slate-950/40 text-emerald-400 font-bold uppercase tracking-wider">
-                    <td colSpan={4} className="py-2 px-4">
+                    <td colSpan={previewMode ? 3 : 4} className="py-2 px-4">
                       Operating Revenue
                     </td>
                   </tr>
                   {report.operating_revenue.map((row) => (
                     <tr
                       key={row.line_id}
-                      onClick={() => handleDrilldown(row.line_id)}
-                      className="hover:bg-slate-800/60 cursor-pointer transition-colors"
+                      onClick={() => !previewMode && handleDrilldown(row.line_id)}
+                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
                     >
                       <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
                         {row.label}
@@ -419,12 +432,14 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
-                      <td className="py-2.5 px-4 text-center print:hidden">
-                        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
-                          <span>Inspect</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </span>
-                      </td>
+                      {!previewMode && (
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                            <span>Inspect</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </td>
+                      )}
                     </tr>
                   ))}
                   <tr className="bg-slate-900 font-bold border-t-2 border-slate-700 text-slate-100">
@@ -433,20 +448,22 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">100.0%</td>
-                    <td className="py-3 px-4 text-center print:hidden">—</td>
+                    {!previewMode && (
+                      <td data-non-printable="true" className="py-3 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
+                    )}
                   </tr>
 
                   {/* DEPARTMENTAL EXPENSES */}
                   <tr className="bg-slate-950/40 text-rose-400 font-bold uppercase tracking-wider">
-                    <td colSpan={4} className="py-2 px-4 pt-4">
+                    <td colSpan={previewMode ? 3 : 4} className="py-2 px-4 pt-4">
                       Departmental Expenses
                     </td>
                   </tr>
                   {report.departmental_expenses.map((row) => (
                     <tr
                       key={row.line_id}
-                      onClick={() => handleDrilldown(row.line_id)}
-                      className="hover:bg-slate-800/60 cursor-pointer transition-colors"
+                      onClick={() => !previewMode && handleDrilldown(row.line_id)}
+                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
                     >
                       <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
                         {row.label}
@@ -459,12 +476,14 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
-                      <td className="py-2.5 px-4 text-center print:hidden">
-                        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
-                          <span>Inspect</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </span>
-                      </td>
+                      {!previewMode && (
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                            <span>Inspect</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </td>
+                      )}
                     </tr>
                   ))}
                   <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
@@ -477,7 +496,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.total_departmental_expenses ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-2.5 px-4 text-center print:hidden">—</td>
+                    {!previewMode && (
+                      <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
+                    )}
                   </tr>
                   <tr className="bg-emerald-950/30 font-bold border-t border-b border-emerald-800/50 text-emerald-300">
                     <td className="py-3 px-4 pl-4 uppercase">Total Departmental Profit</td>
@@ -489,20 +510,22 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.total_departmental_profit ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-3 px-4 text-center print:hidden">—</td>
+                    {!previewMode && (
+                      <td data-non-printable="true" className="py-3 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
+                    )}
                   </tr>
 
                   {/* UNDISTRIBUTED OPERATING EXPENSES */}
                   <tr className="bg-slate-950/40 text-amber-400 font-bold uppercase tracking-wider">
-                    <td colSpan={4} className="py-2 px-4 pt-4">
+                    <td colSpan={previewMode ? 3 : 4} className="py-2 px-4 pt-4">
                       Undistributed Operating Expenses
                     </td>
                   </tr>
                   {report.undistributed_operating_expenses.map((row) => (
                     <tr
                       key={row.line_id}
-                      onClick={() => handleDrilldown(row.line_id)}
-                      className="hover:bg-slate-800/60 cursor-pointer transition-colors"
+                      onClick={() => !previewMode && handleDrilldown(row.line_id)}
+                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
                     >
                       <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
                         {row.label}
@@ -515,12 +538,14 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
-                      <td className="py-2.5 px-4 text-center print:hidden">
-                        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
-                          <span>Inspect</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </span>
-                      </td>
+                      {!previewMode && (
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                            <span>Inspect</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </td>
+                      )}
                     </tr>
                   ))}
                   <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
@@ -533,7 +558,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.total_undistributed_expenses ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-2.5 px-4 text-center print:hidden">—</td>
+                    {!previewMode && (
+                      <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
+                    )}
                   </tr>
 
                   {/* GROSS OPERATING PROFIT (GOP) */}
@@ -543,15 +570,17 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
                     </td>
                     <td className="py-3.5 px-4 text-right">{gopMargin}%</td>
-                    <td className="py-3.5 px-4 text-center print:hidden">—</td>
+                    {!previewMode && (
+                      <td data-non-printable="true" className="py-3.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
+                    )}
                   </tr>
 
                   {/* MANAGEMENT FEES & EBITDA */}
                   {report.management_fees.map((row) => (
                     <tr
                       key={row.line_id}
-                      onClick={() => handleDrilldown(row.line_id)}
-                      className="hover:bg-slate-800/60 cursor-pointer transition-colors"
+                      onClick={() => !previewMode && handleDrilldown(row.line_id)}
+                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
                     >
                       <td className="py-2.5 px-4 pl-8 text-slate-300 font-medium">
                         {row.label}
@@ -560,12 +589,14 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         {formatAmount(row.amount, report.formatting)}
                       </td>
                       <td className="py-2.5 px-4 text-right text-slate-400">—</td>
-                      <td className="py-2.5 px-4 text-center print:hidden">
-                        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
-                          <span>Inspect</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </span>
-                      </td>
+                      {!previewMode && (
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                            <span>Inspect</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </td>
+                      )}
                     </tr>
                   ))}
                   <tr className="bg-slate-900 font-bold border-t border-b border-slate-800 text-slate-200">
@@ -578,7 +609,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                         ? `${(((report.ebitda ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                         : '0.0%'}
                     </td>
-                    <td className="py-3 px-4 text-center print:hidden">—</td>
+                    {!previewMode && (
+                      <td data-non-printable="true" className="py-3 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
+                    )}
                   </tr>
                 </tbody>
               </table>

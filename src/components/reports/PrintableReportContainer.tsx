@@ -165,15 +165,15 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
         .report-preview-active [class*="no-print"],
         .report-preview-active .preview-hidden,
         .report-preview-active [class*="preview-hidden"],
+        .report-preview-active .non-printable-col,
+        .report-preview-active [data-non-printable="true"],
         .report-preview-active button,
         .report-preview-active input,
         .report-preview-active select,
         .report-preview-active svg.lucide,
         .report-preview-active .lucide,
-        .report-preview-active table th:nth-child(3),
-        .report-preview-active table th:nth-child(4),
-        .report-preview-active table td:nth-child(3),
-        .report-preview-active table td:nth-child(4) {
+        .report-preview-active .header-col-inspect,
+        .report-preview-active [data-non-printable="true"] {
           display: none !important;
         }
 
@@ -209,10 +209,9 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
           [role="banner"],
           .sidebar,
           #root > header,
-          table th:nth-child(3),
-          table th:nth-child(4),
-          table td:nth-child(3),
-          table td:nth-child(4) {
+          .non-printable-col,
+          [data-non-printable="true"],
+          .header-col-inspect {
             display: none !important;
           }
 
@@ -425,51 +424,6 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
         {/* REPORT CONTENT BODY */}
         {/* ======================================================== */}
         <div className="report-body-content text-inherit">{children}</div>
-
-        {/* ======================================================== */}
-        {/* EXECUTIVE 4-TIER SIGNATURE BLOCK (Optional) */}
-        {/* ======================================================== */}
-        {showSignatures && (
-          <div className={`${previewMode ? 'block' : 'hidden print:block'} mt-8 pt-4 border-t border-black page-break-avoid`}>
-            <div className="text-[9px] font-mono uppercase font-bold text-black tracking-wider mb-3">
-              STATUTORY &amp; EXECUTIVE GOVERNANCE SIGN-OFF:
-            </div>
-
-            <div className="grid grid-cols-4 gap-3 text-center">
-              <div className="border border-black p-2 flex flex-col justify-between h-24">
-                <div className="text-[8px] font-bold uppercase text-black">1. PREPARED BY</div>
-                <div className="my-auto">
-                  <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                  <div className="text-[10px] font-bold text-black">Chief Accountant</div>
-                </div>
-              </div>
-
-              <div className="border border-black p-2 flex flex-col justify-between h-24">
-                <div className="text-[8px] font-bold uppercase text-black">2. REVIEWED BY</div>
-                <div className="my-auto">
-                  <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                  <div className="text-[10px] font-bold text-black">Financial Controller</div>
-                </div>
-              </div>
-
-              <div className="border border-black p-2 flex flex-col justify-between h-24">
-                <div className="text-[8px] font-bold uppercase text-black">3. APPROVED BY</div>
-                <div className="my-auto">
-                  <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                  <div className="text-[10px] font-bold text-black">General Manager</div>
-                </div>
-              </div>
-
-              <div className="border border-black p-2 flex flex-col justify-between h-24">
-                <div className="text-[8px] font-bold uppercase text-black">4. ACKNOWLEDGED BY</div>
-                <div className="my-auto">
-                  <div className="border-b border-dotted border-black w-3/4 mx-auto mb-1"></div>
-                  <div className="text-[10px] font-bold text-black">Director / Representative</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* ======================================================== */}
         {/* RUNNING FOOTER RULE: Company Name Left, Page Number Right */}

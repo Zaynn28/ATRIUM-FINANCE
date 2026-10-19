@@ -36,6 +36,13 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
   const [loading, setLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
+  // Listen for atrium-open-print-preview event to switch into print mode
+  useEffect(() => {
+    const handleOpenPreview = () => setPreviewMode(true);
+    window.addEventListener('atrium-open-print-preview', handleOpenPreview);
+    return () => window.removeEventListener('atrium-open-print-preview', handleOpenPreview);
+  }, []);
+
   // Drilldown modal state
   const [drilldownLineId, setDrilldownLineId] = useState<string | null>(null);
   const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
@@ -256,6 +263,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
           property={property}
           columnHeader={`Period: ${period || 'All Available Posted'} (IDR)`}
           orientation="portrait"
+          showSignatures={false}
           previewMode={previewMode}
           onExitPreview={() => setPreviewMode(false)}
           onExportExcel={handleExportExcel}
@@ -333,8 +341,8 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <tr>
                       <th className="py-2.5 px-4 text-left">Line Item</th>
                       <th className="py-2.5 px-4 text-right">Amount ({report.formatting?.currency_symbol || 'IDR'})</th>
-                      {!previewMode && <th className="py-2.5 px-4 text-center print:hidden">Accounts</th>}
-                      {!previewMode && <th className="py-2.5 px-4 text-center print:hidden">Drill-Down</th>}
+                      {!previewMode && <th data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">Accounts</th>}
+                      {!previewMode && <th data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">Drill-Down</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 print:divide-none">
@@ -357,12 +365,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                           {formatAmount(row.amount, report.formatting)}
                         </td>
                         {!previewMode && (
-                          <td className="py-2.5 px-4 text-center text-slate-400 print:hidden">
+                          <td data-non-printable="true" className="py-2.5 px-4 text-center text-slate-400 print:hidden no-print non-printable-col">
                             {row.account_codes.join(', ')}
                           </td>
                         )}
                         {!previewMode && (
-                          <td className="py-2.5 px-4 text-center print:hidden">
+                          <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">
                             <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                               <span>Inspect</span>
                               <ChevronRight className="w-3 h-3" />
@@ -376,7 +384,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                       <td className="py-3 px-4 text-right text-emerald-400 print:text-black font-mono font-bold text-sm print:border-t print:border-black print:border-b-4 print:border-double print:border-black">
                         {formatAmount(report.balance_sheet.total_assets, report.formatting)}
                       </td>
-                      {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                      {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                     </tr>
 
                     {/* LIABILITIES */}
@@ -398,12 +406,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                           {formatAmount(row.amount, report.formatting)}
                         </td>
                         {!previewMode && (
-                          <td className="py-2.5 px-4 text-center text-slate-400 print:hidden">
+                          <td data-non-printable="true" className="py-2.5 px-4 text-center text-slate-400 print:hidden no-print non-printable-col">
                             {row.account_codes.join(', ')}
                           </td>
                         )}
                         {!previewMode && (
-                          <td className="py-2.5 px-4 text-center print:hidden">
+                          <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">
                             <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                               <span>Inspect</span>
                               <ChevronRight className="w-3 h-3" />
@@ -417,7 +425,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                       <td className="py-2.5 px-4 text-right text-amber-300 print:text-black font-mono font-bold print:border-t print:border-black">
                         {formatAmount(report.balance_sheet.total_liabilities, report.formatting)}
                       </td>
-                      {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                      {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                     </tr>
 
                     {/* EQUITY */}
@@ -439,12 +447,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                           {formatAmount(row.amount, report.formatting)}
                         </td>
                         {!previewMode && (
-                          <td className="py-2.5 px-4 text-center text-slate-400 print:hidden">
+                          <td data-non-printable="true" className="py-2.5 px-4 text-center text-slate-400 print:hidden no-print non-printable-col">
                             {row.account_codes.join(', ')}
                           </td>
                         )}
                         {!previewMode && (
-                          <td className="py-2.5 px-4 text-center print:hidden">
+                          <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">
                             <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                               <span>Inspect</span>
                               <ChevronRight className="w-3 h-3" />
@@ -458,7 +466,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                       <td className="py-2.5 px-4 text-right text-indigo-300 print:text-black font-mono font-bold print:border-t print:border-black">
                         {formatAmount(report.balance_sheet.total_equity, report.formatting)}
                       </td>
-                      {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                      {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                     </tr>
 
                     {/* TOTAL LIABILITIES & EQUITY */}
@@ -485,8 +493,8 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                   <tr>
                     <th className="py-2.5 px-4 text-left">Line Item</th>
                     <th className="py-2.5 px-4 text-right">Amount ({report.formatting?.currency_symbol || 'IDR'})</th>
-                    {!previewMode && <th className="py-2.5 px-4 text-center print:hidden">Accounts</th>}
-                    {!previewMode && <th className="py-2.5 px-4 text-center print:hidden">Drill-Down</th>}
+                    {!previewMode && <th data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">Accounts</th>}
+                    {!previewMode && <th data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">Drill-Down</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 print:divide-none">
@@ -509,12 +517,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                         {formatAmount(row.amount, report.formatting)}
                       </td>
                       {!previewMode && (
-                        <td className="py-2.5 px-4 text-center text-slate-400 print:hidden">
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center text-slate-400 print:hidden no-print non-printable-col">
                           {row.account_codes.join(', ')}
                         </td>
                       )}
                       {!previewMode && (
-                        <td className="py-2.5 px-4 text-center print:hidden">
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">
                           <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                             <span>Inspect</span>
                             <ChevronRight className="w-3 h-3" />
@@ -528,7 +536,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <td className="py-3 px-4 text-right text-emerald-400 print:text-black font-mono font-bold text-sm print:border-t print:border-black">
                       {formatAmount(report.income_statement.total_operating_revenue ?? 0, report.formatting)}
                     </td>
-                    {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                    {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                   </tr>
 
                   {/* COST OF SALES (if configured) */}
@@ -552,12 +560,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                             {formatAmount(row.amount, report.formatting)}
                           </td>
                           {!previewMode && (
-                            <td className="py-2.5 px-4 text-center text-slate-400 print:hidden">
+                            <td data-non-printable="true" className="py-2.5 px-4 text-center text-slate-400 print:hidden no-print non-printable-col">
                               {row.account_codes.join(', ')}
                             </td>
                           )}
                           {!previewMode && (
-                            <td className="py-2.5 px-4 text-center print:hidden">
+                            <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">
                               <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                                 <span>Inspect</span>
                                 <ChevronRight className="w-3 h-3" />
@@ -571,7 +579,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                         <td className="py-2.5 px-4 text-right text-amber-300 print:text-black font-mono font-bold print:border-t print:border-black">
                           {formatAmount(report.income_statement.total_cost_of_sales ?? 0, report.formatting)}
                         </td>
-                        {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                        {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                       </tr>
 
                       {/* GROSS PROFIT */}
@@ -580,7 +588,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                         <td className="py-2.5 px-4 text-right text-emerald-300 print:text-black font-mono font-bold print:border-t print:border-black">
                           {formatAmount(report.income_statement.gross_profit ?? 0, report.formatting)}
                         </td>
-                        {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                        {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                       </tr>
                     </>
                   )}
@@ -604,12 +612,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                         {formatAmount(row.amount, report.formatting)}
                       </td>
                       {!previewMode && (
-                        <td className="py-2.5 px-4 text-center text-slate-400 print:hidden">
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center text-slate-400 print:hidden no-print non-printable-col">
                           {row.account_codes.join(', ')}
                         </td>
                       )}
                       {!previewMode && (
-                        <td className="py-2.5 px-4 text-center print:hidden">
+                        <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print non-printable-col">
                           <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
                             <span>Inspect</span>
                             <ChevronRight className="w-3 h-3" />
@@ -623,7 +631,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <td className="py-2.5 px-4 text-right text-rose-300 print:text-black font-mono font-bold print:border-t print:border-black">
                       {formatAmount(report.income_statement.total_operating_expenses ?? 0, report.formatting)}
                     </td>
-                    {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                    {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                   </tr>
 
                   {/* NET OPERATING INCOME */}
@@ -632,7 +640,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
                     <td className="py-3.5 px-4 text-right text-emerald-300 print:text-black font-mono font-black text-base print:border-t print:border-black print:border-b-4 print:border-double print:border-black">
                       {formatAmount(report.income_statement.net_operating_income ?? 0, report.formatting)}
                     </td>
-                    {!previewMode && <td colSpan={2} className="print:hidden"></td>}
+                    {!previewMode && <td colSpan={2} data-non-printable="true" className="print:hidden no-print non-printable-col"></td>}
                   </tr>
                 </tbody>
               </table>
