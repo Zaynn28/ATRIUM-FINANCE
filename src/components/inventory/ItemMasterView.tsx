@@ -97,8 +97,8 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
       reorder_point: 20,
       average_cost: 0,
       last_purchase_price: 0,
-      inventory_gl_account: catObj?.default_inventory_gl_account || '1080',
-      expense_gl_account: catObj?.default_expense_gl_account || '5110',
+      inventory_gl_account: catObj?.default_inventory_account || '1080',
+      expense_gl_account: catObj?.default_expense_account || '5110',
       supplier: '',
       is_active: true,
       barcode: `899${Math.floor(1000000000 + Math.random() * 9000000000)}`,
@@ -195,7 +195,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
             <option value="ALL">All Categories</option>
             {categories.map((c) => (
               <option key={c.category_id} value={c.category_id}>
-                {c.category_name}
+                {c.name}
               </option>
             ))}
           </select>
@@ -317,7 +317,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                       </td>
                       <td className="px-4 py-3">
                         <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium block w-fit mb-0.5">
-                          {(categories || []).find((c) => c.category_id === item.category_id)?.category_name || item.category_id}
+                          {(categories || []).find((c) => c.category_id === item.category_id)?.name || item.category_id}
                         </span>
                         <span className="text-[10px] text-slate-400">{item.subcategory}</span>
                       </td>
@@ -456,15 +456,15 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                         ...editingItem,
                         category_id: catId,
                         subcategory: catObj?.subcategories?.[0] || 'General',
-                        inventory_gl_account: catObj?.default_inventory_gl_account || editingItem.inventory_gl_account,
-                        expense_gl_account: catObj?.default_expense_gl_account || editingItem.expense_gl_account,
+                        inventory_gl_account: catObj?.default_inventory_account || editingItem.inventory_gl_account,
+                        expense_gl_account: catObj?.default_expense_account || editingItem.expense_gl_account,
                       });
                     }}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100"
                   >
                     {categories.map((c) => (
                       <option key={c.category_id} value={c.category_id}>
-                        {c.category_name}
+                        {c.name}
                       </option>
                     ))}
                   </select>

@@ -57,12 +57,12 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
   const handleOpenCreate = () => {
     setEditingCategory({
       category_id: `CAT-HOTEL-${Date.now().toString().slice(-4)}`,
-      category_name: '',
+      name: '',
       subcategories: ['General'],
-      default_inventory_gl_account: '1080',
-      default_expense_gl_account: '5110',
-      valuation_method: 'MOVING_AVERAGE',
-      description: '',
+      default_inventory_account: '1080',
+      default_expense_account: '5010',
+      is_fixed_asset: false,
+      active: 'Y',
     });
     setSubcatInput('');
     setIsModalOpen(true);
@@ -96,7 +96,7 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingCategory || !editingCategory.category_name) return;
+    if (!editingCategory || !editingCategory.name) return;
 
     setSaving(true);
     try {
@@ -160,8 +160,8 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((cat) => {
-          const invAccount = (accounts || []).find((a) => a.account_code === cat.default_inventory_gl_account);
-          const expAccount = (accounts || []).find((a) => a.account_code === cat.default_expense_gl_account);
+          const invAccount = (accounts || []).find((a) => a.account_code === cat.default_inventory_account);
+          const expAccount = (accounts || []).find((a) => a.account_code === cat.default_expense_account);
 
           return (
             <div
@@ -174,7 +174,7 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                       {cat.category_id}
                     </span>
-                    <h4 className="text-base font-bold text-white mt-1.5">{cat.category_name}</h4>
+                    <h4 className="text-base font-bold text-white mt-1.5">{cat.name}</h4>
                   </div>
                   <button
                     onClick={() => handleOpenEdit(cat)}
@@ -184,7 +184,9 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
                   </button>
                 </div>
 
-                <p className="text-xs text-slate-400 mt-2">{cat.description || 'No description provided.'}</p>
+                <p className="text-xs text-slate-400 mt-2">
+                  {cat.is_fixed_asset ? 'Fixed asset' : 'Consumable / operating stock'}
+                </p>
 
                 {/* Subcategories Tags */}
                 <div className="mt-3">
@@ -207,18 +209,20 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="font-mono">Asset (Stock):</span>
                   <span className="font-mono font-semibold text-emerald-400">
-                    {cat.default_inventory_gl_account} ({invAccount?.account_name || 'Inventory'})
+                    {cat.default_inventory_account} ({invAccount?.account_name || 'Inventory'})
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="font-mono">Expense/COS:</span>
                   <span className="font-mono font-semibold text-amber-400">
-                    {cat.default_expense_gl_account} ({expAccount?.account_name || 'Operating Cost'})
+                    {cat.default_expense_account} ({expAccount?.account_name || 'Operating Cost'})
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-400">
-                  <span className="font-mono">Valuation:</span>
-                  <span className="font-mono text-slate-300">{cat.valuation_method}</span>
+                  <span className="font-mono">Status:</span>
+                  <span className="font-mono text-slate-300">
+                    {cat.active === 'Y' ? 'Active' : 'Inactive'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -260,20 +264,10 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
                 <input
                   type="text"
                   required
-                  value={editingCategory.category_name || ''}
-                  onChange={(e) => setEditingCategory({ ...editingCategory, category_name: e.target.value })}
+                  value={editingCategory.name || ''}
+                  onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm"
                   placeholder="e.g. Food & Beverage"
-                />
-              </div>
-
-              <div>
-                <label className="font-mono text-slate-400 block mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={editingCategory.description || ''}
-                  onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs"
                 />
               </div>
 
@@ -326,14 +320,14 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
                 <div>
                   <label className="font-mono text-slate-400 block mb-1">Default Inventory Asset GL</label>
                   <select
-                    value={editingCategory.default_inventory_gl_account || '1080'}
+                    value={editingCategory.default_inventory_account || '1080'}
                     onChange={(e) =>
-                      setEditingCategory({ ...editingCategory, default_inventory_gl_account: e.target.value })
+                      setEditingCategory({ ...editingCategory, default_inventory_account: e.target.value })
                     }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono"
                   >
                     {(accounts || [])
-                      .filter((a) => a.account_type === 'ASSET')
+                      .filter((a) => a.account_type === 'Asset')
                       .map((a) => (
                         <option key={a.account_code} value={a.account_code}>
                           {a.account_code} - {a.account_name}
@@ -345,14 +339,14 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
                 <div>
                   <label className="font-mono text-slate-400 block mb-1">Default Expense GL</label>
                   <select
-                    value={editingCategory.default_expense_gl_account || '5110'}
+                    value={editingCategory.default_expense_account || '5010'}
                     onChange={(e) =>
-                      setEditingCategory({ ...editingCategory, default_expense_gl_account: e.target.value })
+                      setEditingCategory({ ...editingCategory, default_expense_account: e.target.value })
                     }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono"
                   >
                     {(accounts || [])
-                      .filter((a) => a.account_type === 'EXPENSE' || a.account_type === 'COST_OF_SALES')
+                      .filter((a) => a.account_type === 'Expense')
                       .map((a) => (
                         <option key={a.account_code} value={a.account_code}>
                           {a.account_code} - {a.account_name}

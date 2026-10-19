@@ -119,7 +119,7 @@ export const InventoryReportsView: React.FC = () => {
     const valRows: (string | number)[][] = items.map((i) => [
       i.item_code,
       i.item_name,
-      categories.find((c) => c.category_id === i.category_id)?.category_name || i.category_id,
+      categories.find((c) => c.category_id === i.category_id)?.name || i.category_id,
       i.uom,
       i.current_stock,
       i.average_cost,
@@ -349,7 +349,7 @@ export const InventoryReportsView: React.FC = () => {
                 <tbody className="divide-y divide-slate-800 text-slate-300">
                   {categoryValuation.map((cv) => (
                     <tr key={cv.category.category_id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-4 py-2.5 font-bold text-white">{cv.category.category_name}</td>
+                      <td className="px-4 py-2.5 font-bold text-white">{cv.category.name}</td>
                       <td className="px-4 py-2.5 font-mono text-emerald-400">
                         {cv.category.inventory_asset_account}
                       </td>
