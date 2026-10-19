@@ -13,10 +13,9 @@ import {
   Coins,
   Clock,
   Layers,
-  FileSpreadsheet,
   Printer,
   Eye,
-} from 'lucide-react';
+} from 'lucide-react';;
 import {
   InventoryItem,
   InventoryCategory,
@@ -24,7 +23,8 @@ import {
   StockAdjustmentRecord,
 } from '../../types';
 import { api } from '../../services/api';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../../utils/excelExporter';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
 import { PrintableReportContainer } from '../reports/PrintableReportContainer';
 
 export const InventoryReportsView: React.FC = () => {
@@ -103,7 +103,19 @@ export const InventoryReportsView: React.FC = () => {
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
+    if (activeTab === 'SPOILAGE') {
+      createReportExporter(format)('Inventory_Spoilage', [{
+        name: 'Spoilage', title: 'Inventory Wastage, Spoilage & Write-Off Audit',
+        headers: ['Date', 'Item Name', 'Storeroom', 'Reason', 'Written-Off Quantity', 'UOM', 'Financial Loss (Rp)', 'Incident Description'],
+        rows: [
+          ...adjustments.filter(a => a.type === 'ADJUSTMENT_OUT').map(a => [a.date, a.item_name, a.storeroom_id, a.reason_code, -a.quantity, a.uom, a.total_cost, a.reason_notes]),
+          ['TOTAL', '', '', '', '', '', totalSpoilageLoss, ''],
+        ],
+        colWidths: [14, 26, 14, 18, 14, 8, 20, 32],
+      }]);
+      return;
+    }
     const valRows: (string | number)[][] = items.map((i) => [
       i.item_code,
       i.item_name,
@@ -113,7 +125,7 @@ export const InventoryReportsView: React.FC = () => {
       i.average_cost,
       i.current_stock * i.average_cost,
     ]);
-    valRows.push([
+    valRows.push(...withTotal(items.map(i => [i]), [
       'TOTAL',
       'Total Inventory Valuation',
       '',
@@ -121,7 +133,7 @@ export const InventoryReportsView: React.FC = () => {
       items.reduce((s, i) => s + i.current_stock, 0),
       '',
       items.reduce((s, i) => s + i.current_stock * i.average_cost, 0),
-    ]);
+    ]));
 
     const reorderRows: (string | number)[][] = reorderItems.map((r) => [
       r.item.item_code,
@@ -132,7 +144,7 @@ export const InventoryReportsView: React.FC = () => {
       r.orderQty,
       r.estCost,
     ]);
-    reorderRows.push([
+    reorderRows.push(...withTotal(reorderItems.map(r => [r]), [
       'TOTAL',
       'Total Estimated Reorder Cost',
       '',
@@ -140,9 +152,9 @@ export const InventoryReportsView: React.FC = () => {
       '',
       reorderItems.reduce((s, r) => s + r.orderQty, 0),
       reorderItems.reduce((s, r) => s + r.estCost, 0),
-    ]);
+    ]));
 
-    exportReportToExcel('Inventory_Financial_Report_PT_Atrium_Management_Group.xlsx', [
+    createReportExporter(format)(`Inventory_${activeTab}_Report`, [
       {
         name: 'Stock Valuation',
         title: 'HOTEL INVENTORY VALUATION REPORT',
@@ -174,31 +186,7 @@ export const InventoryReportsView: React.FC = () => {
         rows: reorderRows,
         colWidths: [15, 30, 15, 12, 12, 16, 20],
       },
-    ]);
-  };
-
-  const exportCSV = () => {
-    let csv = '';
-    if (activeTab === 'VALUATION') {
-      csv = 'Item Code,Item Name,Category,UOM,Current Stock,Unit Cost,Total Value\n';
-      items.forEach((i) => {
-        csv += `"${i.item_code}","${i.item_name}","${i.category_id}","${i.uom}",${i.current_stock},${i.average_cost},${i.current_stock * i.average_cost}\n`;
-      });
-    } else if (activeTab === 'REORDER') {
-      csv = 'Item Code,Item Name,Current Stock,Min Stock,Max Stock,Suggested Order,Est Cost\n';
-      reorderItems.forEach((r) => {
-        csv += `"${r.item.item_code}","${r.item.item_name}",${r.item.current_stock},${r.item.min_stock},${r.item.max_stock},${r.orderQty},${r.estCost}\n`;
-      });
-    }
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `inventory_${activeTab.toLowerCase()}_report.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    ].filter((_, index) => index === (activeTab === 'VALUATION' ? 0 : 1)));
   };
 
   return (
@@ -216,15 +204,7 @@ export const InventoryReportsView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="px-3.5 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg border border-emerald-600 flex items-center gap-1.5 transition-colors shadow-xs"
-            title="Export full inventory valuation to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={loading} />
 
           {/* Toggle PDF Preview */}
           <button
@@ -250,13 +230,6 @@ export const InventoryReportsView: React.FC = () => {
             <span>Print to PDF</span>
           </button>
 
-          <button
-            onClick={exportCSV}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>CSV</span>
-          </button>
         </div>
       </div>
 

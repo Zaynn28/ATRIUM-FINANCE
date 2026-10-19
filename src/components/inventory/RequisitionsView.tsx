@@ -30,6 +30,8 @@ import {
   Department,
 } from '../../types';
 import { api } from '../../services/api';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
+import { exportReport } from '../../utils/reportExport';
 import { PurchaseRequisitionDocumentModal } from './PurchaseRequisitionDocumentModal';
 
 interface RequisitionsViewProps {
@@ -206,13 +208,34 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-950 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Requisition</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <ReportExportButtons
+            disabled={loading}
+            onExport={format => exportReport('Department_Requisition_Register', [
+              {
+                name: 'Requisitions',
+                title: 'DEPARTMENT PURCHASE REQUISITION REGISTER',
+                subtitle: `${requisitions.length} requisitions`,
+                headers: ['Req #', 'Date', 'Department', 'Requester', 'Source Storeroom', 'Line Items', 'Requested Qty', 'Approved Qty', 'Estimated Cost (Rp)', 'Status', 'Approver', 'Issuer', 'Linked POs', 'Journal'],
+                rows: requisitions.map(r => [
+                  r.requisition_id, r.date, r.department_name, r.requester_name, r.storeroom_name, r.items.length,
+                  r.items.reduce((s, i) => s + (i.requested_quantity || 0), 0),
+                  r.items.reduce((s, i) => s + (i.approved_quantity ?? i.requested_quantity ?? 0), 0),
+                  r.items.reduce((s, i) => s + (i.approved_quantity ?? i.requested_quantity ?? 0) * (i.unit_cost || 0), 0),
+                  r.status, r.approver_name, r.issuer_name, (r.linked_po_ids || []).join('; '), r.journal_id,
+                ]),
+                colWidths: [16, 14, 20, 22, 18, 11, 14, 13, 20, 20, 20, 20, 22, 16],
+              },
+            ], format)}
+          />
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-950 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Requisition</span>
+          </button>
+        </div>
       </div>
 
       {/* Notifications */}

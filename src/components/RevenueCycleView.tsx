@@ -14,11 +14,9 @@ import {
   Settings2,
   ArrowRight,
   Calendar,
-  Download,
-  FileSpreadsheet,
   Printer,
   Search,
-} from 'lucide-react';
+} from 'lucide-react';;;
 import {
   RevenueTransaction,
   Account,
@@ -27,7 +25,8 @@ import {
 } from '../types';
 import { api } from '../services/api';
 import { AccountsReceivableModule } from './ar/AccountsReceivableModule';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 import { printReportElement } from '../utils/printManager';
 
 interface RevenueCycleViewProps {
@@ -101,37 +100,8 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
   const totalFilteredAmount = filteredTransactions.reduce((sum, tx) => sum + (tx.amount || 0), 0);
 
-  const handleExportCSV = () => {
-    const headers = [
-      'Date',
-      'Transaction ID',
-      'Department',
-      'Revenue Account',
-      'Amount (IDR)',
-      'Description',
-      'Journal ID',
-    ];
-    const rows = filteredTransactions.map((tx) => [
-      tx.date,
-      `"${tx.transaction_id}"`,
-      `"${tx.department_code}"`,
-      `"${tx.account_code}"`,
-      tx.amount,
-      `"${(tx.description || '').replace(/"/g, '""')}"`,
-      `"${tx.journal_id || ''}"`,
-    ]);
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Revenue_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportExcel = () => {
-    exportReportToExcel(`Revenue_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}`, [
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
+    createReportExporter(format)(`Revenue_Transactions_${logDateFrom || 'all'}_to_${logDateTo || 'all'}`, [
       {
         name: 'Revenue Log',
         title: 'REVENUE INGESTION & AUDIT LOG',
@@ -549,29 +519,14 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
             {/* Export Toolbar */}
             <div className="flex items-center gap-2">
-              <button
-                onClick={handleExportCSV}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
-                title="Export to CSV"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>CSV</span>
-              </button>
-              <button
-                onClick={handleExportExcel}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors"
-                title="Export to Excel (.xlsx)"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
-                <span>Excel</span>
-              </button>
+              <ReportExportButtons onExport={handleExportExcel} />
               <button
                 onClick={handlePrint}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
                 title="Print Log / Save to PDF"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>PDF</span>
+                <span>Print</span>
               </button>
             </div>
           </div>

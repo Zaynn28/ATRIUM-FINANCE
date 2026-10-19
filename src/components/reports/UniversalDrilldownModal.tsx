@@ -22,6 +22,8 @@ import {
 import { DrilldownDetail, DrilldownJournalLine, DrilldownAccountSummary } from '../../types';
 import { api } from '../../services/api';
 import { formatAmount } from '../../utils/reportFormatter';
+import { ReportExportButtons } from './ReportExportButtons';
+import { exportReport } from '../../utils/reportExport';
 
 interface UniversalDrilldownModalProps {
   isOpen: boolean;
@@ -145,6 +147,12 @@ export const UniversalDrilldownModal: React.FC<UniversalDrilldownModalProps> = (
             </div>
           </div>
 
+          <ReportExportButtons disabled={loading || !data || !!error} onExport={format => exportReport(`Drilldown_${lineId || accountCode}_${period || 'All_Time'}`, [{
+            name: 'Journal Lines', title: `Drill-Down: ${data?.line_label || accountCode || 'Detail'}`, period: period || 'All Time',
+            headers: ['Date', 'Journal', 'Account', 'Department', 'Description', 'Debit (Rp)', 'Credit (Rp)'],
+            rows: displayedJournalLines.map(line => [line.journal_date, line.journal_id, line.account_code, line.department_code, line.description, line.debit, line.credit]),
+            colWidths: [14, 18, 12, 12, 45, 20, 20],
+          }], format)} />
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"

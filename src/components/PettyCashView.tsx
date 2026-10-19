@@ -27,11 +27,10 @@ import {
   HelpCircle,
   ExternalLink,
   Download,
-  FileSpreadsheet,
   Printer,
   Search,
   Sparkles,
-} from 'lucide-react';
+} from 'lucide-react';;
 import {
   PettyCashTransaction,
   PettyCashBalanceSummary,
@@ -40,7 +39,8 @@ import {
   Department,
 } from '../types';
 import { api } from '../services/api';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 import { printReportElement } from '../utils/printManager';
 
 interface PettyCashViewProps {
@@ -310,45 +310,8 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
   const totalFilteredDisbursed = filteredTransactions.reduce((sum, tx) => sum + (tx.amount || 0), 0);
 
-  const handleExportCSV = () => {
-    const headers = [
-      'Voucher Number',
-      'Date',
-      'Category',
-      'Department',
-      'Paid To / Payee',
-      'Description',
-      'Amount (IDR)',
-      'Status',
-      'Receipt Attached',
-      'GL Claim ID',
-    ];
-
-    const rows = filteredTransactions.map((tx) => [
-      `"${tx.voucher_number}"`,
-      tx.date,
-      `"${tx.category_label}"`,
-      `"${tx.department_name}"`,
-      `"${tx.paid_to}"`,
-      `"${(tx.description || '').replace(/"/g, '""')}"`,
-      tx.amount,
-      tx.status,
-      tx.receipt_image_url ? 'YES' : 'NO',
-      `"${tx.reimbursement_id || ''}"`,
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Petty_Cash_Vouchers_${dateFrom || 'all'}_to_${dateTo || 'all'}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportExcel = () => {
-    exportReportToExcel(`Petty_Cash_Register_${dateFrom || 'all'}_to_${dateTo || 'all'}`, [
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
+    createReportExporter(format)(`Petty_Cash_Register_${dateFrom || 'all'}_to_${dateTo || 'all'}`, [
       {
         name: 'Petty Cash',
         title: 'OPERATIONAL PETTY CASH REGISTER & VOUCHERS',
@@ -420,25 +383,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
-          {/* Direct CSV Download */}
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors"
-            title="Export to CSV"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>CSV</span>
-          </button>
-
-          {/* Direct Excel Download */}
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold border border-emerald-600 transition-colors shadow-xs"
-            title="Export to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} />
 
           {/* Print PDF */}
           <button
@@ -447,7 +392,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
             title="Print Voucher Register"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>PDF</span>
+            <span>Print</span>
           </button>
 
           <button

@@ -23,13 +23,13 @@ import {
   Info,
   X,
   ArrowRight,
-  FileSpreadsheet,
   Printer,
   Eye,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { JournalWithLines, JournalStatus, Account, Department } from '../types';
 import { api } from '../services/api';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 import { PrintableReportContainer } from './reports/PrintableReportContainer';
 
 interface JournalWorkbenchViewProps {
@@ -214,7 +214,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     const rows: (string | number)[][] = [];
     filteredJournals.forEach((j) => {
       j.lines.forEach((l) => {
@@ -245,7 +245,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       0
     );
 
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       '',
       '',
@@ -260,7 +260,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       totalCredits,
     ]);
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `Journal_Entries_PT_Atrium_Management_Group_${statusFilter}.xlsx`,
       [
         {
@@ -303,15 +303,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-            title="Export journal register to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} />
 
           {/* Toggle PDF Preview */}
           <button

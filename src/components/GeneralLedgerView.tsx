@@ -20,7 +20,8 @@ import {
 import { Account, GeneralLedgerEntry } from '../types';
 import { api } from '../services/api';
 import { PrintableReportContainer } from './reports/PrintableReportContainer';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 
 interface GeneralLedgerViewProps {
   accounts?: Account[];
@@ -54,7 +55,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!currentAccount) return;
 
     const rows: (string | number)[][] = (ledgerData.entries || []).map((e) => [
@@ -69,7 +70,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
     ]);
 
     // Totals row
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       '',
       '',
@@ -80,7 +81,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
       ledgerData.ending_balance ?? 0,
     ]);
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `General_Ledger_${currentAccount.account_code}_PT_Atrium_Management_Group_${periodFilter || 'All_Time'}.xlsx`,
       [
         {
@@ -185,15 +186,7 @@ export const GeneralLedgerView: React.FC<GeneralLedgerViewProps> = ({
             <span>Strictly POSTED Entries</span>
           </div>
 
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-            title="Export this ledger account to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={loading || !currentAccount} />
 
           {/* Toggle PDF Preview */}
           <button

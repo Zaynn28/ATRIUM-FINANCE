@@ -4,10 +4,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { ReportExportButtons } from './ReportExportButtons';
+import type { ReportExportFormat } from '../../utils/reportExport';
 import {
   Printer,
   Download,
-  FileSpreadsheet,
   X,
   FileText,
   RotateCw,
@@ -15,7 +16,7 @@ import {
   AlertCircle,
   Eye,
   SlidersHorizontal,
-} from 'lucide-react';
+} from 'lucide-react';;
 import {
   printReportElement,
   downloadPrintableHtml,
@@ -32,7 +33,7 @@ interface UniversalPrintModalProps {
   property?: string;
   columnHeader?: string;
   children: React.ReactNode;
-  onExportExcel?: () => void;
+  onExportExcel?: (format?: ReportExportFormat) => void;
   defaultOrientation?: 'portrait' | 'landscape';
 }
 
@@ -92,7 +93,7 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
       setFeedbackNotice('Downloaded print-ready file! Open it to print or save directly to PDF.');
       setTimeout(() => setFeedbackNotice(null), 6000);
     } else if (res.success) {
-      setFeedbackNotice('Print dialog triggered. If blocked by browser sandbox, use "Save as PDF" button.');
+      setFeedbackNotice('Print dialog triggered. You can also print straight to PDF, or use the PDF export above.');
       setTimeout(() => setFeedbackNotice(null), 5000);
     } else {
       setFeedbackNotice('Could not open system dialog. Downloading standalone print-ready file.');
@@ -102,20 +103,6 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
       );
       setTimeout(() => setFeedbackNotice(null), 6000);
     }
-  };
-
-  const handleDownloadStandalone = () => {
-    const content = document.getElementById('universal-modal-print-content');
-    if (!content) return;
-    downloadPrintableHtml(content.innerHTML, {
-      title,
-      subtitle,
-      period,
-      property,
-      orientation,
-    });
-    setFeedbackNotice('Downloaded standalone print-ready HTML file!');
-    setTimeout(() => setFeedbackNotice(null), 4000);
   };
 
   return (
@@ -171,31 +158,10 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
               </button>
             </div>
 
-            {/* Excel Export (if supported) */}
-            {onExportExcel && (
-              <button
-                type="button"
-                onClick={onExportExcel}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
-                title="Download formatted Excel (.xlsx) workbook"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Excel (.xlsx)</span>
-              </button>
-            )}
+            {/* Report exports: PDF, CSV and Excel */}
+            {onExportExcel && <ReportExportButtons onExport={onExportExcel} />}
 
-            {/* Standalone Save as HTML */}
-            <button
-              type="button"
-              onClick={handleDownloadStandalone}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium shadow-xs transition-colors"
-              title="Download clean standalone A4 HTML archive file"
-            >
-              <Download className="w-3.5 h-3.5 text-slate-400" />
-              <span>Download HTML</span>
-            </button>
-
-            {/* Primary Print / Save as PDF Button */}
+            {/* Primary Print Button */}
             <button
               type="button"
               onClick={handlePrint}

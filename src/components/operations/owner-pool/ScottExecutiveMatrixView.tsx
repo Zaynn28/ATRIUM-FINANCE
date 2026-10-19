@@ -11,7 +11,6 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
-  Download,
   Filter,
   RefreshCw,
   Search,
@@ -21,15 +20,15 @@ import {
   DollarSign,
   Briefcase,
   HelpCircle,
-  FileSpreadsheet,
   Printer,
   ChevronLeft,
   ChevronRight,
   Calendar,
-} from 'lucide-react';
+} from 'lucide-react';;;
 import { ScottExecutiveMatrixSummary, ScottMatrixUnitItem } from '../../../types';
 import { api } from '../../../services/api';
-import { exportReportToExcel } from '../../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../../../utils/excelExporter';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
 import { printReportElement } from '../../../utils/printManager';
 
 interface ScottExecutiveMatrixViewProps {
@@ -80,69 +79,10 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
     loadMatrix(period);
   }, [loadMatrix, period]);
 
-  const handleExportCSV = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!matrix || !matrix.units) return;
 
-    const headers = [
-      'Unit Number',
-      'Owner Name',
-      'Category Group',
-      'Unit SQM',
-      'Purchase Price',
-      'VAT Amount',
-      'Return Basis (Price - VAT)',
-      'Monthly 10% Guarantee',
-      'SQM Pool Share',
-      'Shortfall from PT Keen Eye',
-      'Excess to PT Atrium',
-      'Stay Days',
-      'Stay Deduction',
-      'Tax Withheld (10%)',
-      'Net Return After Tax',
-      'Installment Offset to PT Keen Eye',
-      'Remaining Due to Keen Eye',
-      'Cash Payout to Owner (15th)',
-      'Bank Name',
-      'Account Number',
-    ];
-
-    const rows = matrix.units.map((u) => [
-      `"${u.unit_number}"`,
-      `"${u.owner_name}"`,
-      `"${u.category_label}"`,
-      u.unit_sqm,
-      u.purchase_price,
-      u.vat_amount,
-      u.return_basis,
-      u.monthly_guaranteed_return,
-      u.sqm_pool_share_amount,
-      u.shortfall_covered_by_keen_eye,
-      u.excess_to_atrium_management,
-      u.stay_days_month,
-      u.stay_deduction_amount,
-      u.tax_withheld,
-      u.net_return_after_tax,
-      u.installment_offset_to_keen_eye,
-      u.remaining_payable_to_keen_eye,
-      u.cash_payout_amount,
-      `"${u.bank_name}"`,
-      `"${u.bank_account_number}"`,
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Scott_Executive_Owner_Matrix_${period}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportExcel = () => {
-    if (!matrix || !matrix.units) return;
-
-    exportReportToExcel(`Scott_Executive_Owner_Matrix_${period}`, [
+    createReportExporter(format)(`Scott_Executive_Owner_Matrix_${period}`, [
       {
         name: 'Executive Matrix',
         title: `EXECUTIVE OWNER RETURN & CASHFLOW MATRIX — ${period}`,
@@ -283,23 +223,8 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
           </button>
 
           {/* Export Options: CSV, Excel, PDF */}
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
-            title="Export CSV"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>CSV</span>
-          </button>
 
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors"
-            title="Export Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={loading || !matrix} />
 
           <button
             onClick={handlePrint}
@@ -307,7 +232,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
             title="Print / Save PDF"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>PDF</span>
+            <span>Print</span>
           </button>
         </div>
       </div>

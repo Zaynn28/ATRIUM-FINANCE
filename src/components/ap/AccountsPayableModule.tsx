@@ -23,14 +23,14 @@ import {
   Coins,
   Send,
   Building2,
-  FileSpreadsheet,
   Printer,
   Eye,
   Download,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { APAgingItem, AgingSummary, Account, Department } from '../../types';
 import { api } from '../../services/api';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../../utils/excelExporter';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
 import { PrintableReportContainer } from '../reports/PrintableReportContainer';
 
 interface AccountsPayableModuleProps {
@@ -241,52 +241,11 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
     }
   };
 
-  const handleExportCSV = () => {
-    const headers = [
-      'Bill ID',
-      'Vendor / Supplier',
-      'PO Ref',
-      'Department',
-      'Bill Date',
-      'Due Date',
-      'Original Amount (Rp)',
-      'Outstanding Amount (Rp)',
-      'Days Overdue',
-      'Aging Bucket',
-      'Status',
-      'Origin Journal Ref',
-    ];
-
-    const rows = filteredItems.map((item) => [
-      `"${item.bill_id}"`,
-      `"${item.vendor_name}"`,
-      `"${item.po_id || ''}"`,
-      `"${item.department_name}"`,
-      item.bill_date,
-      item.due_date,
-      item.original_amount,
-      item.outstanding_amount,
-      item.days_overdue,
-      item.aging_bucket,
-      item.status,
-      `"${item.origin_journal_id || ''}"`,
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `AP_Vendor_Bills_Schedule_${dateFrom || 'all'}_to_${dateTo || 'all'}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   const handlePrint = () => {
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     const rows: (string | number)[][] = filteredItems.map((item) => [
       item.bill_id,
       item.vendor_name,
@@ -302,7 +261,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
     ]);
 
     // Totals row
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       '',
       '',
@@ -325,7 +284,7 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
       ['Over 90 Days (Critical)', dynamicSummary.bucket_over_90],
     ];
 
-    exportReportToExcel('AP_Aging_Schedule_PT_Atrium_Management_Group.xlsx', [
+    createReportExporter(format)('AP_Aging_Schedule_PT_Atrium_Management_Group.xlsx', [
       {
         name: 'AP Vendor Bills',
         title: 'ACCOUNTS PAYABLE AGING & VENDOR BILLS SCHEDULE',
@@ -379,24 +338,8 @@ export const AccountsPayableModule: React.FC<AccountsPayableModuleProps> = ({
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Direct CSV Download Button */}
-          <button
-            onClick={handleExportCSV}
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-700 shadow-xs"
-            title="Export AP Aging schedule to CSV"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>CSV</span>
-          </button>
 
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="px-3 py-2 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-emerald-600 shadow-xs"
-            title="Export AP Aging schedule to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={loading} />
 
           {/* Toggle PDF Preview */}
           <button

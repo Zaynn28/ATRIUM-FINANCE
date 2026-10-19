@@ -4,8 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Printer, Download, Eye, X } from 'lucide-react';
+import { Printer, Eye, X } from 'lucide-react';;
 import { UniversalPrintModal } from './UniversalPrintModal';
+import { ReportExportButtons } from './ReportExportButtons';
+import type { ReportExportFormat } from '../../utils/reportExport';
 import { printReportElement, downloadPrintableHtml } from '../../utils/printManager';
 
 interface PrintableReportContainerProps {
@@ -23,7 +25,7 @@ interface PrintableReportContainerProps {
   onExitPreview?: () => void;
   isPrintModalOpen?: boolean;
   onClosePrintModal?: () => void;
-  onExportExcel?: () => void;
+  onExportExcel?: (format?: ReportExportFormat) => void;
 }
 
 export const PrintableReportContainer: React.FC<PrintableReportContainerProps> = ({
@@ -335,14 +337,7 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
               <span>Full Print Preview</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleDirectDownload}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-md font-medium flex items-center gap-1.5 transition-colors"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Save as PDF</span>
-            </button>
+            {onExportExcel && <ReportExportButtons onExport={onExportExcel} />}
 
             {onExitPreview && (
               <button
@@ -433,7 +428,7 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
             <span className="font-bold">{property}</span>
             {period && <span> | For the period {period}</span>}
           </div>
-          <div>Page 1 of 1</div>
+          <div>Internal report</div>
         </div>
       </div>
 

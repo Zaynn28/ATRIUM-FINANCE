@@ -12,12 +12,12 @@ import {
   Lock,
   Download,
   Printer,
-  FileSpreadsheet,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { TrialBalanceReport } from '../types';
 import { api } from '../services/api';
 import { PrintableReportContainer } from './reports/PrintableReportContainer';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 
 export const TrialBalanceView: React.FC = () => {
   const [period, setPeriod] = useState<string>('');
@@ -47,7 +47,7 @@ export const TrialBalanceView: React.FC = () => {
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!report) return;
 
     const rows: (string | number)[][] = report.items.map((item) => [
@@ -62,7 +62,7 @@ export const TrialBalanceView: React.FC = () => {
     ]);
 
     // Grand Totals row
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       'Grand Totals',
       '',
@@ -73,7 +73,7 @@ export const TrialBalanceView: React.FC = () => {
       report.total_credits ?? 0,
     ]);
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `Trial_Balance_PT_Atrium_Management_Group_${period || 'All_Time'}.xlsx`,
       [
         {
@@ -132,15 +132,7 @@ export const TrialBalanceView: React.FC = () => {
             )}
           </div>
 
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-            title="Export directly to Excel (.xlsx) with formatting"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={loading || !report} />
 
           {/* Toggle PDF Preview */}
           <button

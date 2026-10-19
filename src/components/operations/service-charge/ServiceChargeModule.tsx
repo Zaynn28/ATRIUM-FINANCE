@@ -24,6 +24,8 @@ import {
 } from '../../../types';
 import { api } from '../../../services/api';
 import { ServiceChargeDashboardView } from './ServiceChargeDashboardView';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
+import { exportReport } from '../../../utils/reportExport';
 import { DistributionEngineView } from './DistributionEngineView';
 import { EmployeeRegistryView } from './EmployeeRegistryView';
 import { CollectionsLogView } from './CollectionsLogView';
@@ -125,6 +127,41 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
 
         {/* Global Toolbar */}
         <div className="flex items-center gap-2 self-start md:self-auto">
+          <ReportExportButtons
+            onExport={format => exportReport('Service_Charge_Pool_Summary', [
+              {
+                name: 'Pool Position',
+                title: 'STAFF SERVICE CHARGE & GRATUITIES POOL POSITION',
+                subtitle: 'Fiduciary trust accounting summary — Account 2030',
+                headers: ['Metric', 'Amount / Value'],
+                rows: [
+                  ['Trust Liability Pool Balance (Acc. 2030)', kpis?.trust_liability_balance ?? 0],
+                  ['Current Period Guest Inflow (10%)', kpis?.current_period_collections ?? 0],
+                  ['Eligible Operational Staff', kpis?.active_eligible_staff ?? 0],
+                  ['Estimated Point Value (Rp / point)', kpis?.estimated_point_value ?? 0],
+                  ['Last Distributed Amount', kpis?.last_distributed_amount ?? 0],
+                  ['Last Distributed Point Value', kpis?.last_distributed_point_value ?? 0],
+                  ['Total All-Time Distributed', kpis?.total_all_time_distributed ?? 0],
+                ],
+                colWidths: [55, 28],
+              },
+              {
+                name: 'Department Breakdown',
+                title: 'ALLOCATION BY OPERATING DEPARTMENT',
+                headers: ['Department Code', 'Department', 'Staff Count', 'Allocated Amount (Rp)'],
+                rows: (kpis?.department_breakdown || []).map(d => [d.department_code, d.department_name, d.staff_count, d.allocated_amount]),
+                colWidths: [18, 34, 14, 24],
+              },
+              {
+                name: 'Distribution Cycles',
+                title: 'MONTH-END DISTRIBUTION CYCLE HISTORY',
+                headers: ['Cycle', 'Period', 'Status', 'Pool (Rp)', 'Points', 'Point Value (Rp)', 'Gross Payout (Rp)', 'Tax Withheld (Rp)', 'Net Payout (Rp)', 'Journal'],
+                rows: cycles.map(c => [c.cycle_id, c.period, c.status, c.distributable_pool_amount, c.total_weighted_points, c.point_value_rate, c.total_gross_payout, c.total_tax_withheld, c.total_net_payout, c.journal_id]),
+                colWidths: [16, 12, 16, 20, 12, 18, 20, 18, 20, 18],
+              },
+            ], format)}
+          />
+
           <button
             onClick={() => {
               loadData();

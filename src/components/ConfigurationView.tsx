@@ -26,6 +26,8 @@ import {
 import { Account, Department, MappingConfig, AccountType, NormalBalance } from '../types';
 import { api } from '../services/api';
 import { ReportConfigDesigner } from './configuration/ReportConfigDesigner';
+import { ReportExportButtons } from './reports/ReportExportButtons';
+import { exportReport } from '../utils/reportExport';
 
 interface ConfigurationViewProps {
   accounts: Account[];
@@ -341,6 +343,27 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <ReportExportButtons
+                onExport={format => exportReport(`Chart_of_Accounts_${selectedType !== 'ALL' ? selectedType : 'All_Types'}`, [
+                  {
+                    name: 'Chart of Accounts',
+                    title: 'MASTER CHART OF ACCOUNTS',
+                    subtitle: `Statutory & USALI 12 Compliant General Ledger Architecture (${filteredAccounts.length} of ${accounts.length} accounts)`,
+                    headers: ['Account Code', 'Account Name', 'Type', 'Normal Balance', 'Statutory Line', 'USALI Line', 'Status'],
+                    rows: filteredAccounts.map(a => [a.account_code, a.account_name, a.account_type, a.normal_balance, a.statutory_line, a.usali_line, a.active === 'Y' ? 'Active' : 'Inactive']),
+                    colWidths: [15, 38, 14, 15, 25, 25, 12],
+                  },
+                  {
+                    name: 'Cost Centers',
+                    title: 'OPERATING DEPARTMENTS MASTER',
+                    subtitle: `${filteredDepartments.length} of ${departments.length} cost centers`,
+                    headers: ['Department Code', 'Department Name', 'Status'],
+                    rows: filteredDepartments.map(d => [d.department_code, d.department_name, d.active === 'Y' ? 'Active' : 'Inactive']),
+                    colWidths: [18, 38, 12],
+                  },
+                ], format)}
+              />
+
               <button
                 onClick={handleSeedUsali}
                 disabled={loading}
@@ -476,13 +499,25 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               />
             </div>
 
-            <button
-              onClick={handleOpenAddDept}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Department</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <ReportExportButtons
+                onExport={format => exportReport('Cost_Centers_Master', [{
+                  name: 'Cost Centers',
+                  title: 'OPERATING DEPARTMENTS MASTER',
+                  subtitle: `${filteredDepartments.length} of ${departments.length} cost centers`,
+                  headers: ['Department Code', 'Department Name', 'Status'],
+                  rows: filteredDepartments.map(d => [d.department_code, d.department_name, d.active === 'Y' ? 'Active' : 'Inactive']),
+                  colWidths: [18, 38, 12],
+                }], format)}
+              />
+              <button
+                onClick={handleOpenAddDept}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Department</span>
+              </button>
+            </div>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">

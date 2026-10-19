@@ -21,7 +21,7 @@ import { UniversalReportToolbar } from './UniversalReportToolbar';
 import { UniversalDrilldownModal } from './UniversalDrilldownModal';
 import { PrintableReportContainer } from './PrintableReportContainer';
 import { formatAmount } from '../../utils/reportFormatter';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../../utils/excelExporter';
 
 interface UsaliStatementsViewProps {
   onOpenJournalInWorkbench?: (journalId: string) => void;
@@ -141,8 +141,44 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
   };
 
   // Excel (.xlsx) export with auto-sized columns and PT Atrium Management Group format
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!report) return;
+
+    const ratio = (amount: number) => report.total_operating_revenue > 0
+      ? `${(amount / report.total_operating_revenue * 100).toFixed(1)}%` : '0.0%';
+    const schedule = report.schedules_summary;
+    const otherRows: Record<string, (string | number)[][]> = {
+      'summary-owner': [
+        ['Total Operating Revenue', report.total_operating_revenue, ratio(report.total_operating_revenue)],
+        ['Total Operating Expenses (Dept + Undistributed)', report.total_departmental_expenses + report.total_undistributed_expenses, ratio(report.total_departmental_expenses + report.total_undistributed_expenses)],
+        ['Gross Operating Profit (GOP)', report.gross_operating_profit, `${gopMargin}%`],
+        ['Less: Operator Management Fees', report.total_management_fees, ''],
+        ['Less: Non-Operating Income & Expenses', report.total_non_operating_expenses, ''],
+        ['Net Operating Profit for Owner (EBITDA)', report.ebitda, ratio(report.ebitda)],
+      ],
+      'schedule-rooms': [
+        ['Rooms Revenue', schedule.rooms_revenue], ['Rooms Expenses', schedule.rooms_expense],
+        ['Rooms Departmental Profit', schedule.rooms_profit], ['Rooms Profit Margin', `${roomsMargin}%`],
+      ],
+      'schedule-fb': [
+        ['F&B Revenue', schedule.fb_revenue], ['F&B Expenses', schedule.fb_expense],
+        ['F&B Departmental Profit', schedule.fb_profit], ['F&B Profit Margin', `${fbMargin}%`],
+      ],
+      undistributed: report.undistributed_operating_expenses.map(row => [row.label, row.amount]),
+      kpis: [
+        ['GOP Margin', `${gopMargin}%`], ['Rooms Margin', `${roomsMargin}%`],
+        ['F&B Margin', `${fbMargin}%`],
+        ['Operating Ratio', ratio(report.total_departmental_expenses + report.total_undistributed_expenses)],
+      ],
+    };
+    if (activeTab !== 'summary-operator') {
+      createReportExporter(format)(`USALI_${activeTab}_${period || 'All_Time'}`, [{
+        name: activeTab, title: getStatementTitle(), property, period: period || 'All Time',
+        headers: activeTab === 'summary-owner' ? ['Statement Line Item', 'Amount (Rp)', '% Total Revenue'] : ['Statement Line Item', 'Amount (Rp) / Metric'],
+        rows: otherRows[activeTab], colWidths: activeTab === 'summary-owner' ? [50, 22, 16] : [50, 22],
+      }]);
+      return;
+    }
 
     const opRows: (string | number)[][] = [
       ['OPERATING REVENUES', ''],
@@ -171,44 +207,44 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
       ['Total Non-Operating Expenses', report.total_non_operating_expenses],
       ['', ''],
       ['NET OPERATING INCOME (EBITDA)', report.ebitda],
-      ['REPLACEMENT RESERVE', report.replacement_reserve],
-      ['EBITDA LESS REPLACEMENT RESERVE', report.ebitda_less_replacement_reserve],
     ];
 
     const schedRows: (string | number)[][] = [
       ['ROOMS DEPARTMENT (SCHEDULE 1)', ''],
       ['Rooms Revenue', report.schedules_summary.rooms_revenue],
-      ['Rooms Expenses', report.schedules_summary.rooms_expenses],
+      ['Rooms Expenses', report.schedules_summary.rooms_expense],
       ['Rooms Departmental Profit', report.schedules_summary.rooms_profit],
       ['Rooms Profit Margin', `${roomsMargin}%`],
       ['', ''],
       ['FOOD & BEVERAGE DEPARTMENT (SCHEDULE 2)', ''],
       ['F&B Revenue', report.schedules_summary.fb_revenue],
-      ['F&B Expenses', report.schedules_summary.fb_expenses],
+      ['F&B Expenses', report.schedules_summary.fb_expense],
       ['F&B Departmental Profit', report.schedules_summary.fb_profit],
       ['F&B Profit Margin', `${fbMargin}%`],
     ];
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `USALI_12_Operating_Statement_${property.replace(/\s+/g, '_')}_${period || 'All_Time'}.xlsx`,
       [
         {
           name: 'Operating Statement',
+          property,
           title: 'USALI 12th Revised Edition — Operating Statement',
           period: period || 'All Time',
-          headers: ['Statement Line Item', 'Amount (Rp)'],
-          rows: opRows,
-          colWidths: [45, 20],
+          headers: ['Statement Line Item', 'Amount (Rp)', '% Total Revenue'],
+          rows: opRows.map(row => [...row, typeof row[1] === 'number' ? ratio(row[1]) : '']),
+          colWidths: [45, 20, 16],
         },
         {
           name: 'Department Schedules',
+          property,
           title: 'USALI 12 — Departmental Schedules Summary',
           period: period || 'All Time',
           headers: ['Department Schedule Line', 'Amount (Rp)'],
           rows: schedRows,
           colWidths: [45, 20],
         },
-      ]
+      ].slice(0, 1)
     );
   };
 

@@ -17,16 +17,15 @@ import {
   RefreshCw,
   Search,
   DollarSign,
-  Download,
-  FileSpreadsheet,
   Printer,
   AlertTriangle,
   CheckCircle2,
   Loader2,
-} from 'lucide-react';
+} from 'lucide-react';;;
 import { InventoryStoreroom, InventoryItem, Department } from '../../types';
 import { api } from '../../services/api';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../../utils/excelExporter';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
 import { printReportElement } from '../../utils/printManager';
 
 interface StoreroomsViewProps {
@@ -214,41 +213,9 @@ export const StoreroomsView: React.FC<StoreroomsViewProps> = ({
   const totalStoreValuation = storeroomStockItems.reduce((sum, e) => sum + e.val, 0);
   const totalStoreStockQty = storeroomStockItems.reduce((sum, e) => sum + e.qty, 0);
 
-  const handleExportCSV = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!currentStoreroom) return;
-    const headers = [
-      'Item Code',
-      'Item Name',
-      'Category',
-      'Bin Location',
-      'Quantity In Store',
-      'Unit',
-      'Avg Cost (IDR)',
-      'Store Valuation (IDR)',
-    ];
-    const rows = storeroomStockItems.map((e) => [
-      `"${e.item.item_code}"`,
-      `"${e.item.item_name}"`,
-      `"${e.item.category_id}"`,
-      `"${e.bin}"`,
-      e.qty,
-      `"${e.item.unit_of_measure}"`,
-      e.item.average_cost,
-      e.val,
-    ]);
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Storeroom_Stock_${currentStoreroom.storeroom_id}_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleExportExcel = () => {
-    if (!currentStoreroom) return;
-    exportReportToExcel(`Storeroom_Stock_${currentStoreroom.storeroom_id}`, [
+    createReportExporter(format)(`Storeroom_Stock_${currentStoreroom.storeroom_id}`, [
       {
         name: 'Storeroom Stock',
         title: `Storeroom Stock & Valuation — ${currentStoreroom.storeroom_name}`,
@@ -459,29 +426,14 @@ export const StoreroomsView: React.FC<StoreroomsViewProps> = ({
 
               {/* Export Buttons */}
               <div className="flex items-center gap-1.5 no-print">
-                <button
-                  onClick={handleExportCSV}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 border border-slate-700"
-                  title="Export to CSV"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>CSV</span>
-                </button>
-                <button
-                  onClick={handleExportExcel}
-                  className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1 shadow-xs"
-                  title="Export to Excel"
-                >
-                  <FileSpreadsheet className="w-3.5 h-3.5" />
-                  <span>Excel</span>
-                </button>
+                <ReportExportButtons onExport={handleExportExcel} />
                 <button
                   onClick={handlePrint}
                   className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 border border-slate-700"
                   title="Print / Save PDF"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>PDF</span>
+                  <span>Print</span>
                 </button>
               </div>
 

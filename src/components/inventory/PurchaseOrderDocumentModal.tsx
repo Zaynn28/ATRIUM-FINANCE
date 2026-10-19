@@ -27,12 +27,12 @@ import {
   Sparkles,
   RotateCcw,
   PackageCheck,
-  FileSpreadsheet,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { PurchaseOrder, InventoryItem, InventoryStoreroom, Department } from '../../types';
 import { api } from '../../services/api';
 import { AtriumLogo } from '../common/AtriumLogo';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../../utils/excelExporter';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
 import { printReportElement } from '../../utils/printManager';
 
 interface PurchaseOrderDocumentModalProps {
@@ -142,7 +142,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
     });
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     const rows: (string | number)[][] = items.map((line, idx) => {
       const invItem = inventoryItems.find((i) => i.item_id === line.item_id);
       return [
@@ -156,35 +156,31 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
       ];
     });
 
-    rows.push([
-      'TOTAL',
-      '',
-      '',
-      '',
-      items.reduce((s, i) => s + (Number(i.ordered_quantity) || 0), 0),
-      'Subtotal',
-      calcSubtotal,
-    ]);
-    rows.push([
-      '',
-      '',
-      '',
-      '',
-      '',
-      `Tax (${taxRatePct}%)`,
-      calcTax,
-    ]);
-    rows.push([
-      '',
-      '',
-      '',
-      '',
-      '',
-      'Total Amount',
-      calcTotal,
-    ]);
+    if (rows.length) {
+      rows.push(
+        [
+          'TOTAL',
+          '',
+          '',
+          '',
+          items.reduce((s, i) => s + (Number(i.ordered_quantity) || 0), 0),
+          'Subtotal',
+          calcSubtotal,
+        ],
+        [
+          '',
+          '',
+          '',
+          '',
+          '',
+          `Tax (${taxRatePct}%)`,
+          calcTax,
+        ],
+        ['', '', '', '', '', 'Total Amount', calcTotal]
+      );
+    }
 
-    exportReportToExcel(`PO_${po.po_number}_PT_Atrium_Management_Group.xlsx`, [
+    createReportExporter(format)(`PO_${po.po_number}_PT_Atrium_Management_Group.xlsx`, [
       {
         name: `PO ${po.po_number}`.slice(0, 31),
         title: `OFFICIAL PURCHASE ORDER — ${po.po_number}`,
@@ -461,15 +457,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                   <span>Edit Document Details</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleExportExcel}
-                  className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition-colors border border-emerald-600"
-                  title="Export PO to Excel (.xlsx)"
-                >
-                  <FileSpreadsheet className="w-3.5 h-3.5" />
-                  <span>Excel (.xlsx)</span>
-                </button>
+                <ReportExportButtons onExport={handleExportExcel} />
 
                 <button
                   type="button"

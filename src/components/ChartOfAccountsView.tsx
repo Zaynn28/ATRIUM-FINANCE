@@ -18,12 +18,12 @@ import {
   Trash2,
   PowerOff,
   Printer,
-  FileSpreadsheet,
   Eye,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { Account, Department, AccountType, NormalBalance } from '../types';
 import { api } from '../services/api';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 import { PrintableReportContainer } from './reports/PrintableReportContainer';
 
 interface ChartOfAccountsViewProps {
@@ -190,7 +190,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     const accRows = filteredAccounts.map((a) => [
       a.account_code,
       a.account_name,
@@ -207,7 +207,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
       d.active === 'Y' ? 'Active' : 'Inactive',
     ]);
 
-    exportReportToExcel('Chart_of_Accounts_PT_Atrium_Management_Group.xlsx', [
+    createReportExporter(format)('Chart_of_Accounts_PT_Atrium_Management_Group.xlsx', [
       {
         name: 'Chart of Accounts',
         title: 'MASTER CHART OF ACCOUNTS',
@@ -249,15 +249,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-            title="Export master chart of accounts to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} />
 
           {/* Toggle PDF Preview */}
           <button

@@ -30,6 +30,8 @@ import {
   Account,
 } from '../../types';
 import { api } from '../../services/api';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
+import { exportReport, withTotal } from '../../utils/reportExport';
 
 interface ItemMasterViewProps {
   onOpenStockCard: (itemId: string) => void;
@@ -228,6 +230,20 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          <ReportExportButtons
+            disabled={loading}
+            onExport={format => exportReport(`Item_Master_${selectedCategory !== 'ALL' ? selectedCategory : 'All_Categories'}`, [{
+              name: 'Item Master',
+              title: 'INVENTORY ITEM MASTER & STOCK VALUATION REGISTER',
+              subtitle: `${filteredItems.length} of ${items.length} items | Category: ${selectedCategory} | Stock filter: ${stockFilter}`,
+              headers: ['Item Code', 'Item Name', 'Category', 'Subcategory', 'UOM', 'On Hand', 'Reorder Point', 'Min', 'Max', 'Average Cost (Rp)', 'Stock Value (Rp)', 'Last Purchase Cost (Rp)', 'Supplier', 'Barcode', 'Status'],
+              rows: withTotal(
+                filteredItems.map(i => [i.item_code, i.item_name, i.category_id, i.subcategory, i.uom, i.current_stock, i.reorder_point, i.min_stock, i.max_stock, i.average_cost, i.current_stock * i.average_cost, i.last_purchase_cost, i.supplier, i.barcode, i.status]),
+                ['TOTAL', '', '', '', '', filteredItems.reduce((s, i) => s + i.current_stock, 0), '', '', '', '', filteredItems.reduce((s, i) => s + i.current_stock * i.average_cost, 0), '', '', '', '']
+              ),
+              colWidths: [14, 30, 16, 20, 8, 11, 12, 9, 9, 18, 20, 20, 28, 18, 12],
+            }], format)}
+          />
           <button
             onClick={onOpenScanner}
             className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors"

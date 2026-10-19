@@ -1,0 +1,69 @@
+{
+  "config": {
+    "account_name": "Kas Kecil Operasional Atrium",
+    "gl_account_code": "1010",
+    "bank_replenishment_account": "1020",
+    "float_limit": 10000000,
+    "low_balance_threshold": 2500000,
+    "updated_at": "2024-01-01T00:00:00.000Z"
+  },
+  "transactions": [
+    {
+      "id": "PCV-2026-001",
+      "voucher_number": "PCV-2026-001",
+      "date": "2026-10-14",
+      "category": "KITCHEN_EMERGENCY",
+      "category_label": "Kitchen & Bar Emergency Herbs",
+      "department_code": "200",
+      "department_name": "Food & Beverage (Uma Blu)",
+      "account_code": "5210",
+      "account_name": "Food & Beverage Operating Supplies",
+      "amount": 450000,
+      "paid_to": "Pasar Segar Bali - Bumbu Dapur",
+      "description": "Pembelian darurat daun basil segar, jeruk nipis & es batu kristal untuk operasional Uma Blu Restaurant",
+      "receipt_image_url": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"500\" viewBox=\"0 0 400 500\" fill=\"%23fff\"><rect width=\"100%\" height=\"100%\" fill=\"%23f8fafc\" stroke=\"%23cbd5e1\" stroke-width=\"2\"/><text x=\"50%\" y=\"40\" font-family=\"monospace\" font-size=\"16\" font-weight=\"bold\" fill=\"%230f172a\" text-anchor=\"middle\">PASAR SEGAR BALI - UMA BLU</text><text x=\"50%\" y=\"65\" font-family=\"monospace\" font-size=\"11\" fill=\"%2364748b\" text-anchor=\"middle\">NOTA PEMBELIAN CASH / BUMBU DAPUR</text><line x1=\"30\" y1=\"85\" x2=\"370\" y2=\"85\" stroke=\"%2394a3b8\" stroke-dasharray=\"4\"/><text x=\"30\" y=\"115\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">Tanggal: 14 Okt 2026</text><text x=\"30\" y=\"135\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">No: STR-2026/10/89</text><text x=\"30\" y=\"170\" font-family=\"monospace\" font-size=\"13\" font-weight=\"bold\" fill=\"%230f172a\">ITEM PEMBELIAN:</text><text x=\"30\" y=\"200\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">1. Daun Basil & Mint Segar (2kg)</text><text x=\"370\" y=\"200\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\" text-anchor=\"end\">Rp 120.000</text><text x=\"30\" y=\"225\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">2. Jeruk Nipis Lokal (5kg)</text><text x=\"370\" y=\"225\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\" text-anchor=\"end\">Rp 150.000</text><text x=\"30\" y=\"250\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">3. Es Batu Kristal Darurat (10 bag)</text><text x=\"370\" y=\"250\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\" text-anchor=\"end\">Rp 180.000</text><line x1=\"30\" y1=\"280\" x2=\"370\" y2=\"280\" stroke=\"%2394a3b8\"/><text x=\"30\" y=\"310\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\" fill=\"%230f172a\">TOTAL CASH:</text><text x=\"370\" y=\"310\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\" fill=\"%23059669\" text-anchor=\"end\">Rp 450.000</text><rect x=\"30\" y=\"350\" width=\"340\" height=\"70\" fill=\"%23ecfdf5\" rx=\"6\" stroke=\"%2310b981\"/><text x=\"50%\" y=\"380\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"%23065f46\" text-anchor=\"middle\">LUNAS - KAS KECIL OPERASIONAL</text><text x=\"50%\" y=\"402\" font-family=\"monospace\" font-size=\"10\" fill=\"%23047857\" text-anchor=\"middle\">Chef Pastry: Made Wardana</text></svg>",
+      "receipt_filename": "nota-bumbu-pasar-14okt.svg",
+      "status": "PENDING_REIMBURSEMENT",
+      "created_by": "Made Wardana (Chef Uma Blu)",
+      "created_at": "2026-10-14T09:30:00.000Z"
+    },
+    {
+      "id": "PCV-2026-002",
+      "voucher_number": "PCV-2026-002",
+      "date": "2026-10-12",
+      "category": "OFFICE_STATIONERY_ADMIN",
+      "category_label": "Office Stationery & Legal Stamp",
+      "department_code": "500",
+      "department_name": "Admin & General",
+      "account_code": "6310",
+      "account_name": "Printing & Stationery Expense",
+      "amount": 380000,
+      "paid_to": "Toko Buku & ATK Jaya",
+      "description": "Kertas HVS A4 80gr (3 rim) dan Materai 10.000 (10 lembar) untuk kontrak legal owner condotel",
+      "receipt_image_url": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"500\" viewBox=\"0 0 400 500\" fill=\"%23fff\"><rect width=\"100%\" height=\"100%\" fill=\"%23f8fafc\" stroke=\"%23cbd5e1\" stroke-width=\"2\"/><text x=\"50%\" y=\"40\" font-family=\"monospace\" font-size=\"16\" font-weight=\"bold\" fill=\"%230f172a\" text-anchor=\"middle\">TOKO BUKU &amp; ATK JAYA</text><text x=\"50%\" y=\"65\" font-family=\"monospace\" font-size=\"11\" fill=\"%2364748b\" text-anchor=\"middle\">KWITANSI RESMI PENGELUARAN KANTOR</text><line x1=\"30\" y1=\"85\" x2=\"370\" y2=\"85\" stroke=\"%2394a3b8\" stroke-dasharray=\"4\"/><text x=\"30\" y=\"115\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">Tanggal: 12 Okt 2026</text><text x=\"30\" y=\"135\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">Untuk: PT Atrium Management Group</text><text x=\"30\" y=\"170\" font-family=\"monospace\" font-size=\"13\" font-weight=\"bold\" fill=\"%230f172a\">RINCIAN:</text><text x=\"30\" y=\"200\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">1. Kertas HVS A4 80gr (3 Rim)</text><text x=\"370\" y=\"200\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\" text-anchor=\"end\">Rp 175.000</text><text x=\"30\" y=\"225\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">2. Materai Tempel 10.000 (10 lbr)</text><text x=\"370\" y=\"225\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\" text-anchor=\"end\">Rp 110.000</text><text x=\"30\" y=\"250\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\">3. Map Gantung &amp; Binder Folio</text><text x=\"370\" y=\"250\" font-family=\"monospace\" font-size=\"12\" fill=\"%23334155\" text-anchor=\"end\">Rp 95.000</text><line x1=\"30\" y1=\"280\" x2=\"370\" y2=\"280\" stroke=\"%2394a3b8\"/><text x=\"30\" y=\"310\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\" fill=\"%230f172a\">JUMLAH:</text><text x=\"370\" y=\"310\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\" fill=\"%23059669\" text-anchor=\"end\">Rp 380.000</text><rect x=\"30\" y=\"350\" width=\"340\" height=\"70\" fill=\"%23f1f5f9\" rx=\"6\" stroke=\"%2394a3b8\"/><text x=\"50%\" y=\"380\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"%23334155\" text-anchor=\"middle\">PEMBAYARAN LUNAS</text><text x=\"50%\" y=\"402\" font-family=\"monospace\" font-size=\"10\" fill=\"%2364748b\" text-anchor=\"middle\">Diterima oleh Kasir ATK</text></svg>",
+      "receipt_filename": "nota-atk-materai-12okt.svg",
+      "status": "PENDING_REIMBURSEMENT",
+      "created_by": "Siti Rahma (Admin Staff)",
+      "created_at": "2026-10-12T14:15:00.000Z"
+    },
+    {
+      "id": "PCV-2026-003",
+      "voucher_number": "PCV-2026-003",
+      "date": "2026-10-10",
+      "category": "ENGINEERING_MAINTENANCE",
+      "category_label": "Urgent Maintenance Sealant",
+      "department_code": "600",
+      "department_name": "Property Maintenance & Engineering",
+      "account_code": "6420",
+      "account_name": "Maintenance Supplies & Small Hardware",
+      "amount": 220000,
+      "paid_to": "UD Mitra Bangunan Sanur",
+      "description": "Sealant anti-bocor & klem pipa darurat untuk perbaikan unit 304 kamar mandi",
+      "status": "PENDING_REIMBURSEMENT",
+      "created_by": "Wayan Suarjana (Engineering)",
+      "created_at": "2026-10-10T11:00:00.000Z"
+    }
+  ],
+  "claims": [],
+  "saved_at": "2026-10-19T03:34:00.978Z"
+}

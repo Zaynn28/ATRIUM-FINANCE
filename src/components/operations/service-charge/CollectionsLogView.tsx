@@ -14,10 +14,11 @@ import {
   Clock,
   ArrowDownLeft,
   DollarSign,
-  FileSpreadsheet,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { ServiceChargeCollection, Department, ServiceChargeSource } from '../../../types';
 import { api } from '../../../services/api';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
+import { exportReport, withTotal } from '../../../utils/reportExport';
 
 interface CollectionsLogViewProps {
   collections: ServiceChargeCollection[];
@@ -185,6 +186,16 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
 
       {/* Filter and Search Bar */}
       <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
+        <ReportExportButtons onExport={format => exportReport(`Service_Charge_Collections_${selectedPeriod}`, [{
+          name: 'Collections', title: 'Service Charge Collections Log', period: selectedPeriod,
+          subtitle: searchTerm ? `Search: ${searchTerm}` : undefined,
+          headers: ['Date', 'Reference', 'Source', 'Department', 'Gross Sales (Rp)', 'Rate', 'Service Charge (Rp)', 'Status', 'Journal', 'Notes'],
+          rows: withTotal(
+            filtered.map(c => [c.date, c.reference_no, c.source, c.department_code, c.gross_sales_amount, `${c.service_charge_rate_pct}%`, c.service_charge_amount, c.status, c.journal_id, c.notes]),
+            ['TOTAL', '', '', '', totalGross, '', totalServiceCharge, '', '', '']
+          ),
+          colWidths: [14, 20, 20, 12, 20, 10, 20, 14, 16, 26],
+        }], format)} />
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
           <input

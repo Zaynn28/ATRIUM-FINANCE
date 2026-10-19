@@ -7,20 +7,19 @@ import React, { useState, useEffect } from 'react';
 import {
   Scale,
   TrendingUp,
-  FileSpreadsheet,
   CheckCircle2,
   AlertTriangle,
   ChevronRight,
   ShieldCheck,
   Sliders,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { FinancialStatementsReport, ReportLineItem } from '../../types';
 import { api } from '../../services/api';
 import { UniversalReportToolbar } from './UniversalReportToolbar';
 import { UniversalDrilldownModal } from './UniversalDrilldownModal';
 import { PrintableReportContainer } from './PrintableReportContainer';
 import { formatAmount, getThemeClasses, getDensityClasses } from '../../utils/reportFormatter';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../../utils/excelExporter';
 
 interface FinancialStatementsViewProps {
   onOpenJournalInWorkbench?: (journalId: string) => void;
@@ -137,7 +136,7 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
     document.body.removeChild(link);
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!report) return;
 
     // Sheet 1: Balance Sheet
@@ -179,11 +178,12 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
       ['NET OPERATING INCOME', report.income_statement.net_operating_income ?? 0],
     ];
 
-    exportReportToExcel(
-      `Financial_Statements_${property.replace(/\s+/g, '_')}_${period || 'All_Time'}.xlsx`,
+    createReportExporter(format)(
+      `Financial_${activeTab}_${property.replace(/\s+/g, '_')}_${period || 'All_Time'}.xlsx`,
       [
         {
           name: 'Balance Sheet',
+          property,
           title: 'STATEMENT OF FINANCIAL POSITION',
           period: period || 'All Time',
           headers: ['Statement Line Item', 'Amount (Rp)'],
@@ -192,13 +192,14 @@ export const FinancialStatementsView: React.FC<FinancialStatementsViewProps> = (
         },
         {
           name: 'Income Statement',
+          property,
           title: 'STATEMENT OF PROFIT AND LOSS',
           period: period || 'All Time',
           headers: ['Statement Line Item', 'Amount (Rp)'],
           rows: isRows,
           colWidths: [45, 20],
         },
-      ]
+      ].filter((_, index) => index === (activeTab === 'balance-sheet' ? 0 : 1))
     );
   };
 

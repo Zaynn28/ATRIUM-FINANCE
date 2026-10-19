@@ -19,9 +19,9 @@ import {
   AlertCircle,
   Clock,
   ArrowUpRight,
-  FileSpreadsheet,
-} from 'lucide-react';
-import { exportReportToExcel } from '../../../utils/excelExporter';
+} from 'lucide-react';;
+import { createReportExporter, ReportExportFormat } from '../../../utils/excelExporter';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
 import { printReportElement } from '../../../utils/printManager';
 
 export const OwnerStatementView: React.FC = () => {
@@ -66,7 +66,7 @@ export const OwnerStatementView: React.FC = () => {
     });
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!line || !unit) return;
 
     const rows: (string | number)[][] = [
@@ -83,22 +83,23 @@ export const OwnerStatementView: React.FC = () => {
       ['Net Return Basis', line.return_basis_amount],
       ['', ''],
       ['HOTEL OPERATIONS & DISTRIBUTABLE POOL', ''],
-      ['Total Room Revenue', batch?.total_room_revenue ?? 0],
-      ['Total Pool Revenue', batch?.total_pool_revenue ?? 0],
-      ['Operating Deductions', -(batch?.total_deductions ?? 0)],
-      ['Net Distributable Pool', batch?.distributable_pool ?? 0],
+      ['Total Room Revenue', batch?.room_revenue_amount ?? 0],
+      ['Owner Pool', batch?.owner_pool_amount ?? 0],
+      ['Operator Allocation', batch?.amg_allocation_amount ?? 0],
       ['', ''],
       ['UNIT ALLOCATION & SETTLEMENT', ''],
-      ['Unit Allocation Weight (Sqm Share)', `${(line.weight_factor * 100).toFixed(4)}%`],
-      ['Gross Distribution Share', line.gross_distribution],
-      ['Maintenance Reserve (Sink Fund)', -line.maintenance_reserve],
-      ['Management Operational Fee', -line.management_fee],
-      ['PPh 4(2) Final Withholding Tax', -line.pph_final_tax],
+      ['Unit Allocation Weight (Sqm Share)', `${(line.allocation_pct * 100).toFixed(4)}%`],
+      ['Pool Allocation', line.pool_allocation_amount],
+      ['Monthly Guaranteed Return', line.monthly_guaranteed_return],
+      ['Gross Return Applied', line.gross_return_amount],
+      ['Stay Deduction', -line.stay_deduction_amount],
+      [`Tax Withheld (${line.tax_type_label})`, -line.tax_withheld_amount],
+      ['Installment Offset to Keen Eye', -line.installment_offset_to_keen_eye],
       ['', ''],
-      ['NET DISBURSED TO INVESTOR', line.net_distribution],
+      ['NET DISBURSED TO INVESTOR', line.net_distribution_amount],
     ];
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `Owner_Statement_Unit_${unit.unit_number}_${selectedPeriod}.xlsx`,
       [
         {
@@ -189,14 +190,7 @@ export const OwnerStatementView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-            title="Export statement to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={!line || !unit} />
 
           <button
             onClick={handlePrint}

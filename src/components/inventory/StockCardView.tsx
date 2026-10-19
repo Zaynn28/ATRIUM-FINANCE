@@ -23,7 +23,8 @@ import {
   StockMovement,
 } from '../../types';
 import { api } from '../../services/api';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat } from '../../utils/excelExporter';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
 import { printReportElement } from '../../utils/printManager';
 
 interface StockCardViewProps {
@@ -95,22 +96,22 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
     });
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!activeItem) return;
 
     const rows: (string | number)[][] = movements.map((m) => [
-      m.movement_date || m.created_at || '',
-      m.movement_type,
+      m.date,
+      m.type,
       m.storeroom_id,
-      m.reference_number || '',
-      m.quantity_change > 0 ? `+${m.quantity_change}` : m.quantity_change,
+      m.reference_id || '',
+      m.quantity,
       m.balance_after,
       m.unit_cost,
       m.balance_after * m.unit_cost,
       m.notes || '',
     ]);
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `Stock_Card_${activeItem.item_code}_PT_Atrium_Management_Group.xlsx`,
       [
         {
@@ -151,16 +152,7 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
 
         {/* Filters & Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            disabled={!activeItem}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600 disabled:opacity-50"
-            title="Export stock card ledger to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={!activeItem || loading} />
 
           {/* Print Button */}
           <button

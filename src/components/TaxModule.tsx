@@ -26,11 +26,10 @@ import {
   Info,
   Building,
   HelpCircle,
-  FileSpreadsheet,
   Printer,
   Eye,
   Trash2,
-} from 'lucide-react';
+} from 'lucide-react';;
 import { PrintableReportContainer } from './reports/PrintableReportContainer';
 import {
   TaxTypeCode,
@@ -44,7 +43,8 @@ import {
   UserRoleDefinition,
 } from '../types';
 import { api } from '../services/api';
-import { exportReportToExcel } from '../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../utils/excelExporter';
+import { ReportExportButtons } from './reports/ReportExportButtons';
 
 interface TaxModuleProps {
   currentUser?: SystemUser;
@@ -408,68 +408,103 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
     window.dispatchEvent(new CustomEvent('atrium-open-print-preview'));
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
+    if (activeTab === 'reconciliation') {
+      createReportExporter(format)(`Tax_Reconciliation_${selectedPeriod}`, [{
+        name: 'Reconciliation', title: 'General Ledger to Tax Return Reconciliation', period: selectedPeriod,
+        headers: ['Tax Type', 'GL Account', 'Calculated (Rp)', 'GL Balance (Rp)', 'Tax Paid (Rp)', 'Tax Filed (Rp)', 'Difference (Rp)', 'Status', 'Notes'],
+        rows: reconciliations.map(r => [r.tax_name, r.gl_account_code, r.calculated_amount, r.gl_balance_amount, r.paid_amount, r.filed_amount, r.difference_amount, r.status, r.discrepancy_note]),
+        colWidths: [22, 12, 18, 18, 18, 18, 18, 18, 30],
+      }]);
+      return;
+    }
+    if (activeTab === 'settings') {
+      createReportExporter(format)(`Tax_Rules_${selectedPeriod}`, [{
+        name: 'Tax Rules', title: 'Master Tax Rules & Statutory Configuration', period: selectedPeriod,
+        headers: ['Tax Code', 'Tax Name', 'Rate', 'Tax Base', 'GL Account', 'Filing Due Day', 'Payment Due Day', 'Active'],
+        rows: rules.map(r => [r.tax_code, r.tax_name, r.is_rate_configured ? `${r.tax_rate_pct}%` : 'Unconfigured', r.tax_base_description, r.gl_liability_account, r.filing_due_day, r.payment_due_day, r.active]),
+        colWidths: [18, 24, 12, 35, 12, 12, 12, 10],
+      }]);
+      return;
+    }
+    if (activeTab === 'filing') {
+      createReportExporter(format)(`Tax_Filing_${selectedPeriod}`, [{
+        name: 'Tax Filing', title: 'Official Tax Filing & Settlement Schedule', period: selectedPeriod,
+        headers: ['Tax', 'Period', 'Amount (Rp)', 'Paid (Rp)', 'Payment Date', 'NTPN Reference', 'Filing Date', 'BPE Reference', 'Evidence Count', 'Status'],
+        rows: obligations.map(o => [o.tax_name, o.period, o.tax_amount, o.paid_amount, o.payment_date, o.ntpn_reference, o.filing_date, o.bpe_reference, o.documents.length, o.status]),
+        colWidths: [22, 12, 18, 18, 14, 20, 14, 20, 10, 16],
+      }]);
+      return;
+    }
     const obRows: (string | number)[][] = obligations.map((o) => [
       o.tax_code,
-      o.source_document_ref,
-      o.counterparty_name || '',
-      o.transaction_date,
-      o.tax_base_amount,
+      o.tax_name,
+      o.source_reference,
+      o.payment_due_date,
+      o.tax_base,
       `${o.tax_rate_pct}%`,
-      o.tax_due_amount,
-      o.payment_status,
-      o.filing_status,
-      o.payment_reference_ntpn || '',
+      o.tax_amount,
+      o.paid_amount,
+      o.status,
+      o.ntpn_reference || '',
     ]);
 
-    obRows.push([
+    obRows.push(...withTotal(obligations.map(o => [o]), [
       'TOTAL',
       '',
       '',
       '',
-      obligations.reduce((s, o) => s + (o.tax_base_amount || 0), 0),
+      obligations.reduce((s, o) => s + (o.tax_base || 0), 0),
       '',
-      obligations.reduce((s, o) => s + (o.tax_due_amount || 0), 0),
+      obligations.reduce((s, o) => s + (o.tax_amount || 0), 0),
+      obligations.reduce((s, o) => s + (o.paid_amount || 0), 0),
       '',
       '',
-      '',
-    ]);
+    ]));
 
     const kpiRows: (string | number)[][] = [
-      ['Total Tax Accrued', summary?.total_tax_accrued ?? 0],
-      ['Total Tax Paid / Deposited', summary?.total_tax_paid ?? 0],
-      ['Net Outstanding Tax Payable', summary?.total_tax_outstanding ?? 0],
+      ['Total Tax Accrued', summary?.tax_payable ?? 0],
+      ['Total Tax Paid / Deposited', summary?.tax_paid ?? 0],
+      ['Net Outstanding Tax Payable', summary?.tax_outstanding ?? 0],
+      ['Filings Due', summary?.filing_due_count ?? 0],
+      ['Overdue Obligations', summary?.overdue_count ?? 0],
       ['Period Closed', summary?.is_period_closed ? 'YES (LOCKED)' : 'NO (ACTIVE)'],
     ];
 
-    exportReportToExcel(
-      `Tax_Compliance_Register_PT_Atrium_Management_Group_${selectedPeriod}.xlsx`,
-      [
+    const isOverview = activeTab === 'overview';
+
+    createReportExporter(format)(
+      `Tax_${isOverview ? 'Compliance_Summary' : 'Obligations_Register'}_${selectedPeriod}`,
+      isOverview
+        ? [
+            {
+              name: 'Period Summary',
+              title: `TAX COMPLIANCE & STATUTORY SUMMARY — ${selectedPeriod}`,
+              subtitle: 'PT Atrium Management Group • Withholdings & Hospitality PBJT Position',
+              headers: ['Metric Category', 'Amount / Status'],
+              rows: kpiRows,
+              colWidths: [40, 30],
+            },
+          ]
+        : [
         {
           name: 'Tax Obligations',
           title: `STATUTORY TAX COMPLIANCE REGISTER — ${selectedPeriod}`,
           subtitle: 'PT Atrium Management Group • Withholdings & Hospitality PBJT Subledger',
           headers: [
             'Tax Type',
+            'Tax Name',
             'Source Ref',
-            'Counterparty / Vendor',
-            'Date',
+            'Payment Due',
             'DPP / Tax Base (Rp)',
             'Rate',
             'Tax Due (Rp)',
-            'Payment Status',
-            'Filing Status',
+            'Paid Amount (Rp)',
+            'Status',
             'NTPN / Receipt',
           ],
           rows: obRows,
           colWidths: [15, 18, 25, 12, 20, 10, 20, 15, 15, 20],
-        },
-        {
-          name: 'Period Summary',
-          title: `TAX SUMMARY & STATUS — ${selectedPeriod}`,
-          headers: ['Metric Category', 'Amount / Status'],
-          rows: kpiRows,
-          colWidths: [35, 25],
         },
       ]
     );
@@ -504,15 +539,7 @@ export const TaxModule: React.FC<TaxModuleProps> = ({ currentUser, currentRole }
 
         {/* Period Control & Close Button */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Direct Excel Download Button */}
-          <button
-            onClick={handleExportExcel}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700/80 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-            title="Export tax register to Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>Excel (.xlsx)</span>
-          </button>
+          <ReportExportButtons onExport={handleExportExcel} disabled={loading} />
 
           {/* Toggle PDF Preview */}
           <button

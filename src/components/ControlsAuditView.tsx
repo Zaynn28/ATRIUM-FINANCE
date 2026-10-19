@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { ControlException } from '../types';
 import { api } from '../services/api';
+import { ReportExportButtons } from './reports/ReportExportButtons';
+import { exportReport } from '../utils/reportExport';
 
 interface ControlsAuditViewProps {
   onNavigateToTab?: (tab: string, context?: any) => void;
@@ -76,6 +78,13 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 text-xs">
+            <ReportExportButtons disabled={loading} onExport={format => exportReport(`Audit_Exceptions_${period || 'All_Time'}`, [{
+              name: 'Audit Exceptions', title: 'Controls & Audit Exceptions', period: period || 'All Time',
+              subtitle: `Severity: ${filterSeverity}`,
+              headers: ['Category', 'Severity', 'Title', 'Description', 'Account', 'Journal', 'Posted Amount (Rp)'],
+              rows: filteredExceptions.map(e => [e.category, e.severity, e.title, e.description, e.account_code, e.journal_id, e.posted_amount]),
+              colWidths: [20, 12, 25, 45, 12, 15, 20],
+            }], format)} />
             {/* Period Selector */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/70 border border-slate-800">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />

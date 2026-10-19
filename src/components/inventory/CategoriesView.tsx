@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { InventoryCategory, Account } from '../../types';
 import { api } from '../../services/api';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
+import { exportReport } from '../../utils/reportExport';
 
 interface CategoriesViewProps {
   accounts?: Account[];
@@ -123,13 +125,36 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ accounts: propAc
           </p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-950 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Category</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <ReportExportButtons
+            disabled={loading}
+            onExport={format => exportReport('Inventory_Category_GL_Mapping', [{
+              name: 'Category Mapping',
+              title: 'INVENTORY CATEGORY & GENERAL LEDGER MAPPING',
+              subtitle: `${categories.length} categories with default double-entry accounts`,
+              headers: ['Category ID', 'Category Name', 'Subcategories', 'Inventory GL Account', 'Inventory GL Name', 'Expense GL Account', 'Expense GL Name', 'Fixed Asset', 'Status'],
+              rows: categories.map(c => [
+                c.category_id,
+                c.name,
+                (c.subcategories || []).join(', '),
+                c.default_inventory_account,
+                (accounts || []).find(a => a.account_code === c.default_inventory_account)?.account_name || '',
+                c.default_expense_account,
+                (accounts || []).find(a => a.account_code === c.default_expense_account)?.account_name || '',
+                c.is_fixed_asset ? 'Yes' : 'No',
+                c.active === 'Y' ? 'Active' : 'Inactive',
+              ]),
+              colWidths: [18, 26, 32, 20, 32, 20, 32, 12, 12],
+            }], format)}
+          />
+          <button
+            onClick={handleOpenCreate}
+            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-950 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Category</span>
+          </button>
+        </div>
       </div>
 
       {/* Categories Grid */}

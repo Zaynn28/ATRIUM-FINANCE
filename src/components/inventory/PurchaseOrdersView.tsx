@@ -39,6 +39,8 @@ import {
   Department,
 } from '../../types';
 import { api } from '../../services/api';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
+import { exportReport, withTotal } from '../../utils/reportExport';
 import { PurchaseOrderDocumentModal } from './PurchaseOrderDocumentModal';
 
 interface PurchaseOrdersViewProps {
@@ -492,6 +494,20 @@ export const PurchaseOrdersView: React.FC<PurchaseOrdersViewProps> = ({
       {/* Filters & Search Control Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-lg">
         <div className="flex items-center gap-3 flex-1">
+          <ReportExportButtons
+            disabled={loading}
+            onExport={format => exportReport(`Purchase_Order_Register_${statusFilter}`, [{
+              name: 'Purchase Orders',
+              title: 'PURCHASE ORDER REGISTER',
+              subtitle: `${filteredOrders.length} of ${purchaseOrders.length} orders | Status: ${statusFilter} | Department: ${deptFilter}`,
+              headers: ['PO Number', 'PO ID', 'Order Date', 'Expected Delivery', 'Supplier', 'Department', 'Storeroom', 'Line Items', 'Ordered Qty', 'Received Qty', 'Subtotal (Rp)', 'Tax (Rp)', 'Total (Rp)', 'Status', 'Journal'],
+              rows: withTotal(
+                filteredOrders.map(po => [po.po_number, po.po_id, po.order_date, po.expected_delivery_date, po.supplier_name, po.department_name, po.storeroom_name, po.items.length, po.items.reduce((s, i) => s + i.ordered_quantity, 0), po.items.reduce((s, i) => s + i.received_quantity, 0), po.subtotal, po.tax_amount, po.total_amount, po.status, po.journal_id]),
+                ['TOTAL', '', '', '', '', '', '', '', filteredOrders.reduce((s, p) => s + p.items.reduce((t, i) => t + i.ordered_quantity, 0), 0), filteredOrders.reduce((s, p) => s + p.items.reduce((t, i) => t + i.received_quantity, 0), 0), filteredOrders.reduce((s, p) => s + p.subtotal, 0), filteredOrders.reduce((s, p) => s + p.tax_amount, 0), filteredOrders.reduce((s, p) => s + p.total_amount, 0), '', '']
+              ),
+              colWidths: [16, 16, 14, 16, 28, 14, 14, 11, 12, 13, 20, 18, 20, 18, 16],
+            }], format)}
+          />
           <div className="relative flex-1 max-w-sm">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input

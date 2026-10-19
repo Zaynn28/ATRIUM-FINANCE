@@ -21,16 +21,16 @@ import {
   Calendar,
   Layers,
   ArrowRight,
-  FileSpreadsheet,
   Printer,
-} from 'lucide-react';
+} from 'lucide-react';;
 import {
   ServiceChargeDistributionCycle,
   ServiceChargeStaffAllocationLine,
   Department,
 } from '../../../types';
 import { api } from '../../../services/api';
-import { exportReportToExcel } from '../../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../../../utils/excelExporter';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
 import { printReportElement } from '../../../utils/printManager';
 import { StaffPaySlipModal } from './StaffPaySlipModal';
 
@@ -166,7 +166,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
     });
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!activeCycle) return;
 
     const rows: (string | number)[][] = displayedLines.map((l) => [
@@ -175,15 +175,15 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
       l.job_title,
       getDeptName(l.department_code),
       l.base_points,
-      l.seniority_multiplier,
-      `${(l.attendance_factor * 100).toFixed(0)}%`,
+      1 + l.seniority_bonus_pct / 100,
+      `${(l.attendance_ratio * 100).toFixed(0)}%`,
       l.effective_points,
-      l.gross_amount,
-      l.tax_withheld,
+      l.gross_payout,
+      l.tax_withheld_amount,
       l.net_payout,
     ]);
 
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       'Batch Totals',
       '',
@@ -192,24 +192,24 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
       '',
       '',
       displayedLines.reduce((s, l) => s + l.effective_points, 0),
-      displayedLines.reduce((s, l) => s + l.gross_amount, 0),
-      displayedLines.reduce((s, l) => s + l.tax_withheld, 0),
+      displayedLines.reduce((s, l) => s + l.gross_payout, 0),
+      displayedLines.reduce((s, l) => s + l.tax_withheld_amount, 0),
       displayedLines.reduce((s, l) => s + l.net_payout, 0),
     ]);
 
     const summaryRows: (string | number)[][] = [
-      ['Gross Service Charge Collected', activeCycle.total_collected_pool],
-      ['Retention / Breakage Reserve', -activeCycle.retained_breakage_reserve],
-      ['Net Distributable Pool', activeCycle.net_distributable_pool],
-      ['Total Eligible Staff Points', activeCycle.total_eligible_points],
-      ['Point Value (Rate / Point)', activeCycle.point_value_idr],
+      ['Gross Service Charge Collected', activeCycle.total_collected_amount],
+      ['Retention / Breakage Reserve', -activeCycle.company_retention_amount],
+      ['Net Distributable Pool', activeCycle.distributable_pool_amount],
+      ['Total Eligible Staff Points', activeCycle.total_weighted_points],
+      ['Point Value (Rate / Point)', activeCycle.point_value_rate],
       ['Total Payout Gross', activeCycle.total_gross_payout],
       ['Total PPh 21 Tax Withheld', activeCycle.total_tax_withheld],
       ['Total Net Disbursed to Staff', activeCycle.total_net_payout],
       ['Status', activeCycle.status],
     ];
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `Service_Charge_Distribution_${activeCycle.period}_PT_Atrium_Management_Group.xlsx`,
       [
         {
@@ -284,15 +284,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* Direct Excel Download Button */}
-            <button
-              onClick={handleExportExcel}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-              title="Export staff distribution roster to Excel (.xlsx)"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Excel (.xlsx)</span>
-            </button>
+            <ReportExportButtons onExport={handleExportExcel} disabled={!activeCycle} />
 
             {/* Print Button */}
             <button

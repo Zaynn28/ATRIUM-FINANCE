@@ -21,8 +21,7 @@ import {
   Clock,
   Tag,
   AlertCircle,
-  FileSpreadsheet,
-} from 'lucide-react';
+} from 'lucide-react';;
 import {
   DepartmentRequisition,
   InventoryItem,
@@ -30,7 +29,8 @@ import {
   Department,
 } from '../../types';
 import { AtriumLogo } from '../common/AtriumLogo';
-import { exportReportToExcel } from '../../utils/excelExporter';
+import { createReportExporter, ReportExportFormat , withTotal } from '../../utils/excelExporter';
+import { ReportExportButtons } from '../reports/ReportExportButtons';
 import { printReportElement } from '../../utils/printManager';
 
 interface PurchaseRequisitionDocumentModalProps {
@@ -88,7 +88,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
     });
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     const rows: (string | number)[][] = requisition.items.map((line, idx) => {
       const invItem = inventoryItems.find((i) => i.item_id === line.item_id);
       const unitPrice = line.unit_cost || invItem?.average_cost || 0;
@@ -105,7 +105,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
       ];
     });
 
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       '',
       '',
@@ -116,7 +116,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
       totalEstimatedCost,
     ]);
 
-    exportReportToExcel(`PR_${requisition.requisition_id}_PT_Atrium_Management_Group.xlsx`, [
+    createReportExporter(format)(`PR_${requisition.requisition_id}_PT_Atrium_Management_Group.xlsx`, [
       {
         name: `PR ${requisition.requisition_id}`.slice(0, 31),
         title: `DEPARTMENT PURCHASE REQUISITION — ${requisition.requisition_id}`,
@@ -254,15 +254,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
               </button>
             )}
 
-            <button
-              type="button"
-              onClick={handleExportExcel}
-              className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md transition-colors border border-emerald-600"
-              title="Export Requisition to Excel (.xlsx)"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Excel (.xlsx)</span>
-            </button>
+            <ReportExportButtons onExport={handleExportExcel} />
 
             <button
               type="button"

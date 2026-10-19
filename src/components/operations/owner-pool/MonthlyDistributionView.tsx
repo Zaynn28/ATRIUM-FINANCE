@@ -33,12 +33,12 @@ import {
   FileText,
   Mail,
   Send,
-  FileSpreadsheet,
   Printer,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
-import { exportReportToExcel } from '../../../utils/excelExporter';
+} from 'lucide-react';;
+import { createReportExporter, ReportExportFormat , withTotal } from '../../../utils/excelExporter';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
 import { printReportElement } from '../../../utils/printManager';
 
 interface MonthlyDistributionViewProps {
@@ -208,7 +208,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
     });
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = (format: ReportExportFormat = 'xlsx') => {
     if (!currentBatch) return;
 
     const rows: (string | number)[][] = currentBatch.lines.map((l) => [
@@ -216,32 +216,32 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
       l.owner_name,
       l.unit_sqm,
       l.contract_year_number,
-      `${(l.weight_factor * 100).toFixed(4)}%`,
-      l.gross_distribution,
-      l.maintenance_reserve,
-      l.management_fee,
-      l.pph_final_tax,
-      l.net_distribution,
+      `${(l.allocation_pct * 100).toFixed(4)}%`,
+      l.gross_return_amount,
+      l.stay_deduction_amount,
+      l.installment_offset_to_keen_eye,
+      l.tax_withheld_amount,
+      l.net_distribution_amount,
       l.status,
-      l.settlement_reference || '',
+      l.payout_date || '',
     ]);
 
-    rows.push([
+    withTotal(rows, [
       'TOTAL',
       'Batch Totals',
       currentBatch.lines.reduce((s, l) => s + l.unit_sqm, 0),
       '',
       '100.00%',
-      currentBatch.lines.reduce((s, l) => s + l.gross_distribution, 0),
-      currentBatch.lines.reduce((s, l) => s + l.maintenance_reserve, 0),
-      currentBatch.lines.reduce((s, l) => s + l.management_fee, 0),
-      currentBatch.lines.reduce((s, l) => s + l.pph_final_tax, 0),
-      currentBatch.lines.reduce((s, l) => s + l.net_distribution, 0),
+      currentBatch.lines.reduce((s, l) => s + l.gross_return_amount, 0),
+      currentBatch.lines.reduce((s, l) => s + l.stay_deduction_amount, 0),
+      currentBatch.lines.reduce((s, l) => s + l.installment_offset_to_keen_eye, 0),
+      currentBatch.lines.reduce((s, l) => s + l.tax_withheld_amount, 0),
+      currentBatch.lines.reduce((s, l) => s + l.net_distribution_amount, 0),
       currentBatch.status,
       '',
     ]);
 
-    exportReportToExcel(
+    createReportExporter(format)(
       `Owner_Pool_Distribution_Batch_${period}_PT_Atrium_Management_Group.xlsx`,
       [
         {
@@ -255,12 +255,12 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             'Year',
             'Weight %',
             'Gross Distribution (Rp)',
-            'Sink Fund (Rp)',
-            'Mgmt Fee (Rp)',
-            'PPh 4(2) Tax (Rp)',
+            'Stay Deduction (Rp)',
+            'Installment Offset (Rp)',
+            'Tax Withheld (Rp)',
             'Net Disbursed (Rp)',
             'Status',
-            'Payment Ref',
+            'Payout Date',
           ],
           rows,
           colWidths: [10, 28, 12, 8, 12, 22, 18, 18, 18, 22, 14, 20],
@@ -326,14 +326,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
           {/* Export to Excel and Print PDF buttons */}
           {currentBatch && (
             <div className="flex items-center gap-1.5 ml-2">
-              <button
-                onClick={handleExportExcel}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors border border-emerald-600"
-                title="Export distribution batch to Excel (.xlsx)"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
-                <span>Excel (.xlsx)</span>
-              </button>
+              <ReportExportButtons onExport={handleExportExcel} disabled={!currentBatch} />
 
               <button
                 onClick={handlePrint}

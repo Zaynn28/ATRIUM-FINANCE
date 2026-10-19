@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { StaffEmployee, Department, StaffGradeLevel, EmploymentStatus } from '../../../types';
 import { api } from '../../../services/api';
+import { ReportExportButtons } from '../../reports/ReportExportButtons';
+import { exportReport } from '../../../utils/reportExport';
 
 interface EmployeeRegistryViewProps {
   employees: StaffEmployee[];
@@ -266,14 +268,26 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
 
       {/* Filter and Search Bar */}
       <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
-        <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search by name, title, or ID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-72">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search by name, title, or ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+          <ReportExportButtons
+            onExport={format => exportReport('Service_Charge_Staff_Registry', [{
+              name: 'Staff Registry',
+              title: 'STAFF SERVICE CHARGE ELIGIBILITY & GRADE POINT REGISTRY',
+              subtitle: `${filtered.length} of ${employees.length} staff | Dept: ${selectedDept} | Grade: ${selectedGrade}`,
+              headers: ['Employee ID', 'Employee Name', 'Department', 'Job Title', 'Grade', 'Base Points', 'Hire Date', 'Employment Status', 'SC Eligible', 'Bank', 'Bank Account', 'Status'],
+              rows: filtered.map(e => [e.employee_id, e.employee_name, getDeptName(e.department_code), e.job_title, e.grade_level, e.base_points, e.hire_date, e.employment_status, e.is_eligible ? 'Yes' : 'No', e.bank_name, e.bank_account_number, e.active === 'Y' ? 'Active' : 'Inactive']),
+              colWidths: [14, 26, 22, 22, 12, 11, 14, 16, 12, 20, 20, 12],
+            }], format)}
           />
         </div>
 
