@@ -149,22 +149,22 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-14 max-w-7xl mx-auto">
           {/* Brand: PT ATRIUM MANAGEMENT GROUP */}
           <div
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-2 cursor-pointer group max-w-[60%]"
             onClick={() => onSelectPillar('command-centre')}
           >
             <div className="shrink-0 group-hover:scale-105 transition-transform duration-200">
               <AtriumLogo variant="arch-only" size="md" theme="dark" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-slate-100 tracking-tight text-sm uppercase">
+                <span className="font-extrabold text-slate-100 tracking-tight text-sm uppercase truncate">
                   PT ATRIUM MANAGEMENT GROUP
                 </span>
                 <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-semibold">
                   USALI 12
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
+              <p className="text-[10px] text-slate-400 hidden sm:block truncate">
                 Autonomous Double-Entry Hotel Financial Operating System
               </p>
             </div>
@@ -363,76 +363,76 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Contextual Sub-Navigation Bar for Multi-View Pillars */}
       {activePillar === 'operations' && (
-        <div className="px-4 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80">
-          <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mr-2">
+        <div className="px-3 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80 overflow-x-auto">
+          <div className="max-w-full mx-auto min-w-0">
+            <div className="flex flex-wrap items-start justify-start text-xs gap-1.5">
+              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
                 Operations Cycle:
               </span>
               <button
                 onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('revenue')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   operationsSubTab === 'revenue'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <ArrowDownLeft className="w-3.5 h-3.5" />
-                <span>Revenue Cycle (Sales &amp; Accounts Receivable AR)</span>
+                <ArrowDownLeft className="w-3 h-3" />
+                <span>Revenue Cycle (Sales &amp; AR)</span>
               </button>
 
               <button
                 onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('spending')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   operationsSubTab === 'spending'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <ArrowUpRight className="w-3.5 h-3.5" />
-                <span>Spending Cycle (Procurement, AP &amp; Payroll)</span>
+                <ArrowUpRight className="w-3 h-3" />
+                <span>Spending Cycle (Procurement, AP)</span>
               </button>
 
               <button
                 id="nav-operations-inventory"
                 onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('inventory')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   operationsSubTab === 'inventory'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Package className="w-3.5 h-3.5 text-blue-400" />
+                <Package className="w-3 h-3 text-blue-400" />
                 <span>Procurement, PO &amp; Storerooms</span>
               </button>
 
               <button
                 id="nav-operations-service-charge"
                 onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('service-charge')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   operationsSubTab === 'service-charge'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Coins className="w-3.5 h-3.5 text-amber-400" />
-                <span>Staff Service Charge &amp; Gratuities Pool</span>
+                <Coins className="w-3 h-3 text-amber-400" />
+                <span>Staff Service Charge &amp; Pool</span>
               </button>
 
               <button
                 id="nav-operations-petty-cash"
                 onClick={() => onSelectOperationsSubTab && onSelectOperationsSubTab('petty-cash')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   operationsSubTab === 'petty-cash'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Wallet className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Kas Kecil Operasional (Petty Cash)</span>
+                <Wallet className="w-3 h-3 text-emerald-400" />
+                <span>Petty Cash (Operasional)</span>
               </button>
             </div>
-            <span className="text-[11px] font-mono text-slate-400 hidden md:block">
+            <span className="text-[10px] font-mono text-slate-400 hidden sm:block mt-1">
               Auto-generates balanced double-entry drafts
             </span>
           </div>
@@ -440,74 +440,74 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
 
       {activePillar === 'reports' && (
-        <div className="px-4 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80">
-          <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mr-2">
+        <div className="px-3 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80 overflow-x-auto">
+          <div className="max-w-full mx-auto min-w-0">
+            <div className="flex flex-wrap items-start justify-start text-xs gap-1.5">
+              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
                 Reports &amp; Statements:
               </span>
               <button
                 onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('usali')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   reportsSubTab === 'usali'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <TrendingUp className="w-3.5 h-3.5" />
+                <TrendingUp className="w-3 h-3" />
                 <span>USALI 12 Statements</span>
               </button>
 
               <button
                 onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('financial')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   reportsSubTab === 'financial'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Scale className="w-3.5 h-3.5" />
+                <Scale className="w-3 h-3" />
                 <span>Balance Sheet &amp; P&amp;L</span>
               </button>
 
               <button
                 onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('trial-balance')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   reportsSubTab === 'trial-balance'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <FileSpreadsheet className="w-3 h-3" />
                 <span>Trial Balance</span>
               </button>
 
               <button
                 onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('ledger')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   reportsSubTab === 'ledger'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <BookOpen className="w-3.5 h-3.5" />
+                <BookOpen className="w-3 h-3" />
                 <span>General Ledger</span>
               </button>
 
               <button
                 id="nav-reports-owner-pool"
                 onClick={() => onSelectReportsSubTab && onSelectReportsSubTab('owner-pool')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   reportsSubTab === 'owner-pool'
                     ? 'bg-indigo-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <PieChart className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Owner Pool &amp; Return Distribution</span>
+                <PieChart className="w-3 h-3 text-indigo-400" />
+                <span>Owner Pool &amp; Return</span>
               </button>
             </div>
-            <span className="text-[11px] font-mono text-indigo-400 hidden md:block">
+            <span className="text-[10px] font-mono text-indigo-400 hidden sm:block mt-1">
               USALI 12 Financial Reporting &amp; Owner Yield Analysis
             </span>
           </div>
@@ -515,24 +515,24 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
 
       {activePillar === 'accounting-core' && (
-        <div className="px-4 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80">
-          <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mr-2">
+        <div className="px-3 lg:px-6 py-1.5 bg-slate-900/70 border-t border-slate-800/80 overflow-x-auto">
+          <div className="max-w-full mx-auto min-w-0">
+            <div className="flex flex-wrap items-start justify-start text-xs gap-1.5">
+              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
                 Accounting Core:
               </span>
               <button
                 onClick={() => onSelectAccountingCoreSubTab && onSelectAccountingCoreSubTab('workbench')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   accountingCoreSubTab === 'workbench'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Clock className="w-3.5 h-3.5" />
+                <Clock className="w-3 h-3" />
                 <span>Journal Workbench</span>
                 {pendingJournalsCount > 0 && (
-                  <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-400 text-slate-950 font-bold">
+                  <span className="ml-1 px-1 py-0.2 rounded-full text-[9px] bg-amber-400 text-slate-950 font-bold">
                     {pendingJournalsCount}
                   </span>
                 )}
@@ -540,29 +540,29 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => onSelectAccountingCoreSubTab && onSelectAccountingCoreSubTab('ledger')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   accountingCoreSubTab === 'ledger'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <FileSpreadsheet className="w-3 h-3" />
                 <span>General Ledger</span>
               </button>
 
               <button
                 onClick={() => onSelectAccountingCoreSubTab && onSelectAccountingCoreSubTab('trial-balance')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                className={`flex flex-wrap items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-colors whitespace-nowrap ${
                   accountingCoreSubTab === 'trial-balance'
                     ? 'bg-emerald-600 text-white font-semibold'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <Scale className="w-3.5 h-3.5" />
+                <Scale className="w-3 h-3" />
                 <span>Trial Balance</span>
               </button>
             </div>
-            <span className="text-[11px] font-mono text-emerald-400 hidden md:block">
+            <span className="text-[10px] font-mono text-emerald-400 hidden sm:block mt-1">
               Rule 31 &amp; 32 Enforced: Balanced Proof
             </span>
           </div>

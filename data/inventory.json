@@ -914,7 +914,33 @@
       "notes": "Initial fiscal period opening stock verification"
     }
   ],
-  "requisitions": [],
+  "requisitions": [
+    {
+      "requisition_id": "REQ-20261019-MVF0KRIR",
+      "date": "2026-10-19",
+      "department_code": "F&B",
+      "department_name": "Dept F&B",
+      "requester_name": "Chef Agus Santoso",
+      "storeroom_id": "STR-MAIN",
+      "storeroom_name": "Main Central Store",
+      "status": "PENDING",
+      "items": [
+        {
+          "item_id": "ITEM-FB-001",
+          "item_code": "FB-RICE-01",
+          "item_name": "Jasmine Rice 20kg Sack",
+          "uom": "KG",
+          "requested_quantity": 5,
+          "approved_quantity": 5,
+          "issued_quantity": 0,
+          "unit_cost": 18500,
+          "total_cost": 92500
+        }
+      ],
+      "notes": "Daily prep replenishment for banqueting.",
+      "created_at": "2026-10-19T08:50:23.955Z"
+    }
+  ],
   "purchaseOrders": [],
   "receipts": [],
   "countSessions": [],

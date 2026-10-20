@@ -258,7 +258,7 @@ export default function App() {
       />
 
       {/* Main Workspace Canvas */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 overflow-x-hidden">
         {loading ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-slate-400 space-y-3">
             <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
