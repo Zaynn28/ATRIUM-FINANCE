@@ -133,7 +133,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
         notes,
       });
 
-      setNotification({ text: 'Requisition submitted successfully. Status: PENDING_APPROVAL.' });
+      setNotification({ text: 'Requisition submitted successfully. Status: PENDING.' });
       setIsCreateOpen(false);
       await loadData();
     } catch (err: any) {
@@ -328,7 +328,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                               ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                               : req.status === 'ORDERED'
                               ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                              : req.status === 'PENDING_APPROVAL'
+                              : req.status === 'PENDING'
                               ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                               : 'bg-slate-800 text-slate-300'
                           }`}
@@ -358,7 +358,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                             <span>Print Form</span>
                           </button>
 
-                          {req.status === 'PENDING_APPROVAL' && (
+                          {req.status === 'PENDING' && (
                             <button
                               onClick={() => handleOpenApproveModal(req)}
                               className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold"

@@ -209,7 +209,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
           </div>
 
           <div className="flex items-center gap-2">
-            {requisition.status === 'PENDING_APPROVAL' && onApprove && (
+            {requisition.status === 'PENDING' && onApprove && (
               <button
                 type="button"
                 onClick={() => onApprove(requisition)}
@@ -505,7 +505,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
                       {requisition.approver_name || 'Head of Department'}
                     </div>
                     <div className="text-[10px] text-slate-500">
-                      {requisition.status !== 'PENDING_APPROVAL' ? (
+                      {requisition.status !== 'PENDING' ? (
                         <span className="text-emerald-700 font-semibold">✓ Verified &amp; Approved</span>
                       ) : (
                         'Pending Review'
