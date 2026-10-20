@@ -248,9 +248,6 @@ export default function App() {
         onSwitchUser={handleSwitchUser}
         onSignOut={handleSignOut}
         onOpenMappingModal={() => setIsMappingModalOpen(true)}
-        onOpenDbStatusModal={() => setIsDbStatusModalOpen(true)}
-        dbStatus={dbStatus}
-        isDbConnected={Boolean(dbStatus?.connected)}
         pendingJournalsCount={
           journals.filter((j) => j.status === 'VALIDATED' || j.status === 'DRAFT').length
         }

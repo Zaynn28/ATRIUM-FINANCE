@@ -13,9 +13,6 @@ import {
   ShieldAlert,
   Workflow,
   ShieldCheck,
-  Database,
-  CheckCircle2,
-  AlertCircle,
   FileSpreadsheet,
   Clock,
   Scale,
@@ -31,12 +28,10 @@ import {
   Receipt,
   PieChart,
   BookOpen,
-  Trash2,
   Wallet,
 } from 'lucide-react';
 import { PrimaryNavPillar, SystemUser, UserRoleDefinition } from '../types';
 import { AtriumLogo } from './common/AtriumLogo';
-import { ResetMockDataModal } from './administration/ResetMockDataModal';
 
 export type NavTab =
   | 'dashboard'
@@ -80,9 +75,7 @@ interface NavbarProps {
     hasCredentials?: boolean;
     error?: string | null;
   } | null;
-  isDbConnected?: boolean;
   onOpenMappingModal: () => void;
-  onOpenDbStatusModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -102,12 +95,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   pendingJournalsCount,
   exceptionsCount = 0,
   dbStatus,
-  isDbConnected,
-  onOpenDbStatusModal,
 }) => {
-  const isConnected = Boolean(dbStatus?.connected ?? isDbConnected);
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
-  const [isResetModalOpen, setIsResetModalOpen] = React.useState(false);
 
   const pillars: {
     id: PrimaryNavPillar;
@@ -160,52 +149,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="font-extrabold text-slate-100 tracking-tight text-sm uppercase truncate">
                   PT ATRIUM MANAGEMENT GROUP
                 </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-semibold">
-                  USALI 12
-                </span>
               </div>
-              <p className="text-[10px] text-slate-400 hidden sm:block truncate">
-                Autonomous Double-Entry Hotel Financial Operating System
-              </p>
             </div>
           </div>
 
           {/* Right Status Controls */}
           <div className="flex items-center gap-2.5">
-            <button
-              id="btn-db-status"
-              onClick={onOpenDbStatusModal}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs border font-mono transition-colors ${
-                isConnected
-                  ? 'bg-emerald-950/50 text-emerald-300 border-emerald-800/60 hover:bg-emerald-900/40'
-                  : 'bg-amber-950/50 text-amber-300 border-amber-800/60 hover:bg-amber-900/40'
-              }`}
-              title={isConnected ? 'Google Sheets Live Connected' : 'Google Sheets Disconnected'}
-            >
-              <Database className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Sheets DB:</span>
-              {isConnected ? (
-                <span className="flex items-center gap-1 font-semibold text-emerald-400">
-                  <CheckCircle2 className="w-3 h-3" /> Live
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 font-semibold text-amber-400">
-                  <AlertCircle className="w-3 h-3" /> Sandbox
-                </span>
-              )}
-            </button>
-
-            {/* Quick Mock Data Reset Trigger */}
-            <button
-              id="btn-reset-mock-data"
-              onClick={() => setIsResetModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs border font-mono transition-colors bg-slate-950/50 text-slate-300 border-slate-800 hover:border-rose-800/80 hover:text-rose-300"
-              title="Kelola & Bersihkan Mock Data untuk Menguji dengan Data Sendiri"
-            >
-              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-              <span className="hidden sm:inline">Reset Mock Data</span>
-            </button>
-
             {/* Dynamic RBAC User Profile Badge & Quick Persona Switcher */}
             <div className="relative">
               <button
@@ -568,12 +517,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       )}
-
-      {/* Reset Mock Data Modal */}
-      <ResetMockDataModal
-        isOpen={isResetModalOpen}
-        onClose={() => setIsResetModalOpen(false)}
-      />
     </header>
   );
 };
