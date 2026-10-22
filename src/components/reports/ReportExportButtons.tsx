@@ -28,7 +28,7 @@ export function ReportExportButtons({ onExport, disabled = false }: ReportExport
       ] as const).map(([format, label, Icon]) => (
         <button key={format} type="button" disabled={disabled || busy} onClick={() => run(format)}
           title={`Download ${label} (.${format})`}
-          className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed">
           <Icon className="h-3.5 w-3.5" />{label}
         </button>
       ))}

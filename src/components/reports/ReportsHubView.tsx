@@ -48,13 +48,13 @@ export const ReportsHubView: React.FC<ReportsHubViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Report Category Selector */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-2 flex flex-wrap items-center gap-1.5 print:hidden">
+      <div className="bg-white/60 border border-slate-200 rounded-xl p-2 flex flex-wrap items-center gap-1.5 print:hidden">
         <button
           onClick={() => handleSelectReport('usali')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             activeReport === 'usali'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           <TrendingUp className="w-4 h-4" />
@@ -65,8 +65,8 @@ export const ReportsHubView: React.FC<ReportsHubViewProps> = ({
           onClick={() => handleSelectReport('financial')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             activeReport === 'financial'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           <Scale className="w-4 h-4" />
@@ -77,8 +77,8 @@ export const ReportsHubView: React.FC<ReportsHubViewProps> = ({
           onClick={() => handleSelectReport('trial-balance')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             activeReport === 'trial-balance'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           <FileSpreadsheet className="w-4 h-4" />
@@ -89,8 +89,8 @@ export const ReportsHubView: React.FC<ReportsHubViewProps> = ({
           onClick={() => handleSelectReport('ledger')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             activeReport === 'ledger'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           <BookOpen className="w-4 h-4" />
@@ -102,8 +102,8 @@ export const ReportsHubView: React.FC<ReportsHubViewProps> = ({
           onClick={() => handleSelectReport('owner-pool')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
             activeReport === 'owner-pool'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-indigo-600 text-white shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           <PieChart className="w-4 h-4 text-indigo-400" />

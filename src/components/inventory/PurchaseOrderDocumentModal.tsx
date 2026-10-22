@@ -385,12 +385,12 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[95vh]">
+    <div className="fixed inset-0 z-50 bg-white/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-5xl shadow-xs overflow-hidden my-auto flex flex-col max-h-[95vh]">
         {/* Top Header Bar */}
-        <div className="bg-slate-950 px-5 py-3.5 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div className="bg-white px-5 py-3.5 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <span className="p-2 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+            <span className="p-2 bg-blue-500/10 text-slate-500 rounded-xl border border-blue-500/20">
               <FileText className="w-5 h-5" />
             </span>
             <div>
@@ -401,8 +401,8 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                     po.status === 'APPROVED'
                       ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                       : po.status === 'FULFILLED'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-slate-800 text-slate-300'
+                      ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/30'
+                      : 'bg-white text-slate-700'
                   }`}
                 >
                   {po.status}
@@ -418,7 +418,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 {isEditing
                   ? 'Edit directly inside the PO document sheet below (hotel letterhead, vendor coords, line items, terms & signatures)'
                   : 'Official PO document format with direct printable sheet and configurable details'}
@@ -434,15 +434,15 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                     type="button"
                     disabled={receivingStock}
                     onClick={handleReceiveStockDirectly}
-                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950 transition-colors"
+                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs shadow-emerald-950 transition-colors"
                     title="Directly receive delivery and automatically update inventory stock"
                   >
                     <PackageCheck className="w-3.5 h-3.5" />
                     <span>{receivingStock ? 'Receiving Goods...' : 'Receive Goods & Update Stock'}</span>
                   </button>
                 ) : (
-                  <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-mono text-[11px] rounded-lg border border-emerald-500/30 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="px-2.5 py-1 bg-slate-900/20 text-emerald-700 font-mono text-[11px] rounded-lg border border-emerald-500/30 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
                     <span>Stock Received &amp; Updated</span>
                   </span>
                 )}
@@ -450,10 +450,10 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 <button
                   type="button"
                   onClick={() => setIsEditing(true)}
-                  className="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-blue-500/40 transition-colors shadow-sm"
+                  className="px-3 py-1.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-blue-500/40 transition-colors shadow-xs"
                   title="Edit directly inside document sheet"
                 >
-                  <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                  <Edit3 className="w-3.5 h-3.5 text-slate-500" />
                   <span>Edit Document Details</span>
                 </button>
 
@@ -462,7 +462,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-950 transition-colors"
+                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs shadow-blue-950 transition-colors"
                   title="Print Official PO Document / Export PDF"
                 >
                   <Printer className="w-3.5 h-3.5" />
@@ -474,7 +474,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 <button
                   type="button"
                   onClick={handleResetToCurrent}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
+                  className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Cancel</span>
@@ -484,7 +484,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                   type="button"
                   disabled={saving}
                   onClick={handleSaveDetails}
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950 transition-colors"
+                  className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs shadow-emerald-950 transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{saving ? 'Saving...' : 'Save Document Changes'}</span>
@@ -495,7 +495,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-1"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white transition-colors ml-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -504,24 +504,24 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
 
         {/* Feedback Alerts */}
         {successMessage && (
-          <div className="bg-emerald-950/60 border-b border-emerald-500/30 px-5 py-2 text-xs text-emerald-200 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="bg-slate-900/10/60 border-b border-emerald-500/30 px-5 py-2 text-xs text-emerald-200 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
         {errorMessage && (
-          <div className="bg-rose-950/60 border-b border-rose-800/40 px-5 py-2 text-xs text-rose-200 flex items-center gap-2">
-            <X className="w-4 h-4 text-rose-400 shrink-0" />
+          <div className="bg-red-600/10/60 border-b border-rose-800/40 px-5 py-2 text-xs text-rose-200 flex items-center gap-2">
+            <X className="w-4 h-4 text-red-600 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Scrollable Document Area: WYSWYG Printable Document Sheet */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-950/70">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-white/70">
           {/* Visual Document Sheet (White Paper Preview) */}
           <div
             id="po-printable-document"
-            className="bg-white text-slate-900 rounded-xl p-6 sm:p-10 shadow-2xl border border-slate-200 max-w-4xl mx-auto transition-all"
+            className="bg-white text-slate-900 rounded-xl p-6 sm:p-10 shadow-xs border border-slate-200 max-w-4xl mx-auto transition-all"
           >
             {/* Header / Letterhead */}
             <div className="header flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-900 pb-5 mb-6 gap-4">
@@ -536,7 +536,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                         <h1 className="text-xl font-black tracking-tight text-slate-900">
                           {hotelName}
                         </h1>
-                        <div className="text-[11px] text-slate-600 font-medium">
+                        <div className="text-[11px] text-slate-500 font-medium">
                           {hotelDivision}
                         </div>
                       </>
@@ -554,7 +554,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                           type="text"
                           value={hotelDivision}
                           onChange={(e) => setHotelDivision(e.target.value)}
-                          className="w-full text-xs text-slate-600 border-b border-blue-300 bg-blue-50/30 px-1 py-0.5 rounded"
+                          className="w-full text-xs text-slate-500 border-b border-blue-300 bg-blue-50/30 px-1 py-0.5 rounded"
                           placeholder="Division / Department"
                         />
                       </div>
@@ -571,7 +571,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                     <div>Email: {hotelEmail}</div>
                   </div>
                 ) : (
-                  <div className="text-[11px] text-slate-600 mt-2 space-y-1 bg-slate-50 p-2 rounded border border-blue-200">
+                  <div className="text-[11px] text-slate-500 mt-2 space-y-1 bg-slate-50 p-2 rounded border border-blue-200">
                     <div className="flex items-center gap-2">
                       <span className="w-20 text-[10px] font-mono text-slate-500">Address:</span>
                       <input
@@ -620,7 +620,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 </div>
 
                 {!isEditing ? (
-                  <div className="text-[11px] text-slate-600 mt-2 space-y-0.5 font-mono">
+                  <div className="text-[11px] text-slate-500 mt-2 space-y-0.5 font-mono">
                     <div>
                       PO Date: <span className="font-bold text-slate-900">{orderDate}</span>
                     </div>
@@ -691,7 +691,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                       </div>
                     )}
                     {supplierAddress && (
-                      <div className="text-[11px] text-slate-600 mt-1">{supplierAddress}</div>
+                      <div className="text-[11px] text-slate-500 mt-1">{supplierAddress}</div>
                     )}
                   </>
                 ) : (
@@ -757,7 +757,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                         po.department_name}{' '}
                       ({departmentCode})
                     </div>
-                    <div className="text-[11px] text-slate-600 font-mono mt-1">
+                    <div className="text-[11px] text-slate-500 font-mono mt-1">
                       Ref Requisitions:{' '}
                       {po.requisition_ids && po.requisition_ids.length > 0
                         ? po.requisition_ids.join(', ')
@@ -829,7 +829,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 <tbody className="divide-y divide-slate-200">
                   {items.map((line, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/50">
-                      <td className="py-2.5 px-3 font-mono text-center text-slate-400">
+                      <td className="py-2.5 px-3 font-mono text-center text-slate-500">
                         {idx + 1}
                       </td>
 
@@ -864,7 +864,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                                 setItems(newItems);
                               }}
                               placeholder="Line note or item specification..."
-                              className="w-full bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 text-[10px] text-slate-600"
+                              className="w-full bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 text-[10px] text-slate-500"
                             />
                           </div>
                         )}
@@ -911,7 +911,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(idx)}
-                            className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50"
+                            className="p-1 text-slate-500 hover:text-rose-600 rounded hover:bg-rose-50"
                             title="Remove line"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -928,7 +928,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="px-3 py-1 bg-white hover:bg-slate-100 text-blue-700 border border-blue-300 rounded text-xs font-semibold flex items-center gap-1 shadow-sm"
+                    className="px-3 py-1 bg-white hover:bg-slate-100 text-blue-700 border border-blue-300 rounded text-xs font-semibold flex items-center gap-1 shadow-xs"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add New Line Item to Document</span>
@@ -940,11 +940,11 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             {/* Financial Summary Calculation */}
             <div className="flex justify-end mb-6">
               <div className="w-80 space-y-1.5 text-xs font-mono">
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-500">
                   <span>Subtotal Amount:</span>
                   <span>Rp {calcSubtotal.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between text-slate-600 items-center">
+                <div className="flex justify-between text-slate-500 items-center">
                   <span>
                     VAT / PPN{' '}
                     {isEditing ? (
@@ -976,7 +976,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             </div>
 
             {/* Terms, Conditions & Special Instructions Box */}
-            <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 text-[11px] text-slate-600 space-y-1 mb-8">
+            <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 text-[11px] text-slate-500 space-y-1 mb-8">
               <div className="font-bold text-slate-800 uppercase tracking-wider font-mono text-[10px] flex items-center justify-between">
                 <span>Procurement &amp; Receiving Instructions:</span>
                 {isEditing && <span className="text-blue-600 font-normal">Editable Terms</span>}
@@ -1015,7 +1015,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             <div className="grid grid-cols-3 gap-6 pt-4 border-t border-slate-200 text-center">
               <div>
                 <div className="h-14 border-b border-slate-400 mb-1.5 flex items-end justify-center pb-1">
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono text-slate-500">
                     Prepared • {createdBy}
                   </span>
                 </div>
@@ -1038,7 +1038,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                       value={createdBy}
                       onChange={(e) => setCreatedBy(e.target.value)}
                       placeholder="Officer Name"
-                      className="w-full text-center text-[10px] text-slate-600 border border-slate-300 rounded px-1 py-0.5 font-mono"
+                      className="w-full text-center text-[10px] text-slate-500 border border-slate-300 rounded px-1 py-0.5 font-mono"
                     />
                   </div>
                 )}
@@ -1069,7 +1069,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                       value={approvedBy}
                       onChange={(e) => setApprovedBy(e.target.value)}
                       placeholder="Manager Name"
-                      className="w-full text-center text-[10px] text-slate-600 border border-slate-300 rounded px-1 py-0.5 font-mono"
+                      className="w-full text-center text-[10px] text-slate-500 border border-slate-300 rounded px-1 py-0.5 font-mono"
                     />
                   </div>
                 )}
@@ -1077,7 +1077,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
 
               <div>
                 <div className="h-14 border-b border-slate-400 mb-1.5 flex items-end justify-center pb-1">
-                  <span className="text-[10px] font-mono text-slate-400">Company Stamp</span>
+                  <span className="text-[10px] font-mono text-slate-500">Company Stamp</span>
                 </div>
                 <div className="text-xs font-bold text-slate-900">Supplier Acknowledgement</div>
                 <div className="text-[10px] text-slate-500">Signature &amp; Company Stamp</div>
@@ -1087,19 +1087,19 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
         </div>
 
         {/* Modal Bottom Footer with Workflow Links */}
-        <div className="bg-slate-950 px-6 py-3.5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="bg-white px-6 py-3.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 text-xs">
             {po.journal_id ? (
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span className="text-slate-300">GL Accounting Journal:</span>
+                <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                <span className="text-slate-700">GL Accounting Journal:</span>
                 {onViewJournal && (
                   <button
                     onClick={() => {
                       onClose();
                       onViewJournal(po.journal_id!);
                     }}
-                    className="px-2 py-0.5 bg-emerald-600/30 text-emerald-300 rounded font-mono font-bold flex items-center gap-1 hover:bg-emerald-600/50"
+                    className="px-2 py-0.5 bg-slate-100 text-emerald-700 rounded font-mono font-bold flex items-center gap-1 hover:bg-white"
                   >
                     <span>{po.journal_id}</span>
                     <ExternalLink className="w-3 h-3" />
@@ -1109,7 +1109,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             ) : onGenerateJournal ? (
               <button
                 onClick={() => onGenerateJournal(po)}
-                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-slate-800/30 text-amber-300 border border-amber-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <Coins className="w-3.5 h-3.5" />
                 <span>Journalize this PO</span>
@@ -1123,7 +1123,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                 type="button"
                 disabled={saving}
                 onClick={handleSaveDetails}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-950 transition-colors"
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs shadow-emerald-950 transition-colors"
               >
                 <Save className="w-4 h-4" />
                 <span>{saving ? 'Saving...' : 'Save Document Changes'}</span>
@@ -1136,7 +1136,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
                   onClose();
                   onNavigateToReceiving(po.po_number);
                 }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-colors"
+                className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-colors"
               >
                 <Truck className="w-4 h-4" />
                 <span>Receive Delivery (GRN)</span>
@@ -1146,7 +1146,7 @@ export const PurchaseOrderDocumentModal: React.FC<PurchaseOrderDocumentModalProp
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+              className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
             >
               Close
             </button>

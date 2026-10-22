@@ -145,13 +145,13 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+      <div className="bg-white/60 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <ArrowUpRight className="w-5 h-5 text-amber-400" />
+            <ArrowUpRight className="w-5 h-5 text-amber-700" />
             <span>Direct Stock Issue (Storekeeper Counter Dispatch)</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Immediate over-the-counter stock dispatch with storeroom balance validation and automated cost
             journaling (Dr Department Cost, Cr 1080 Inventory).
           </p>
@@ -159,26 +159,26 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
 
         <button
           onClick={onOpenScanner}
-          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors"
+          className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 flex items-center gap-1.5 transition-colors"
         >
-          <Scan className="w-3.5 h-3.5 text-emerald-400" />
+          <Scan className="w-3.5 h-3.5 text-emerald-700" />
           <span>Scan Barcode</span>
         </button>
       </div>
 
       {/* Notifications */}
       {notification && (
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-1.5">
-          <div className="flex items-center gap-2 font-bold text-emerald-300">
+        <div className="p-4 rounded-xl bg-slate-900/10/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-1.5">
+          <div className="flex items-center gap-2 font-bold text-emerald-700">
             <CheckCircle2 className="w-4 h-4" />
             <span>{notification.text}</span>
           </div>
           {notification.journalId && onViewJournal && (
             <div className="flex items-center gap-2">
-              <span className="text-slate-300">Created Journal:</span>
+              <span className="text-slate-700">Created Journal:</span>
               <button
                 onClick={() => onViewJournal(notification.journalId!)}
-                className="px-2 py-0.5 bg-emerald-600/30 text-emerald-300 rounded font-mono font-bold flex items-center gap-1"
+                className="px-2 py-0.5 bg-slate-100 text-emerald-700 rounded font-mono font-bold flex items-center gap-1"
               >
                 <span>{notification.journalId}</span>
                 <ExternalLink className="w-3 h-3" />
@@ -189,32 +189,32 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
       )}
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-red-600/10/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Direct Issue Form */}
-      <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-5 shadow-xl">
+      <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-5 space-y-5 shadow-xs">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Issue Date</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Issue Date</label>
             <input
               type="date"
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Source Storeroom</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Source Storeroom</label>
             <select
               value={storeroomId}
               onChange={(e) => setStoreroomId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             >
               {storerooms.map((s) => (
                 <option key={s.storeroom_id} value={s.storeroom_id}>
@@ -225,11 +225,11 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Receiving Department</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Receiving Department</label>
             <select
               value={deptCode}
               onChange={(e) => setDeptCode(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             >
               {departments.map((d) => (
                 <option key={d.department_code} value={d.department_code}>
@@ -240,14 +240,14 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Issued To (Recipient)</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Issued To (Recipient)</label>
             <input
               type="text"
               required
               value={issuedTo}
               onChange={(e) => setIssuedTo(e.target.value)}
               placeholder="e.g. Sous Chef Made"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white"
             />
           </div>
         </div>
@@ -255,15 +255,15 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
         {/* Dispatch Items List */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-500">
               Items to Dispatch
             </span>
             <button
               type="button"
               onClick={handleAddLine}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded flex items-center gap-1 border border-slate-700"
+              className="px-2.5 py-1 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded flex items-center gap-1 border border-slate-200"
             >
-              <Plus className="w-3 h-3 text-emerald-400" />
+              <Plus className="w-3 h-3 text-emerald-700" />
               <span>Add Item</span>
             </button>
           </div>
@@ -277,7 +277,7 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
               return (
                 <div
                   key={idx}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-slate-950/60 rounded-lg border border-slate-800"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-white/60 rounded-lg border border-slate-200"
                 >
                   <div className="flex-1 w-full">
                     <select
@@ -287,7 +287,7 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
                         newLines[idx].item_id = e.target.value;
                         setLines(newLines);
                       }}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                      className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-xs text-white"
                     >
                       {items.map((i) => (
                         <option key={i.item_id} value={i.item_id}>
@@ -298,9 +298,9 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="text-right font-mono text-[11px] text-slate-400 min-w-[120px]">
+                    <div className="text-right font-mono text-[11px] text-slate-500 min-w-[120px]">
                       Available in Store:{' '}
-                      <span className={`font-bold ${available === 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                      <span className={`font-bold ${available === 0 ? 'text-red-600' : 'text-emerald-700'}`}>
                         {available} {selectedItem?.uom}
                       </span>
                     </div>
@@ -317,8 +317,8 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
                           newLines[idx].quantity = Number(e.target.value);
                           setLines(newLines);
                         }}
-                        className={`w-full bg-slate-900 border rounded px-2.5 py-1.5 text-xs text-white font-mono text-right ${
-                          isOverStock ? 'border-rose-500 text-rose-300' : 'border-slate-700'
+                        className={`w-full bg-white border rounded px-2.5 py-1.5 text-xs text-white font-mono text-right ${
+                          isOverStock ? 'border-rose-500 text-rose-300' : 'border-slate-200'
                         }`}
                       />
                     </div>
@@ -327,7 +327,7 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
                       type="button"
                       onClick={() => handleRemoveLine(idx)}
                       disabled={lines.length === 1}
-                      className="p-1 text-slate-400 hover:text-rose-400 disabled:opacity-20"
+                      className="p-1 text-slate-500 hover:text-red-600 disabled:opacity-20"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -339,24 +339,24 @@ export const StockIssueView: React.FC<StockIssueViewProps> = ({
         </div>
 
         <div>
-          <label className="text-xs font-mono text-slate-400 block mb-1">Issue Reference / Notes</label>
+          <label className="text-xs font-mono text-slate-500 block mb-1">Issue Reference / Notes</label>
           <input
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200"
+            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700"
           />
         </div>
 
-        <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400">
+        <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+          <div className="text-xs text-slate-500">
             Enforces strict stock availability check: zero or negative stock dispatches are rejected.
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg shadow-amber-950 transition-colors"
+            className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-xs shadow-amber-950 transition-colors"
           >
             {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
             <span>Issue Stock & Post Cost Journal</span>

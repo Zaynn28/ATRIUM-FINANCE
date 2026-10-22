@@ -60,19 +60,19 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 shadow-sm backdrop-blur-sm">
+      <div className="bg-white/80 border border-slate-200 rounded-xl p-4 shadow-xs backdrop-blur-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <ShieldAlert className="w-5 h-5 text-amber-400" />
-              <h2 className="text-lg font-bold text-slate-100 tracking-tight">
+              <ShieldAlert className="w-5 h-5 text-amber-700" />
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
                 Controls & Audit Exceptions
               </h2>
-              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-amber-950/60 border border-amber-800/40 text-amber-300">
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-slate-900/10/60 border border-amber-800/40 text-amber-300">
                 AUDIT INTEGRITY MONITOR
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Continuous integrity audit for unmapped accounts, missing departments, unposted drafts, and reconciliation gaps
             </p>
           </div>
@@ -86,18 +86,18 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
               colWidths: [20, 12, 25, 45, 12, 15, 20],
             }], format)} />
             {/* Period Selector */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/70 border border-slate-800">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/70 border border-slate-200">
+              <Calendar className="w-3.5 h-3.5 text-slate-500" />
               <input
                 type="month"
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}
-                className="bg-transparent text-slate-200 font-mono outline-none cursor-pointer"
+                className="bg-transparent text-slate-700 font-mono outline-none cursor-pointer"
               />
               {period && (
                 <button
                   onClick={() => setPeriod('')}
-                  className="text-[11px] text-slate-400 hover:text-slate-200 font-medium ml-1"
+                  className="text-[11px] text-slate-500 hover:text-slate-700 font-medium ml-1"
                 >
                   All
                 </button>
@@ -105,17 +105,17 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
             </div>
 
             {/* Severity Filter */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/70 border border-slate-800">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/70 border border-slate-200">
+              <Filter className="w-3.5 h-3.5 text-slate-500" />
               <select
                 value={filterSeverity}
                 onChange={(e) => setFilterSeverity(e.target.value)}
-                className="bg-transparent text-slate-200 outline-none cursor-pointer"
+                className="bg-transparent text-slate-700 outline-none cursor-pointer"
               >
-                <option value="ALL" className="bg-slate-900">All Severities</option>
-                <option value="HIGH" className="bg-slate-900">High Severity ({highCount})</option>
-                <option value="MEDIUM" className="bg-slate-900">Medium Severity ({mediumCount})</option>
-                <option value="LOW" className="bg-slate-900">Low Severity ({lowCount})</option>
+                <option value="ALL" className="bg-white">All Severities</option>
+                <option value="HIGH" className="bg-white">High Severity ({highCount})</option>
+                <option value="MEDIUM" className="bg-white">Medium Severity ({mediumCount})</option>
+                <option value="LOW" className="bg-white">Low Severity ({lowCount})</option>
               </select>
             </div>
 
@@ -123,9 +123,9 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
             <button
               onClick={() => fetchExceptions(period)}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 border border-slate-700 rounded-lg font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-200 disabled:opacity-50 text-slate-700 border border-slate-200 rounded-lg font-medium transition-colors"
             >
-              <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-amber-400' : 'text-slate-400'}`} />
+              <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-amber-700' : 'text-slate-500'}`} />
               <span>Run Audit Scan</span>
             </button>
           </div>
@@ -134,71 +134,71 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div className="text-xs text-slate-400">Total Exceptions</div>
-          <div className="text-2xl font-bold font-mono text-slate-100 mt-1">
+        <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+          <div className="text-xs text-slate-500">Total Exceptions</div>
+          <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
             {exceptions.length}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-[11px] text-slate-500 mt-0.5">
             Active ledger audit issues
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div className="text-xs text-rose-400">High Severity</div>
-          <div className="text-2xl font-bold font-mono text-rose-400 mt-1">
+        <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+          <div className="text-xs text-red-600">High Severity</div>
+          <div className="text-2xl font-bold font-mono text-red-600 mt-1">
             {highCount}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-[11px] text-slate-500 mt-0.5">
             Require immediate controller action
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div className="text-xs text-amber-400">Medium Severity</div>
-          <div className="text-2xl font-bold font-mono text-amber-400 mt-1">
+        <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+          <div className="text-xs text-amber-700">Medium Severity</div>
+          <div className="text-2xl font-bold font-mono text-amber-700 mt-1">
             {mediumCount}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-[11px] text-slate-500 mt-0.5">
             Unassigned departments / mappings
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div className="text-xs text-emerald-400">Audit Status</div>
-          <div className="text-base font-bold text-emerald-300 mt-1 flex items-center gap-1.5">
+        <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+          <div className="text-xs text-emerald-700">Audit Status</div>
+          <div className="text-base font-bold text-emerald-700 mt-1 flex items-center gap-1.5">
             {highCount === 0 ? (
               <>
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <ShieldCheck className="w-5 h-5 text-emerald-700" />
                 <span>Healthy</span>
               </>
             ) : (
               <>
-                <AlertTriangle className="w-5 h-5 text-rose-400" />
+                <AlertTriangle className="w-5 h-5 text-red-600" />
                 <span>Exceptions Found</span>
               </>
             )}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-[11px] text-slate-500 mt-0.5">
             Updated from live ledger
           </div>
         </div>
       </div>
 
       {/* Exception List Table */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-        <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-100 font-mono uppercase tracking-wider">
+      <div className="bg-white/90 border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
+          <h3 className="text-sm font-bold text-slate-900 font-mono uppercase tracking-wider">
             Exception Log & Remediation Actions
           </h3>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="text-xs font-mono text-slate-500">
             Showing {filteredExceptions.length} of {exceptions.length} items
           </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
+            <thead className="bg-white text-slate-500 font-mono uppercase tracking-wider border-b border-slate-200">
               <tr>
                 <th className="py-2.5 px-4">Severity</th>
                 <th className="py-2.5 px-4">Category</th>
@@ -212,10 +212,10 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
             <tbody className="divide-y divide-slate-800/60 font-mono">
               {filteredExceptions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
+                  <td colSpan={7} className="py-12 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-                      <span className="text-sm font-medium text-slate-200">
+                      <CheckCircle2 className="w-8 h-8 text-emerald-700" />
+                      <span className="text-sm font-medium text-slate-700">
                         No audit exceptions found for this period!
                       </span>
                       <span className="text-xs text-slate-500">
@@ -226,33 +226,33 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
                 </tr>
               ) : (
                 filteredExceptions.map((ex) => (
-                  <tr key={ex.id} className="hover:bg-slate-800/50 transition-colors">
+                  <tr key={ex.id} className="hover:bg-white/50 transition-colors">
                     <td className="py-3 px-4">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           ex.severity === 'HIGH'
-                            ? 'bg-rose-950/60 border border-rose-800/50 text-rose-300'
+                            ? 'bg-red-600/10/60 border border-rose-800/50 text-rose-300'
                             : ex.severity === 'MEDIUM'
-                            ? 'bg-amber-950/60 border border-amber-800/50 text-amber-300'
+                            ? 'bg-slate-900/10/60 border border-amber-800/50 text-amber-300'
                             : 'bg-blue-950/60 border border-blue-800/50 text-blue-300'
                         }`}
                       >
                         {ex.severity}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-slate-300">
+                    <td className="py-3 px-4 font-semibold text-slate-700">
                       {ex.category}
                     </td>
-                    <td className="py-3 px-4 text-emerald-400 font-bold">
+                    <td className="py-3 px-4 text-emerald-700 font-bold">
                       {ex.target_code || '—'}
                     </td>
-                    <td className="py-3 px-4 text-slate-200 font-sans max-w-sm">
+                    <td className="py-3 px-4 text-slate-700 font-sans max-w-sm">
                       {ex.description}
                     </td>
-                    <td className="py-3 px-4 text-slate-400 font-sans">
+                    <td className="py-3 px-4 text-slate-500 font-sans">
                       {ex.impact}
                     </td>
-                    <td className="py-3 px-4 text-slate-300 font-sans">
+                    <td className="py-3 px-4 text-slate-700 font-sans">
                       {ex.recommended_action}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -270,7 +270,7 @@ export const ControlsAuditView: React.FC<ControlsAuditViewProps> = ({ onNavigate
                             }
                           }
                         }}
-                        className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300 font-medium font-sans"
+                        className="inline-flex items-center gap-1 text-[11px] text-emerald-700 hover:text-emerald-700 font-medium font-sans"
                       >
                         <span>Fix</span>
                         <ArrowRight className="w-3 h-3" />

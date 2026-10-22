@@ -258,7 +258,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-slate-400">
+      <div className="p-8 text-center text-slate-500">
         <div className="inline-block animate-spin w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full mb-2"></div>
         <p className="text-xs">Loading report layout configuration...</p>
       </div>
@@ -268,18 +268,18 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner & Action Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800 shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-base font-bold text-slate-100">
+            <Sliders className="w-5 h-5 text-emerald-700" />
+            <h3 className="text-base font-bold text-slate-900">
               Report Format & Structure Designer
             </h3>
-            <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-emerald-950/60 border border-emerald-800/40 text-emerald-300">
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-900/10/60 border border-emerald-800/40 text-emerald-700">
               LIVE CONFIGURABLE
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Tailor currency symbols, number scaling, financial typography, section roll-up lines, and account mappings for all USALI & Statutory statements.
           </p>
         </div>
@@ -288,7 +288,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           <button
             onClick={handleResetDefaults}
             disabled={saving}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
             title="Reset to default USALI 12 standards"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -298,7 +298,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           <button
             onClick={handleSaveConfig}
             disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-sm transition-colors"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-900 shadow-xs transition-colors"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{saving ? 'Saving...' : 'Save Configuration'}</span>
@@ -311,8 +311,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
         <div
           className={`flex items-center gap-2.5 p-3.5 rounded-xl border text-xs animate-in fade-in duration-200 ${
             message.type === 'success'
-              ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300'
-              : 'bg-rose-950/40 border-rose-800/50 text-rose-300'
+              ? 'bg-slate-900/10/40 border-emerald-800/50 text-emerald-700'
+              : 'bg-red-600/10/40 border-rose-800/50 text-rose-300'
           }`}
         >
           {message.type === 'success' ? (
@@ -325,13 +325,13 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
       )}
 
       {/* Main Designer Mode Switcher */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
         <button
           onClick={() => setActiveSubTab('formatting')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
             activeSubTab === 'formatting'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              ? 'bg-slate-900/10 text-emerald-700 border border-emerald-500/30 font-semibold shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
           }`}
         >
           <Palette className="w-4 h-4" />
@@ -342,8 +342,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           onClick={() => setActiveSubTab('structure')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
             activeSubTab === 'structure'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              ? 'bg-slate-900/10 text-emerald-700 border border-emerald-500/30 font-semibold shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
           }`}
         >
           <LayoutGrid className="w-4 h-4" />
@@ -354,8 +354,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           onClick={() => setActiveSubTab('preview')}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
             activeSubTab === 'preview'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold shadow-sm'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              ? 'bg-slate-900/10 text-emerald-700 border border-emerald-500/30 font-semibold shadow-xs'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
           }`}
         >
           <Eye className="w-4 h-4" />
@@ -367,17 +367,17 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
       {activeSubTab === 'formatting' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Card A: Currency & Number Scale */}
-          <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
-            <div className="flex items-center gap-2 text-emerald-400 border-b border-slate-800 pb-2.5">
+          <div className="p-5 rounded-xl bg-white border border-slate-200 space-y-4">
+            <div className="flex items-center gap-2 text-emerald-700 border-b border-slate-200 pb-2.5">
               <Coins className="w-4 h-4" />
-              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Currency & Number Scaling
               </h4>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Base Currency Symbol
                 </label>
                 <div className="flex items-center gap-2">
@@ -391,14 +391,14 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                       })
                     }
                     placeholder="Rp"
-                    className="w-24 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 font-mono focus:border-emerald-500 focus:outline-none"
+                    className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 font-mono focus:border-emerald-500 focus:outline-none"
                   />
                   <span className="text-[11px] text-slate-500">e.g. Rp, $, €, £, S$</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   ISO Currency Code
                 </label>
                 <input
@@ -411,12 +411,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     })
                   }
                   placeholder="IDR"
-                  className="w-24 px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 font-mono focus:border-emerald-500 focus:outline-none"
+                  className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 font-mono focus:border-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Currency Symbol Position
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -430,8 +430,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     }
                     className={`py-1.5 px-2 rounded-lg text-xs font-medium border text-center transition-colors ${
                       config.formatting.currency_position === 'prefix'
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-slate-900/20 border-emerald-500 text-emerald-700'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                     }`}
                   >
                     Prefix ({config.formatting.currency_symbol} 100)
@@ -446,8 +446,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     }
                     className={`py-1.5 px-2 rounded-lg text-xs font-medium border text-center transition-colors ${
                       config.formatting.currency_position === 'suffix'
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-slate-900/20 border-emerald-500 text-emerald-700'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                     }`}
                   >
                     Suffix (100 {config.formatting.currency_symbol})
@@ -456,7 +456,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Denomination / Number Scale
                 </label>
                 <select
@@ -467,7 +467,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                       formatting: { ...config.formatting, number_scale: e.target.value as any },
                     })
                   }
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:border-emerald-500 focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:border-emerald-500 focus:outline-none"
                 >
                   <option value="full">Exact Full Amount (e.g. 15,000,000)</option>
                   <option value="thousands">In Thousands (k) (e.g. 15,000 k)</option>
@@ -476,7 +476,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Decimal Places
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -492,8 +492,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                       }
                       className={`py-1.5 rounded-lg text-xs font-medium border text-center transition-colors ${
                         config.formatting.decimal_places === dp
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold'
-                          : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                          ? 'bg-slate-900/20 border-emerald-500 text-emerald-700 font-bold'
+                          : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                       }`}
                     >
                       {dp} decimals
@@ -505,21 +505,21 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           </div>
 
           {/* Card B: Negative Values & Zero Presentation */}
-          <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
-            <div className="flex items-center gap-2 text-emerald-400 border-b border-slate-800 pb-2.5">
+          <div className="p-5 rounded-xl bg-white border border-slate-200 space-y-4">
+            <div className="flex items-center gap-2 text-emerald-700 border-b border-slate-200 pb-2.5">
               <Hash className="w-4 h-4" />
-              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Accounting Notation Rules
               </h4>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Negative Numbers Format
                 </label>
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 p-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 cursor-pointer hover:border-slate-700">
+                  <label className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 cursor-pointer hover:border-slate-200">
                     <input
                       type="radio"
                       name="negative_format"
@@ -530,12 +530,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                           formatting: { ...config.formatting, negative_format: 'parentheses' },
                         })
                       }
-                      className="text-emerald-500 focus:ring-emerald-500"
+                      className="text-emerald-700 focus:ring-emerald-500"
                     />
                     <span>Accounting Parentheses: <strong>(1,250,000)</strong></span>
                   </label>
 
-                  <label className="flex items-center gap-2 p-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 cursor-pointer hover:border-slate-700">
+                  <label className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 cursor-pointer hover:border-slate-200">
                     <input
                       type="radio"
                       name="negative_format"
@@ -546,12 +546,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                           formatting: { ...config.formatting, negative_format: 'minus' },
                         })
                       }
-                      className="text-emerald-500 focus:ring-emerald-500"
+                      className="text-emerald-700 focus:ring-emerald-500"
                     />
                     <span>Standard Minus: <strong>-1,250,000</strong></span>
                   </label>
 
-                  <label className="flex items-center gap-2 p-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 cursor-pointer hover:border-slate-700">
+                  <label className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 cursor-pointer hover:border-slate-200">
                     <input
                       type="radio"
                       name="negative_format"
@@ -562,15 +562,15 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                           formatting: { ...config.formatting, negative_format: 'red' },
                         })
                       }
-                      className="text-emerald-500 focus:ring-emerald-500"
+                      className="text-emerald-700 focus:ring-emerald-500"
                     />
-                    <span>Red Font Parentheses: <strong className="text-rose-400">(1,250,000)</strong></span>
+                    <span>Red Font Parentheses: <strong className="text-red-600">(1,250,000)</strong></span>
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Zero Values Presentation
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -584,8 +584,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     }
                     className={`py-1.5 rounded-lg text-xs font-medium border text-center transition-colors ${
                       config.formatting.zero_format === 'dash'
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-slate-900/20 border-emerald-500 text-emerald-700'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                     }`}
                   >
                     Dash (—)
@@ -600,8 +600,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     }
                     className={`py-1.5 rounded-lg text-xs font-medium border text-center transition-colors ${
                       config.formatting.zero_format === 'zero'
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-slate-900/20 border-emerald-500 text-emerald-700'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                     }`}
                   >
                     Zero (0)
@@ -616,8 +616,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     }
                     className={`py-1.5 rounded-lg text-xs font-medium border text-center transition-colors ${
                       config.formatting.zero_format === 'blank'
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                        ? 'bg-slate-900/20 border-emerald-500 text-emerald-700'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                     }`}
                   >
                     Blank Space
@@ -625,8 +625,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-800 space-y-2">
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <div className="pt-2 border-t border-slate-200 space-y-2">
+                <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={config.formatting.double_underline_totals}
@@ -636,12 +636,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                         formatting: { ...config.formatting, double_underline_totals: e.target.checked },
                       })
                     }
-                    className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                    className="rounded bg-white border-slate-200 text-emerald-700 focus:ring-emerald-500"
                   />
                   <span>Classic accounting double underline on grand totals</span>
                 </label>
 
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={config.formatting.show_percent_of_revenue}
@@ -651,12 +651,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                         formatting: { ...config.formatting, show_percent_of_revenue: e.target.checked },
                       })
                     }
-                    className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                    className="rounded bg-white border-slate-200 text-emerald-700 focus:ring-emerald-500"
                   />
                   <span>Display % of Total Revenue column in statements</span>
                 </label>
 
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={config.formatting.show_account_codes}
@@ -666,7 +666,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                         formatting: { ...config.formatting, show_account_codes: e.target.checked },
                       })
                     }
-                    className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                    className="rounded bg-white border-slate-200 text-emerald-700 focus:ring-emerald-500"
                   />
                   <span>Show GL Account Code tags beside line items</span>
                 </label>
@@ -675,17 +675,17 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           </div>
 
           {/* Card C: Visual Layout, Theme & Density */}
-          <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
-            <div className="flex items-center gap-2 text-emerald-400 border-b border-slate-800 pb-2.5">
+          <div className="p-5 rounded-xl bg-white border border-slate-200 space-y-4">
+            <div className="flex items-center gap-2 text-emerald-700 border-b border-slate-200 pb-2.5">
               <Palette className="w-4 h-4" />
-              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Visual Style & Density
               </h4>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Table Padding & Density
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -705,8 +705,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                       }
                       className={`p-2 rounded-lg text-center border transition-colors ${
                         config.formatting.table_density === d.id
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                          : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                          ? 'bg-slate-900/20 border-emerald-500 text-emerald-700'
+                          : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
                       }`}
                     >
                       <div className="text-xs font-bold">{d.label}</div>
@@ -717,14 +717,14 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                <label className="block text-[11px] font-medium text-slate-500 mb-1">
                   Report Color Theme
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'slate', name: 'Executive Slate', tag: 'bg-slate-800 border-slate-600' },
-                    { id: 'emerald', name: 'Crisp Emerald', tag: 'bg-emerald-950 border-emerald-700' },
-                    { id: 'classic', name: 'Warm Ledger', tag: 'bg-amber-950 border-amber-700' },
+                    { id: 'slate', name: 'Executive Slate', tag: 'bg-white border-slate-200' },
+                    { id: 'emerald', name: 'Crisp Emerald', tag: 'bg-slate-900/10 border-emerald-700' },
+                    { id: 'classic', name: 'Warm Ledger', tag: 'bg-slate-900/10 border-amber-700' },
                     { id: 'contrast', name: 'Crisp Contrast', tag: 'bg-black border-white' },
                   ].map((t) => (
                     <button
@@ -738,8 +738,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                       }
                       className={`p-2 rounded-lg flex items-center gap-2 border text-left transition-colors ${
                         config.formatting.visual_theme === t.id
-                          ? 'border-emerald-500 bg-emerald-950/30 text-emerald-300'
-                          : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200'
+                          ? 'border-emerald-500 bg-slate-900/10/30 text-emerald-700'
+                          : 'border-slate-200 bg-white text-slate-500 hover:text-slate-700'
                       }`}
                     >
                       <span className={`w-3 h-3 rounded-full border ${t.tag}`}></span>
@@ -749,9 +749,9 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-800 space-y-2">
+              <div className="pt-2 border-t border-slate-200 space-y-2">
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                  <label className="block text-[11px] font-medium text-slate-500 mb-1">
                     Report Header Property Name
                   </label>
                   <input
@@ -763,12 +763,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                         formatting: { ...config.formatting, header_company_name: e.target.value },
                       })
                     }
-                    className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:border-emerald-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                  <label className="block text-[11px] font-medium text-slate-500 mb-1">
                     Report Sub-heading
                   </label>
                   <input
@@ -780,11 +780,11 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                         formatting: { ...config.formatting, header_subtitle: e.target.value },
                       })
                     }
-                    className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:border-emerald-500 focus:outline-none"
+                    className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:border-emerald-500 focus:outline-none"
                   />
                 </div>
 
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer pt-1">
+                <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer pt-1">
                   <input
                     type="checkbox"
                     checked={config.formatting.show_signature_block}
@@ -794,7 +794,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                         formatting: { ...config.formatting, show_signature_block: e.target.checked },
                       })
                     }
-                    className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                    className="rounded bg-white border-slate-200 text-emerald-700 focus:ring-emerald-500"
                   />
                   <span>Include Controller Certification Sign-Off Block</span>
                 </label>
@@ -808,22 +808,22 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
       {activeSubTab === 'structure' && (
         <div className="space-y-6">
           {/* Report Type Selector */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200">
             <div className="flex items-center gap-2">
-              <Type className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-semibold text-slate-200">
+              <Type className="w-4 h-4 text-emerald-700" />
+              <span className="text-xs font-semibold text-slate-700">
                 Select Report Statement to Customize:
               </span>
             </div>
 
-            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200">
               <button
                 type="button"
                 onClick={() => setSelectedReportType('usali')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   selectedReportType === 'usali'
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/40 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 USALI 12th Operating Statement
@@ -834,8 +834,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                 onClick={() => setSelectedReportType('balance_sheet')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   selectedReportType === 'balance_sheet'
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/40 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 Balance Sheet (Position)
@@ -846,8 +846,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                 onClick={() => setSelectedReportType('income_statement')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   selectedReportType === 'income_statement'
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/40 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 Income Statement (P&L)
@@ -860,17 +860,17 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
             {getActiveSections().map((section, sIdx) => (
               <div
                 key={section.section_id}
-                className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden shadow-sm"
+                className="rounded-xl bg-white border border-slate-200 overflow-hidden shadow-xs"
               >
                 {/* Section Header */}
-                <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-slate-950/60 border-b border-slate-800">
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white/60 border-b border-slate-200">
                   <div className="flex items-center gap-3 flex-1 min-w-[280px]">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-slate-900"></span>
                     <input
                       type="text"
                       value={section.section_title}
                       onChange={(e) => handleUpdateSectionTitle(sIdx, e.target.value)}
-                      className="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs font-bold text-slate-100 focus:border-emerald-500 focus:outline-none flex-1 max-w-sm"
+                      className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:border-emerald-500 focus:outline-none flex-1 max-w-sm"
                       title="Edit Section Title"
                     />
                     <span className="text-[11px] font-mono text-slate-500">
@@ -879,12 +879,12 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                    <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={section.is_visible}
                         onChange={() => handleToggleSectionVisibility(sIdx)}
-                        className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                        className="rounded bg-white border-slate-200 text-emerald-700 focus:ring-emerald-500"
                       />
                       <span>Section Visible</span>
                     </label>
@@ -892,7 +892,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     <button
                       type="button"
                       onClick={() => handleAddCustomLine(sIdx)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-medium"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-200 text-emerald-700 border border-slate-200 text-xs font-medium"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Line</span>
@@ -902,8 +902,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
 
                 {/* Section Lines Table */}
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="bg-slate-950/40 text-[11px] text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-white/40 text-[11px] text-slate-500 uppercase tracking-wider border-b border-slate-200">
                       <tr>
                         <th className="py-2.5 px-4 w-12 text-center">Order</th>
                         <th className="py-2.5 px-4 w-32">Line ID</th>
@@ -916,11 +916,11 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
                       {section.lines.map((line, lIdx) => (
-                        <tr key={line.id} className="hover:bg-slate-800/30 transition-colors">
+                        <tr key={line.id} className="hover:bg-white/30 transition-colors">
                           <td className="py-2.5 px-4 text-center text-slate-500 font-mono">
                             {line.order || lIdx + 1}
                           </td>
-                          <td className="py-2.5 px-4 font-mono text-[11px] text-emerald-400">
+                          <td className="py-2.5 px-4 font-mono text-[11px] text-emerald-700">
                             {line.id}
                           </td>
                           <td className="py-2.5 px-4">
@@ -928,7 +928,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                               type="text"
                               value={line.label}
                               onChange={(e) => handleUpdateLine(sIdx, lIdx, 'label', e.target.value)}
-                              className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-100 focus:border-emerald-500 focus:outline-none"
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-900 focus:border-emerald-500 focus:outline-none"
                             />
                           </td>
                           <td className="py-2.5 px-4">
@@ -943,7 +943,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                                 handleUpdateLine(sIdx, lIdx, 'account_prefixes', prefixes);
                               }}
                               placeholder="e.g. 40, 4010"
-                              className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded font-mono text-xs text-slate-300 focus:border-emerald-500 focus:outline-none"
+                              className="w-full px-2 py-1 bg-white border border-slate-200 rounded font-mono text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
                               title="Comma-separated account code prefixes that roll into this line"
                             />
                           </td>
@@ -953,7 +953,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                               onChange={(e) =>
                                 handleUpdateLine(sIdx, lIdx, 'indent_level', parseInt(e.target.value, 10))
                               }
-                              className="px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-300 focus:border-emerald-500 focus:outline-none"
+                              className="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
                             >
                               <option value="0">0 (Flush)</option>
                               <option value="1">1 (Indent)</option>
@@ -965,7 +965,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                               type="checkbox"
                               checked={line.is_visible !== false}
                               onChange={(e) => handleUpdateLine(sIdx, lIdx, 'is_visible', e.target.checked)}
-                              className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                              className="rounded bg-white border-slate-200 text-emerald-700 focus:ring-emerald-500"
                             />
                           </td>
                           <td className="py-2.5 px-4 text-right">
@@ -974,7 +974,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                                 type="button"
                                 onClick={() => handleMoveLine(sIdx, lIdx, 'up')}
                                 disabled={lIdx === 0}
-                                className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-slate-200 disabled:opacity-30"
+                                className="p-1 rounded hover:bg-white text-slate-500 hover:text-slate-700 disabled:opacity-30"
                                 title="Move line up"
                               >
                                 <ChevronUp className="w-3.5 h-3.5" />
@@ -983,7 +983,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                                 type="button"
                                 onClick={() => handleMoveLine(sIdx, lIdx, 'down')}
                                 disabled={lIdx === section.lines.length - 1}
-                                className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-slate-200 disabled:opacity-30"
+                                className="p-1 rounded hover:bg-white text-slate-500 hover:text-slate-700 disabled:opacity-30"
                                 title="Move line down"
                               >
                                 <ChevronDown className="w-3.5 h-3.5" />
@@ -991,7 +991,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                               <button
                                 type="button"
                                 onClick={() => handleDeleteLine(sIdx, lIdx)}
-                                className="p-1 rounded hover:bg-rose-950/50 text-slate-500 hover:text-rose-400 ml-1"
+                                className="p-1 rounded hover:bg-red-600/10/50 text-slate-500 hover:text-red-600 ml-1"
                                 title="Delete line"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1019,22 +1019,22 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
       {/* TAB 3: LIVE INTERACTIVE PREVIEW */}
       {activeSubTab === 'preview' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200">
             <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-semibold text-slate-200">
+              <Eye className="w-4 h-4 text-emerald-700" />
+              <span className="text-xs font-semibold text-slate-700">
                 Live Rendering Preview under active formatting ({config.formatting.visual_theme} / {config.formatting.number_scale})
               </span>
             </div>
 
-            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+            <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200">
               <button
                 type="button"
                 onClick={() => setSelectedReportType('usali')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   selectedReportType === 'usali'
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/40 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 USALI Statement
@@ -1044,8 +1044,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                 onClick={() => setSelectedReportType('balance_sheet')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   selectedReportType === 'balance_sheet'
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/40 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 Balance Sheet
@@ -1055,8 +1055,8 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                 onClick={() => setSelectedReportType('income_statement')}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   selectedReportType === 'income_statement'
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/40 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 Income Statement
@@ -1065,20 +1065,20 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
           </div>
 
           {/* Rendered Live Statement Document */}
-          <div className={`p-6 rounded-xl border shadow-lg transition-all ${themeCls.cardBg}`}>
+          <div className={`p-6 rounded-xl border shadow-xs transition-all ${themeCls.cardBg}`}>
             {/* Header */}
-            <div className="border-b border-slate-800/80 pb-4 mb-4">
+            <div className="border-b border-slate-200/80 pb-4 mb-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight">
                     {config.formatting.header_company_name || 'PT Atrium Management Group'}
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-500 mt-0.5">
                     {config.formatting.header_subtitle || 'Summary Operating Statement'}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block px-2.5 py-1 rounded text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  <span className="inline-block px-2.5 py-1 rounded text-xs font-mono font-semibold bg-slate-900/10 text-emerald-700 border border-emerald-500/30">
                     Currency: {config.formatting.currency_code} ({config.formatting.currency_symbol}) • Scale: {config.formatting.number_scale}
                   </span>
                   <div className="text-[11px] text-slate-500 mt-1">Period: All Time (Live Sample)</div>
@@ -1154,14 +1154,14 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                                 <td
                                   className={`${densityCls.td} text-right font-mono font-medium ${
                                     amount < 0 && config.formatting.negative_format === 'red'
-                                      ? 'text-rose-400'
+                                      ? 'text-red-600'
                                       : ''
                                   }`}
                                 >
                                   {formatAmount(amount, config.formatting)}
                                 </td>
                                 {config.formatting.show_percent_of_revenue && (
-                                  <td className={`${densityCls.td} text-right font-mono text-slate-400`}>
+                                  <td className={`${densityCls.td} text-right font-mono text-slate-500`}>
                                     {pct}%
                                   </td>
                                 )}
@@ -1187,7 +1187,7 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
                               {formatAmount(secTotal, config.formatting)}
                             </td>
                             {config.formatting.show_percent_of_revenue && (
-                              <td className={`${densityCls.subtotal} text-right font-mono text-emerald-400`}>
+                              <td className={`${densityCls.subtotal} text-right font-mono text-emerald-700`}>
                                 {Math.round((Math.abs(secTotal) / 227000000) * 1000) / 10}%
                               </td>
                             )}
@@ -1201,9 +1201,9 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
 
             {/* Controller Sign-off Block */}
             {config.formatting.show_signature_block && (
-              <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-400">
+              <div className="mt-8 pt-6 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-500">
                 <div className="space-y-1">
-                  <div className="font-medium text-slate-300">Financial Controller Certification:</div>
+                  <div className="font-medium text-slate-700">Financial Controller Certification:</div>
                   <div className="text-[11px] text-slate-500">
                     Prepared under strictly balanced double-entry accounting records.
                   </div>
@@ -1211,14 +1211,14 @@ export const ReportConfigDesigner: React.FC<ReportConfigDesignerProps> = ({
 
                 <div className="flex items-center gap-6">
                   <div className="text-center">
-                    <div className="w-36 border-b border-slate-700 pb-1 font-mono text-[11px] text-slate-300">
+                    <div className="w-36 border-b border-slate-200 pb-1 font-mono text-[11px] text-slate-700">
                       Approved
                     </div>
                     <div className="text-[10px] text-slate-500 mt-1">General Manager</div>
                   </div>
 
                   <div className="text-center">
-                    <div className="w-36 border-b border-slate-700 pb-1 font-mono text-[11px] text-emerald-400">
+                    <div className="w-36 border-b border-slate-200 pb-1 font-mono text-[11px] text-emerald-700">
                       Certified True
                     </div>
                     <div className="text-[10px] text-slate-500 mt-1">Financial Controller</div>

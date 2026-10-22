@@ -202,31 +202,31 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-slate-900/20 text-emerald-700 border border-emerald-500/30 font-semibold">
               Revenue Operational Cycle
             </span>
           </div>
-          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
-            <ArrowDownLeft className="w-5 h-5 text-emerald-400" />
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <ArrowDownLeft className="w-5 h-5 text-emerald-700" />
             <span>Revenue Cycle &amp; Accounts Receivable (AR)</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Monitor and control Accounts Receivable aging, guest folios, and automatic double-entry revenue ingestion
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Sub-tab pills */}
-          <div className="bg-slate-950 p-1 rounded-xl border border-slate-800 flex items-center gap-1">
+          <div className="bg-white p-1 rounded-xl border border-slate-200 flex items-center gap-1">
             <button
               onClick={() => setActiveCycleTab('AR_MODULE')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                 activeCycleTab === 'AR_MODULE'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-white'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -236,8 +236,8 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
               onClick={() => setActiveCycleTab('INGESTION')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                 activeCycleTab === 'INGESTION'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-white'
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -247,9 +247,9 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
           <button
             onClick={onOpenMappingModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium transition-colors"
           >
-            <Settings2 className="w-3.5 h-3.5 text-slate-400" />
+            <Settings2 className="w-3.5 h-3.5 text-slate-500" />
             <span>Mapping</span>
           </button>
         </div>
@@ -265,9 +265,9 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
         <>
           {/* Unmapped Exception Banner */}
       {!isMappingConfigured && (
-        <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
+        <div className="bg-slate-900/10/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <div className="space-y-0.5">
               <h4 className="text-xs font-semibold text-amber-200">
                 Accounting Exception: Revenue Counterpart Asset Account Missing
@@ -279,7 +279,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
           </div>
           <button
             onClick={onOpenMappingModal}
-            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs rounded-lg shrink-0 transition-colors"
+            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold text-xs rounded-lg shrink-0 transition-colors"
           >
             Configure Mapping
           </button>
@@ -297,21 +297,21 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
       )}
 
       {successInfo && (
-        <div className="p-4 bg-emerald-950/40 border border-emerald-800/50 rounded-xl flex items-center justify-between text-xs text-emerald-200">
+        <div className="p-4 bg-slate-900/10/40 border border-emerald-800/50 rounded-xl flex items-center justify-between text-xs text-emerald-200">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-700" />
             <div>
               <p className="font-semibold">
                 Transaction recorded: <span className="font-mono">{successInfo.txId}</span>
               </p>
-              <p className="text-emerald-300/80">
+              <p className="text-emerald-700/80">
                 Auto-generated Draft Journal: <span className="font-mono font-medium">{successInfo.journalId}</span> (Pending validation and approval)
               </p>
             </div>
           </div>
           <button
             onClick={() => onViewJournal(successInfo.journalId)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium transition-colors"
           >
             <span>Review Journal</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -322,13 +322,13 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
       {/* Main Form & Summary Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Entry Form */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-              <Plus className="w-4 h-4 text-emerald-400" />
+        <div className="lg:col-span-1 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <Plus className="w-4 h-4 text-emerald-700" />
               <span>Record Revenue Transaction</span>
             </h2>
-            <span className="text-[11px] font-mono uppercase text-slate-500 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+            <span className="text-[11px] font-mono uppercase text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
               Manual Form
             </span>
           </div>
@@ -337,12 +337,12 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
             {/* Transaction Date */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-slate-300 font-medium">Transaction Date *</label>
+                <label className="text-slate-700 font-medium">Transaction Date *</label>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, date: new Date().toISOString().split('T')[0] })}
-                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-white text-slate-700 hover:text-white"
                   >
                     Today
                   </button>
@@ -353,7 +353,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                       d.setDate(d.getDate() - 1);
                       setFormData({ ...formData, date: d.toISOString().split('T')[0] });
                     }}
-                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-white text-slate-700 hover:text-white"
                   >
                     Yesterday
                   </button>
@@ -365,23 +365,23 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 style={{ colorScheme: 'dark' }}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-emerald-500 outline-none cursor-pointer"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-mono focus:border-emerald-500 outline-none cursor-pointer"
               />
             </div>
 
             {/* Source */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Source System</label>
+              <label className="block text-slate-700 font-medium mb-1">Source System</label>
               <select
                 value={formData.source}
                 onChange={(e) => setFormData({ ...formData, source: e.target.value as any })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none"
               >
                 <option value="Manual">Manual Entry</option>
                 <option value="PMS">PMS / Folio Batch</option>
               </select>
               {formData.source === 'PMS' && (
-                <p className="text-[11px] text-amber-400/90 mt-1 flex items-center gap-1 font-mono">
+                <p className="text-[11px] text-amber-700/90 mt-1 flex items-center gap-1 font-mono">
                   <AlertTriangle className="w-3 h-3" /> Yanolja integration — not yet connected (manual entry mode)
                 </p>
               )}
@@ -389,12 +389,12 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
             {/* Department */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Operating Department *</label>
+              <label className="block text-slate-700 font-medium mb-1">Operating Department *</label>
               <select
                 required
                 value={formData.department_code}
                 onChange={(e) => setFormData({ ...formData, department_code: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none"
               >
                 <option value="">-- Select Department --</option>
                 {activeDepartments.map((dept) => (
@@ -407,12 +407,12 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
             {/* Revenue Account (Credit) */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Revenue Account (Credit) *</label>
+              <label className="block text-slate-700 font-medium mb-1">Revenue Account (Credit) *</label>
               <select
                 required
                 value={formData.account_code}
                 onChange={(e) => setFormData({ ...formData, account_code: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none font-mono"
               >
                 <option value="">-- Select Revenue Account --</option>
                 {revenueAccounts.map((acc) => (
@@ -422,7 +422,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                 ))}
               </select>
               {revenueAccounts.length === 0 && (
-                <p className="text-[11px] text-amber-400 mt-1">
+                <p className="text-[11px] text-amber-700 mt-1">
                   No Revenue accounts found. Please add or seed accounts in Chart of Accounts first.
                 </p>
               )}
@@ -431,14 +431,14 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
             {/* Counterpart Asset Account (Debit) */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-slate-300 font-medium">Counterpart Asset Account (Debit) *</label>
+                <label className="text-slate-700 font-medium">Counterpart Asset Account (Debit) *</label>
                 <span className="text-[10px] text-slate-500">Confirmed by Controller</span>
               </div>
               <select
                 required
                 value={formData.debit_account_code || mappingConfig?.revenue_default_debit_account || ''}
                 onChange={(e) => setFormData({ ...formData, debit_account_code: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none font-mono"
               >
                 <option value="">-- Select Settlement / Asset Account --</option>
                 {assetAccounts.map((acc) => (
@@ -451,9 +451,9 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
 
             {/* Amount */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Transaction Amount (IDR / Rp) *</label>
+              <label className="block text-slate-700 font-medium mb-1">Transaction Amount (IDR / Rp) *</label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-slate-400 font-mono font-bold text-xs">Rp</span>
+                <span className="absolute left-3 top-2 text-slate-500 font-mono font-bold text-xs">Rp</span>
                 <input
                   type="number"
                   step="1"
@@ -462,31 +462,31 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                   placeholder="0"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-slate-100 font-mono text-sm focus:border-emerald-500 outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-slate-900 font-mono text-sm focus:border-emerald-500 outline-none"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Description / Guest Reference</label>
+              <label className="block text-slate-700 font-medium mb-1">Description / Guest Reference</label>
               <textarea
                 rows={2}
                 placeholder="e.g. Daily night audit rooms revenue, Banquet hall deposit"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-emerald-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 outline-none focus:border-emerald-500"
               />
             </div>
 
             {/* Double-entry preview hint */}
-            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 space-y-1 font-mono text-[11px]">
-              <div className="text-slate-400 font-sans font-medium">Double-Entry Preview:</div>
-              <div className="text-emerald-400">
+            <div className="bg-white p-3 rounded-lg border border-slate-200/80 space-y-1 font-mono text-[11px]">
+              <div className="text-slate-500 font-sans font-medium">Double-Entry Preview:</div>
+              <div className="text-emerald-700">
                 DR: [{formData.debit_account_code || mappingConfig?.revenue_default_debit_account || 'Asset Pending'}] Rp{' '}
                 {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
-              <div className="text-blue-400">
+              <div className="text-slate-500">
                 CR: [{formData.account_code || 'Revenue Pending'}] Rp{' '}
                 {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
@@ -496,7 +496,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{loading ? 'Generating Draft Journal...' : 'Record & Draft Journal'}</span>
@@ -508,12 +508,12 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
         <div className="lg:col-span-2 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-slate-400" />
+              <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-500" />
                 <span>Revenue Transactions Log ({filteredTransactions.length})</span>
               </h2>
               <span className="text-xs text-slate-500">
-                Total Ingested: <span className="font-mono text-emerald-400 font-semibold">Rp {totalFilteredAmount.toLocaleString('id-ID')}</span>
+                Total Ingested: <span className="font-mono text-emerald-700 font-semibold">Rp {totalFilteredAmount.toLocaleString('id-ID')}</span>
               </span>
             </div>
 
@@ -522,7 +522,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
               <ReportExportButtons onExport={handleExportExcel} />
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition-colors"
                 title="Print Log / Save to PDF"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -532,7 +532,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
           </div>
 
           {/* Period & Filter Controls */}
-          <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="p-3 bg-white border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 flex-1 min-w-[200px]">
               <Search className="w-3.5 h-3.5 text-slate-500" />
               <input
@@ -540,21 +540,21 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                 placeholder="Search reference, description, account..."
                 value={logSearch}
                 onChange={(e) => setLogSearch(e.target.value)}
-                className="bg-transparent text-xs text-slate-200 outline-none w-full placeholder-slate-500"
+                className="bg-transparent text-xs text-slate-700 outline-none w-full placeholder-slate-500"
               />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
-                <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-slate-400 text-[11px]">Period:</span>
+              <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg px-2 py-1">
+                <Calendar className="w-3.5 h-3.5 text-emerald-700" />
+                <span className="text-slate-500 text-[11px]">Period:</span>
                 <input
                   type="date"
                   value={logDateFrom}
                   onChange={(e) => setLogDateFrom(e.target.value)}
                   style={{ colorScheme: 'dark' }}
                   title="From Date"
-                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                  className="bg-white border border-slate-200/80 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
                 />
                 <span className="text-slate-500 text-[11px]">to</span>
                 <input
@@ -563,7 +563,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                   onChange={(e) => setLogDateTo(e.target.value)}
                   style={{ colorScheme: 'dark' }}
                   title="To Date"
-                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                  className="bg-white border border-slate-200/80 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
                 />
                 {(logDateFrom || logDateTo) && (
                   <button
@@ -571,7 +571,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                       setLogDateFrom('');
                       setLogDateTo('');
                     }}
-                    className="text-slate-400 hover:text-slate-200 text-xs px-1 font-bold"
+                    className="text-slate-500 hover:text-slate-700 text-xs px-1 font-bold"
                     title="Clear date filter"
                   >
                     ×
@@ -582,7 +582,7 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
               <select
                 value={logDept}
                 onChange={(e) => setLogDept(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 text-xs outline-none"
+                className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-xs outline-none"
               >
                 <option value="ALL">All Departments</option>
                 {activeDepartments.map((d) => (
@@ -594,10 +594,10 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
             </div>
           </div>
 
-          <div id="revenue-transactions-printable-area" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          <div id="revenue-transactions-printable-area" className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                <thead className="bg-white/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
                   <tr>
                     <th className="py-3 px-3">Date</th>
                     <th className="py-3 px-3">ID</th>
@@ -612,8 +612,8 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                   {filteredTransactions.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-500 font-sans">
-                        <ArrowDownLeft className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
-                        <p className="font-medium text-slate-400">No revenue transactions recorded</p>
+                        <ArrowDownLeft className="w-8 h-8 mx-auto text-slate-500 mb-2 opacity-50" />
+                        <p className="font-medium text-slate-500">No revenue transactions recorded</p>
                         <p className="text-xs text-slate-500 mt-1">
                           Record hotel revenues using the form on the left to generate draft journals.
                         </p>
@@ -623,31 +623,31 @@ export const RevenueCycleView: React.FC<RevenueCycleViewProps> = ({
                     filteredTransactions.map((tx) => {
                       const acc = (accounts || []).find((a) => a.account_code === tx.account_code);
                       return (
-                        <tr key={tx.transaction_id} className="hover:bg-slate-800/40">
-                          <td className="py-3 px-3 text-slate-300 whitespace-nowrap">{tx.date}</td>
-                          <td className="py-3 px-3 font-semibold text-slate-200 whitespace-nowrap">
+                        <tr key={tx.transaction_id} className="hover:bg-white/40">
+                          <td className="py-3 px-3 text-slate-700 whitespace-nowrap">{tx.date}</td>
+                          <td className="py-3 px-3 font-semibold text-slate-700 whitespace-nowrap">
                             {tx.transaction_id}
                           </td>
-                          <td className="py-3 px-3 text-slate-400">{tx.department_code}</td>
+                          <td className="py-3 px-3 text-slate-500">{tx.department_code}</td>
                           <td className="py-3 px-3">
-                            <span className="text-slate-200 font-medium">{tx.account_code}</span>
+                            <span className="text-slate-700 font-medium">{tx.account_code}</span>
                             {acc && (
-                              <span className="block text-[10px] text-slate-400 font-sans truncate max-w-[140px]">
+                              <span className="block text-[10px] text-slate-500 font-sans truncate max-w-[140px]">
                                 {acc.account_name}
                               </span>
                             )}
                           </td>
-                          <td className="py-3 px-3 text-right font-semibold text-emerald-400">
+                          <td className="py-3 px-3 text-right font-semibold text-emerald-700">
                             Rp {(tx.amount ?? 0).toLocaleString('id-ID')}
                           </td>
-                          <td className="py-3 px-3 font-sans text-slate-300 truncate max-w-[180px]">
+                          <td className="py-3 px-3 font-sans text-slate-700 truncate max-w-[180px]">
                             {tx.description || '—'}
                           </td>
                           <td className="py-3 px-3 text-center font-sans">
                             {tx.journal_id ? (
                               <button
                                 onClick={() => onViewJournal(tx.journal_id)}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-[11px] font-mono transition-colors"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white hover:bg-slate-200 text-emerald-700 border border-slate-200 text-[11px] font-mono transition-colors"
                                 title="Click to view journal in Workbench"
                               >
                                 <Clock className="w-3 h-3" />

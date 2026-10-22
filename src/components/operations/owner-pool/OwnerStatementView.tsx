@@ -194,7 +194,7 @@ export const OwnerStatementView: React.FC = () => {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
           >
             <Printer className="w-4 h-4" />
             <span>Print PDF</span>
@@ -204,19 +204,19 @@ export const OwnerStatementView: React.FC = () => {
 
       {/* Main Statement Document */}
       {loading ? (
-        <div className="bg-white p-12 text-center text-slate-400 rounded-xl border border-slate-200">
+        <div className="bg-white p-12 text-center text-slate-500 rounded-xl border border-slate-200">
           Loading owner distribution statement...
         </div>
       ) : !line || !unit ? (
         <div className="bg-white p-12 text-center rounded-xl border border-slate-200 space-y-3">
-          <AlertCircle className="w-8 h-8 text-amber-500 mx-auto" />
+          <AlertCircle className="w-8 h-8 text-amber-700 mx-auto" />
           <h3 className="font-bold text-slate-800 text-base">No Posted Distribution Found</h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
             No active or posted distribution record was found for Unit {units.find((u) => u.unit_id === selectedUnitId)?.unit_number} in period {selectedPeriod}. Please calculate and approve the distribution batch first.
           </p>
         </div>
       ) : (
-        <div id="owner-statement-printable-sheet" className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden p-8 sm:p-10 space-y-8 font-sans max-w-4xl mx-auto print:border-none print:shadow-none print:p-0">
+        <div id="owner-statement-printable-sheet" className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden p-8 sm:p-10 space-y-8 font-sans max-w-4xl mx-auto print:border-none print:shadow-none print:p-0">
           {/* Statement Header */}
           <div className="flex justify-between items-start border-b border-slate-200 pb-6">
             <div className="flex items-center gap-3.5">
@@ -249,7 +249,7 @@ export const OwnerStatementView: React.FC = () => {
                 </strong>
               </p>
               {batch?.journal_id && (
-                <p className="text-[11px] font-mono text-slate-400 mt-0.5">
+                <p className="text-[11px] font-mono text-slate-500 mt-0.5">
                   GL Voucher: {batch.journal_id}
                 </p>
               )}
@@ -266,7 +266,7 @@ export const OwnerStatementView: React.FC = () => {
             <div>
               <span className="text-slate-500 block text-[11px]">Unit Specification:</span>
               <span className="font-bold text-slate-900 text-sm">Unit {unit.unit_number}</span>
-              <span className="text-slate-600 block text-[11px]">
+              <span className="text-slate-500 block text-[11px]">
                 {unit.unit_type} • Floor {unit.floor_number} • {unit.unit_sqm.toFixed(2)} m²
               </span>
             </div>
@@ -300,20 +300,20 @@ export const OwnerStatementView: React.FC = () => {
               <table className="w-full text-left">
                 <tbody className="divide-y divide-slate-100">
                   <tr className="bg-slate-50/50">
-                    <td className="py-2.5 px-4 text-slate-600">Total Audited Hotel Room Revenue (Gross)</td>
+                    <td className="py-2.5 px-4 text-slate-500">Total Audited Hotel Room Revenue (Gross)</td>
                     <td className="py-2.5 px-4 text-right font-mono font-semibold text-slate-900">
                       {formatIDR(batch?.room_revenue_amount)}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-2.5 px-4 text-slate-600">
+                    <td className="py-2.5 px-4 text-slate-500">
                       Owner Distribution Pool Share ({batch?.owner_pool_pct}%)
                     </td>
                     <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-900">
                       {formatIDR(batch?.owner_pool_amount)}
                     </td>
                   </tr>
-                  <tr className="text-slate-400">
+                  <tr className="text-slate-500">
                     <td className="py-2 px-4 text-[11px]">AMG Hotel Operator Allocation ({batch?.amg_allocation_pct}%)</td>
                     <td className="py-2 px-4 text-right font-mono text-[11px]">
                       {formatIDR(batch?.amg_allocation_amount)}
@@ -334,7 +334,7 @@ export const OwnerStatementView: React.FC = () => {
                   <tr>
                     <td className="py-2.5 px-4">
                       <span className="font-medium text-slate-800">SQM-Based Pool Allocation</span>
-                      <span className="block text-[11px] text-slate-400">
+                      <span className="block text-[11px] text-slate-500">
                         {unit.unit_sqm} m² ÷ {batch?.total_eligible_sqm} m² = {(line.allocation_pct * 100).toFixed(4)}% of pool
                       </span>
                     </td>
@@ -345,7 +345,7 @@ export const OwnerStatementView: React.FC = () => {
                   <tr>
                     <td className="py-2.5 px-4">
                       <span className="font-medium text-slate-800">Contractual Guaranteed Return (10% Annual)</span>
-                      <span className="block text-[11px] text-slate-400">
+                      <span className="block text-[11px] text-slate-500">
                         Basis {formatIDR(line.return_basis_amount)} × 10% ÷ 12 months
                       </span>
                     </td>
@@ -390,7 +390,7 @@ export const OwnerStatementView: React.FC = () => {
                       <span className="font-medium text-slate-800">
                         Tax Withholding: {line.tax_type_label}
                       </span>
-                      <span className="block text-[11px] text-slate-400">
+                      <span className="block text-[11px] text-slate-500">
                         Statutory withholding tax deducted at source
                       </span>
                     </td>
@@ -420,7 +420,7 @@ export const OwnerStatementView: React.FC = () => {
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
             <div className="space-y-0.5">
               <span className="font-bold text-slate-800">Beneficiary Banking Details:</span>
-              <p className="text-slate-600">
+              <p className="text-slate-500">
                 {unit.bank_name} • Acc: <strong className="font-mono">{unit.bank_account_number}</strong>
               </p>
               <p className="text-slate-500 text-[11px]">A/N: {unit.bank_account_name || unit.owner_name}</p>
@@ -429,7 +429,7 @@ export const OwnerStatementView: React.FC = () => {
               <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-semibold">
                 <ShieldCheck className="w-4 h-4" /> Verified Financial Record
               </span>
-              <p className="text-[10px] text-slate-400 mt-0.5">
+              <p className="text-[10px] text-slate-500 mt-0.5">
                 Processed via PT Atrium Management Group ERP
               </p>
             </div>

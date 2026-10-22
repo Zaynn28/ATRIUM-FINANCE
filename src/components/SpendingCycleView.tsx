@@ -205,31 +205,31 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-semibold">
               Procurement &amp; Spending Cycle
             </span>
           </div>
-          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
-            <ArrowUpRight className="w-5 h-5 text-amber-400" />
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <ArrowUpRight className="w-5 h-5 text-amber-700" />
             <span>Procurement Spending &amp; Accounts Payable (AP)</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Monitor and control supplier liabilities, aging schedules, and automated double-entry voucher disbursements
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Sub-tab pills */}
-          <div className="bg-slate-950 p-1 rounded-xl border border-slate-800 flex items-center gap-1">
+          <div className="bg-white p-1 rounded-xl border border-slate-200 flex items-center gap-1">
             <button
               onClick={() => setActiveCycleTab('AP_MODULE')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                 activeCycleTab === 'AP_MODULE'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-white'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -239,8 +239,8 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
               onClick={() => setActiveCycleTab('SPENDING_ENTRY')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                 activeCycleTab === 'SPENDING_ENTRY'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-white'
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -250,9 +250,9 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
 
           <button
             onClick={onOpenMappingModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium transition-colors"
           >
-            <Settings2 className="w-3.5 h-3.5 text-slate-400" />
+            <Settings2 className="w-3.5 h-3.5 text-slate-500" />
             <span>Payable Mappings</span>
           </button>
         </div>
@@ -268,9 +268,9 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
         <>
           {/* Unmapped Exception Banner */}
       {!currentDefaultCredit && !formData.credit_account_code && (
-        <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
+        <div className="bg-slate-900/10/40 border border-amber-800/50 rounded-xl p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <div className="space-y-0.5">
               <h4 className="text-xs font-semibold text-amber-200">
                 Accounting Exception: Counterpart Credit Account for {formData.type} Missing
@@ -282,7 +282,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
           </div>
           <button
             onClick={onOpenMappingModal}
-            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs rounded-lg shrink-0 transition-colors"
+            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold text-xs rounded-lg shrink-0 transition-colors"
           >
             Configure Mapping
           </button>
@@ -300,21 +300,21 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
       )}
 
       {successInfo && (
-        <div className="p-4 bg-emerald-950/40 border border-emerald-800/50 rounded-xl flex items-center justify-between text-xs text-emerald-200">
+        <div className="p-4 bg-slate-900/10/40 border border-emerald-800/50 rounded-xl flex items-center justify-between text-xs text-emerald-200">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-700" />
             <div>
               <p className="font-semibold">
                 Spending transaction recorded: <span className="font-mono">{successInfo.txId}</span>
               </p>
-              <p className="text-emerald-300/80">
+              <p className="text-emerald-700/80">
                 Auto-generated Draft Journal: <span className="font-mono font-medium">{successInfo.journalId}</span> (Pending validation and approval)
               </p>
             </div>
           </div>
           <button
             onClick={() => onViewJournal(successInfo.journalId)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium transition-colors"
           >
             <span>Review Journal</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -325,13 +325,13 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
       {/* Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Entry Form */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-              <Plus className="w-4 h-4 text-amber-400" />
+        <div className="lg:col-span-1 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <Plus className="w-4 h-4 text-amber-700" />
               <span>Record Spending Transaction</span>
             </h2>
-            <span className="text-[11px] font-mono uppercase text-slate-500 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+            <span className="text-[11px] font-mono uppercase text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
               Double-Entry
             </span>
           </div>
@@ -340,12 +340,12 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
             {/* Date */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-slate-300 font-medium">Transaction Date *</label>
+                <label className="text-slate-700 font-medium">Transaction Date *</label>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, date: new Date().toISOString().split('T')[0] })}
-                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-white text-slate-700 hover:text-white"
                   >
                     Today
                   </button>
@@ -356,7 +356,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                       d.setDate(d.getDate() - 1);
                       setFormData({ ...formData, date: d.toISOString().split('T')[0] });
                     }}
-                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 hover:text-white"
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-white text-slate-700 hover:text-white"
                   >
                     Yesterday
                   </button>
@@ -368,13 +368,13 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 style={{ colorScheme: 'dark' }}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-amber-500 outline-none cursor-pointer"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-mono focus:border-amber-500 outline-none cursor-pointer"
               />
             </div>
 
             {/* Type */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Spending Category *</label>
+              <label className="block text-slate-700 font-medium mb-1">Spending Category *</label>
               <div className="grid grid-cols-3 gap-1.5">
                 {(['Procurement', 'Payroll', 'Other'] as SpendingType[]).map((t) => (
                   <button
@@ -383,8 +383,8 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                     onClick={() => setFormData({ ...formData, type: t, credit_account_code: '' })}
                     className={`py-1.5 px-2 rounded text-center text-xs font-medium border transition-colors ${
                       formData.type === t
-                        ? 'bg-amber-950/60 text-amber-300 border-amber-600/60'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                        ? 'bg-slate-900/10/60 text-amber-300 border-amber-600/60'
+                        : 'bg-white text-slate-500 border-slate-200 hover:text-slate-700'
                     }`}
                   >
                     {t}
@@ -400,7 +400,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
 
             {/* Vendor or Employee */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">
+              <label className="block text-slate-700 font-medium mb-1">
                 {formData.type === 'Payroll' ? 'Staff Group / Employee Name *' : 'Vendor / Payee Name *'}
               </label>
               <input
@@ -413,18 +413,18 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                 }
                 value={formData.vendor_or_employee}
                 onChange={(e) => setFormData({ ...formData, vendor_or_employee: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-sans"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none font-sans"
               />
             </div>
 
             {/* Department */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Cost Center / Department *</label>
+              <label className="block text-slate-700 font-medium mb-1">Cost Center / Department *</label>
               <select
                 required
                 value={formData.department_code}
                 onChange={(e) => setFormData({ ...formData, department_code: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none"
               >
                 <option value="">-- Select Department --</option>
                 {activeDepartments.map((dept) => (
@@ -437,12 +437,12 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
 
             {/* Expense or Asset Account (Debit) */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Expense or Asset Account (Debit) *</label>
+              <label className="block text-slate-700 font-medium mb-1">Expense or Asset Account (Debit) *</label>
               <select
                 required
                 value={formData.account_code}
                 onChange={(e) => setFormData({ ...formData, account_code: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none font-mono"
               >
                 <option value="">-- Select Expense / Asset Account --</option>
                 {expenseAndAssetAccounts.map((acc) => (
@@ -456,7 +456,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
             {/* Counterpart Credit Account (Liability/Cash) */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-slate-300 font-medium">Counterpart Credit Account *</label>
+                <label className="text-slate-700 font-medium">Counterpart Credit Account *</label>
                 <span className="text-[10px] text-slate-500 font-mono">
                   {currentDefaultCredit ? `Default: ${currentDefaultCredit}` : 'Not set'}
                 </span>
@@ -465,7 +465,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                 required
                 value={formData.credit_account_code || currentDefaultCredit || ''}
                 onChange={(e) => setFormData({ ...formData, credit_account_code: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none font-mono"
               >
                 <option value="">-- Select Payable / Settlement Account --</option>
                 {counterpartCreditAccounts.map((acc) => (
@@ -478,9 +478,9 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
 
             {/* Amount */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Amount (IDR / Rp) *</label>
+              <label className="block text-slate-700 font-medium mb-1">Amount (IDR / Rp) *</label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-slate-400 font-mono font-bold text-xs">Rp</span>
+                <span className="absolute left-3 top-2 text-slate-500 font-mono font-bold text-xs">Rp</span>
                 <input
                   type="number"
                   step="1"
@@ -489,31 +489,31 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                   placeholder="0"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-slate-100 font-mono text-sm focus:border-amber-500 outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-slate-900 font-mono text-sm focus:border-amber-500 outline-none"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Description / PO Reference</label>
+              <label className="block text-slate-700 font-medium mb-1">Description / PO Reference</label>
               <textarea
                 rows={2}
                 placeholder="e.g. Monthly guest amenities replenishment, Meat & poultry kitchen supplies"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-amber-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 outline-none focus:border-amber-500"
               />
             </div>
 
             {/* Double-entry preview hint */}
-            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800/80 space-y-1 font-mono text-[11px]">
-              <div className="text-slate-400 font-sans font-medium">Double-Entry Preview:</div>
-              <div className="text-rose-400">
+            <div className="bg-white p-3 rounded-lg border border-slate-200/80 space-y-1 font-mono text-[11px]">
+              <div className="text-slate-500 font-sans font-medium">Double-Entry Preview:</div>
+              <div className="text-red-600">
                 DR: [{formData.account_code || 'Expense Pending'}] Rp{' '}
                 {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
-              <div className="text-amber-400">
+              <div className="text-amber-700">
                 CR: [{formData.credit_account_code || currentDefaultCredit || 'Payable Pending'}] Rp{' '}
                 {Number(formData.amount || 0).toLocaleString('id-ID')}
               </div>
@@ -523,7 +523,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-medium rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{loading ? 'Generating Draft Journal...' : 'Record & Draft Journal'}</span>
@@ -535,12 +535,12 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
         <div className="lg:col-span-2 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-slate-400" />
+              <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-500" />
                 <span>Spending Transactions Log ({filteredTransactions.length})</span>
               </h2>
               <span className="text-xs text-slate-500">
-                Total Outflow: <span className="font-mono text-rose-400 font-semibold">Rp {totalFilteredAmount.toLocaleString('id-ID')}</span>
+                Total Outflow: <span className="font-mono text-red-600 font-semibold">Rp {totalFilteredAmount.toLocaleString('id-ID')}</span>
               </span>
             </div>
 
@@ -549,7 +549,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
               <ReportExportButtons onExport={handleExportExcel} />
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition-colors"
                 title="Print Log / Save to PDF"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -559,7 +559,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
           </div>
 
           {/* Period & Filter Controls */}
-          <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="p-3 bg-white border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 flex-1 min-w-[200px]">
               <Search className="w-3.5 h-3.5 text-slate-500" />
               <input
@@ -567,21 +567,21 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                 placeholder="Search vendor, payee, reference, account..."
                 value={logSearch}
                 onChange={(e) => setLogSearch(e.target.value)}
-                className="bg-transparent text-xs text-slate-200 outline-none w-full placeholder-slate-500"
+                className="bg-transparent text-xs text-slate-700 outline-none w-full placeholder-slate-500"
               />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
-                <Calendar className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-slate-400 text-[11px]">Period:</span>
+              <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg px-2 py-1">
+                <Calendar className="w-3.5 h-3.5 text-amber-700" />
+                <span className="text-slate-500 text-[11px]">Period:</span>
                 <input
                   type="date"
                   value={logDateFrom}
                   onChange={(e) => setLogDateFrom(e.target.value)}
                   style={{ colorScheme: 'dark' }}
                   title="From Date"
-                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                  className="bg-white border border-slate-200/80 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
                 />
                 <span className="text-slate-500 text-[11px]">to</span>
                 <input
@@ -590,7 +590,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                   onChange={(e) => setLogDateTo(e.target.value)}
                   style={{ colorScheme: 'dark' }}
                   title="To Date"
-                  className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+                  className="bg-white border border-slate-200/80 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
                 />
                 {(logDateFrom || logDateTo) && (
                   <button
@@ -598,7 +598,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                       setLogDateFrom('');
                       setLogDateTo('');
                     }}
-                    className="text-slate-400 hover:text-slate-200 text-xs px-1 font-bold"
+                    className="text-slate-500 hover:text-slate-700 text-xs px-1 font-bold"
                     title="Clear date filter"
                   >
                     ×
@@ -609,7 +609,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
               <select
                 value={logType}
                 onChange={(e) => setLogType(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 text-xs outline-none"
+                className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-xs outline-none"
               >
                 <option value="ALL">All Categories</option>
                 <option value="Procurement">Procurement</option>
@@ -620,7 +620,7 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
               <select
                 value={logDept}
                 onChange={(e) => setLogDept(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 text-xs outline-none"
+                className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-xs outline-none"
               >
                 <option value="ALL">All Departments</option>
                 {activeDepartments.map((d) => (
@@ -632,10 +632,10 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
             </div>
           </div>
 
-          <div id="spending-transactions-printable-area" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          <div id="spending-transactions-printable-area" className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                <thead className="bg-white/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
                   <tr>
                     <th className="py-3 px-3">Date</th>
                     <th className="py-3 px-3">Type</th>
@@ -650,8 +650,8 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                   {filteredTransactions.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-500 font-sans">
-                        <ArrowUpRight className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
-                        <p className="font-medium text-slate-400">No spending transactions recorded</p>
+                        <ArrowUpRight className="w-8 h-8 mx-auto text-slate-500 mb-2 opacity-50" />
+                        <p className="font-medium text-slate-500">No spending transactions recorded</p>
                         <p className="text-xs text-slate-500 mt-1">
                           Record hotel purchases and payroll above to initiate double-entry journal review.
                         </p>
@@ -661,33 +661,33 @@ export const SpendingCycleView: React.FC<SpendingCycleViewProps> = ({
                     filteredTransactions.map((tx) => {
                       const acc = (accounts || []).find((a) => a.account_code === tx.account_code);
                       return (
-                        <tr key={tx.transaction_id} className="hover:bg-slate-800/40">
-                          <td className="py-3 px-3 text-slate-300 whitespace-nowrap">{tx.date}</td>
+                        <tr key={tx.transaction_id} className="hover:bg-white/40">
+                          <td className="py-3 px-3 text-slate-700 whitespace-nowrap">{tx.date}</td>
                           <td className="py-3 px-3">
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-sans bg-slate-800 text-slate-300 border border-slate-700">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-sans bg-white text-slate-700 border border-slate-200">
                               {tx.type}
                             </span>
                           </td>
-                          <td className="py-3 px-3 font-sans text-slate-200 font-medium truncate max-w-[150px]">
+                          <td className="py-3 px-3 font-sans text-slate-700 font-medium truncate max-w-[150px]">
                             {tx.vendor_or_employee}
                           </td>
-                          <td className="py-3 px-3 text-slate-400">{tx.department_code}</td>
+                          <td className="py-3 px-3 text-slate-500">{tx.department_code}</td>
                           <td className="py-3 px-3">
-                            <span className="text-slate-200 font-medium">{tx.account_code}</span>
+                            <span className="text-slate-700 font-medium">{tx.account_code}</span>
                             {acc && (
-                              <span className="block text-[10px] text-slate-400 font-sans truncate max-w-[130px]">
+                              <span className="block text-[10px] text-slate-500 font-sans truncate max-w-[130px]">
                                 {acc.account_name}
                               </span>
                             )}
                           </td>
-                          <td className="py-3 px-3 text-right font-semibold text-rose-400">
+                          <td className="py-3 px-3 text-right font-semibold text-red-600">
                             Rp {(tx.amount ?? 0).toLocaleString('id-ID')}
                           </td>
                           <td className="py-3 px-3 text-center font-sans">
                             {tx.journal_id ? (
                               <button
                                 onClick={() => onViewJournal(tx.journal_id)}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 text-[11px] font-mono transition-colors"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white hover:bg-slate-200 text-amber-700 border border-slate-200 text-[11px] font-mono transition-colors"
                                 title="Click to view journal in Workbench"
                               >
                                 <Clock className="w-3 h-3" />

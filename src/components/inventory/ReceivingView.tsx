@@ -254,13 +254,13 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Overview Banner */}
-      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+      <div className="bg-white/60 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <ArrowDownLeft className="w-5 h-5 text-emerald-400" />
+            <ArrowDownLeft className="w-5 h-5 text-emerald-700" />
             <span>Goods Receiving (PO Ingestion & Stock IN)</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Accept physical supplier shipments, recalculate perpetual moving averages, and automatically
             generate Draft AP/Accrual Journals (Dr 1080 Inventory, Cr 2010 AP).
           </p>
@@ -268,7 +268,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
 
         <button
           onClick={onOpenScanner}
-          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors"
+          className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 flex items-center gap-1.5 transition-colors"
         >
           <span>Scan Shipment Barcode</span>
         </button>
@@ -276,18 +276,18 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
 
       {/* Success Notification */}
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-2">
-          <div className="flex items-center gap-2 font-bold text-emerald-300">
+        <div className="p-4 rounded-xl bg-slate-900/10/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-2">
+          <div className="flex items-center gap-2 font-bold text-emerald-700">
             <CheckCircle2 className="w-4 h-4" />
             <span>{successMessage.text}</span>
           </div>
           {successMessage.journalId && onViewJournal && (
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-slate-300">Created GL Journal:</span>
+              <span className="text-slate-700">Created GL Journal:</span>
               <button
                 type="button"
                 onClick={() => onViewJournal(successMessage.journalId!)}
-                className="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 rounded font-mono font-semibold border border-emerald-500/40 flex items-center gap-1"
+                className="px-2.5 py-1 bg-slate-100 hover:bg-white text-emerald-700 rounded font-mono font-semibold border border-emerald-500/40 flex items-center gap-1"
               >
                 <span>{successMessage.journalId}</span>
                 <ExternalLink className="w-3 h-3" />
@@ -299,25 +299,25 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
 
       {/* Error Notification */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-red-600/10/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {/* Goods Receipt Ingestion Form */}
-      <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-5 shadow-xl">
+      <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-5 space-y-5 shadow-xs">
         {/* Approved Purchase Orders Fast Selector */}
         {purchaseOrders.filter((p) => p.status !== 'FULFILLED' && p.status !== 'CANCELLED').length > 0 && (
           <div className="p-3 bg-blue-950/40 border border-blue-800/40 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs text-blue-300 font-semibold">
-              <ShoppingCart className="w-4 h-4 text-blue-400 shrink-0" />
+              <ShoppingCart className="w-4 h-4 text-slate-500 shrink-0" />
               <span>Select Purchase Order (PO) for Fast Goods Receiving &amp; Auto-Stock:</span>
             </div>
             <select
               value={selectedPoId}
               onChange={(e) => handleSelectPo(e.target.value)}
-              className="bg-slate-950 border border-blue-500/50 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:border-blue-400 outline-none max-w-sm"
+              className="bg-white border border-blue-500/50 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:border-blue-400 outline-none max-w-sm"
             >
               <option value="">-- Select Open / Approved PO --</option>
               {purchaseOrders
@@ -333,46 +333,46 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Receipt Date</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Receipt Date</label>
             <input
               type="date"
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">PO / Contract Reference</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">PO / Contract Reference</label>
             <input
               type="text"
               required
               value={poReference}
               onChange={(e) => setPoReference(e.target.value)}
               placeholder="e.g. PO-2026-03-042"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Vendor / Supplier Name</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Vendor / Supplier Name</label>
             <input
               type="text"
               required
               value={vendorName}
               onChange={(e) => setVendorName(e.target.value)}
               placeholder="e.g. PT Sukses Jaya Pangan"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white"
             />
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Receiving Storeroom</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Receiving Storeroom</label>
             <select
               value={storeroomId}
               onChange={(e) => setStoreroomId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             >
               {storerooms.map((s) => (
                 <option key={s.storeroom_id} value={s.storeroom_id}>
@@ -386,22 +386,22 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
         {/* Lines Table */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-500">
               Shipment Received Line Items
             </span>
             <button
               type="button"
               onClick={handleAddLine}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded flex items-center gap-1 border border-slate-700"
+              className="px-2.5 py-1 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded flex items-center gap-1 border border-slate-200"
             >
-              <Plus className="w-3 h-3 text-emerald-400" />
+              <Plus className="w-3 h-3 text-emerald-700" />
               <span>Add Item Row</span>
             </button>
           </div>
 
-          <div className="overflow-x-auto border border-slate-800 rounded-lg">
+          <div className="overflow-x-auto border border-slate-200 rounded-lg">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+              <thead className="bg-white text-slate-500 font-mono text-[11px] border-b border-slate-200">
                 <tr>
                   <th className="px-3 py-2.5 min-w-[220px]">Item Description</th>
                   <th className="px-3 py-2.5 w-28 text-right">Received Qty</th>
@@ -413,18 +413,18 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                   <th className="px-3 py-2.5 w-12 text-center"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-300">
+              <tbody className="divide-y divide-slate-800 text-slate-700">
                 {lines.map((line, idx) => {
                   const selectedItem = items.find((i) => i.item_id === line.item_id);
                   const lineTotal = (line.received_quantity || 0) * (line.unit_cost || 0);
 
                   return (
-                    <tr key={idx} className="bg-slate-900/50">
+                    <tr key={idx} className="bg-white/50">
                       <td className="px-3 py-2">
                         <select
                           value={line.item_id}
                           onChange={(e) => handleItemSelect(idx, e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-white"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-white"
                         >
                           {items.map((it) => (
                             <option key={it.item_id} value={it.item_id}>
@@ -446,7 +446,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                             newLines[idx].received_quantity = Number(e.target.value);
                             setLines(newLines);
                           }}
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono text-right"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-white font-mono text-right"
                         />
                       </td>
 
@@ -462,11 +462,11 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                             newLines[idx].unit_cost = Number(e.target.value);
                             setLines(newLines);
                           }}
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono text-right"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-white font-mono text-right"
                         />
                       </td>
 
-                      <td className="px-3 py-2 text-right font-mono font-bold text-emerald-400">
+                      <td className="px-3 py-2 text-right font-mono font-bold text-emerald-700">
                         Rp {(lineTotal ?? 0).toLocaleString('id-ID')}
                       </td>
 
@@ -480,7 +480,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                             setLines(newLines);
                           }}
                           placeholder="Bin"
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-white font-mono"
                         />
                       </td>
 
@@ -494,7 +494,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                             setLines(newLines);
                           }}
                           placeholder="LOT"
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-white font-mono"
                         />
                       </td>
 
@@ -507,7 +507,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                             newLines[idx].expiry_date = e.target.value;
                             setLines(newLines);
                           }}
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-xs text-white font-mono"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1.5 text-xs text-white font-mono"
                         />
                       </td>
 
@@ -516,7 +516,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                           type="button"
                           onClick={() => handleRemoveLine(idx)}
                           disabled={lines.length === 1}
-                          className="p-1 rounded text-slate-400 hover:text-rose-400 disabled:opacity-20"
+                          className="p-1 rounded text-slate-500 hover:text-red-600 disabled:opacity-20"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -530,21 +530,21 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
         </div>
 
         {/* Footer & Total */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-slate-800">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-slate-200">
           <div className="flex-1 w-full max-w-md">
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Inspection notes or delivery bill reference..."
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700"
             />
           </div>
 
           <div className="flex items-center gap-6">
             <div className="text-right">
-              <span className="text-[11px] font-mono text-slate-400 block uppercase">Total Receipt Value</span>
-              <div className="text-lg font-bold font-mono text-emerald-400">
+              <span className="text-[11px] font-mono text-slate-500 block uppercase">Total Receipt Value</span>
+              <div className="text-lg font-bold font-mono text-emerald-700">
                 Rp {(calculateTotal() ?? 0).toLocaleString('id-ID')}
               </div>
             </div>
@@ -552,7 +552,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-950 transition-colors"
+              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-xs shadow-emerald-950 transition-colors"
             >
               {submitting ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
@@ -566,15 +566,15 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
       </form>
 
       {/* Historical Goods Receipts Stream */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
         <h4 className="text-sm font-bold text-white flex items-center gap-2">
-          <FileText className="w-4 h-4 text-emerald-400" />
+          <FileText className="w-4 h-4 text-emerald-700" />
           <span>Goods Receipts History</span>
         </h4>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+            <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
               <tr>
                 <th className="px-4 py-2.5">GRN #</th>
                 <th className="px-4 py-2.5">Date</th>
@@ -588,7 +588,7 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                 <th className="px-4 py-2.5 text-right">Journal</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 text-slate-300">
+            <tbody className="divide-y divide-slate-800 text-slate-700">
               {receipts.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-8 text-center text-slate-500 font-mono">
@@ -597,29 +597,29 @@ export const ReceivingView: React.FC<ReceivingViewProps> = ({
                 </tr>
               ) : (
                 receipts.map((rec) => (
-                  <tr key={rec.receipt_id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-4 py-2.5 font-mono font-bold text-emerald-400">
+                  <tr key={rec.receipt_id} className="hover:bg-white/30 transition-colors">
+                    <td className="px-4 py-2.5 font-mono font-bold text-emerald-700">
                       {rec.receipt_number || rec.receipt_id}
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-slate-400">{rec.date}</td>
-                    <td className="px-4 py-2.5 font-mono text-slate-300">{rec.po_reference}</td>
+                    <td className="px-4 py-2.5 font-mono text-slate-500">{rec.date}</td>
+                    <td className="px-4 py-2.5 font-mono text-slate-700">{rec.po_reference}</td>
                     <td className="px-4 py-2.5 font-medium text-white">{rec.vendor_name}</td>
-                    <td className="px-4 py-2.5 font-mono text-slate-400">{rec.storeroom_id}</td>
+                    <td className="px-4 py-2.5 font-mono text-slate-500">{rec.storeroom_id}</td>
                     <td className="px-4 py-2.5 text-right font-mono">{rec.items.length}</td>
-                    <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-400">
+                    <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">
                       Rp {(rec.total_amount ?? 0).toLocaleString('id-ID')}
                     </td>
                     <td className="px-4 py-2.5 text-center">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900/20 text-emerald-700">
                         {rec.status || 'RECEIVED'}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-slate-400 text-[11px]">{rec.received_by}</td>
+                    <td className="px-4 py-2.5 text-slate-500 text-[11px]">{rec.received_by}</td>
                     <td className="px-4 py-2.5 text-right">
                       {rec.journal_id && onViewJournal ? (
                         <button
                           onClick={() => onViewJournal(rec.journal_id!)}
-                          className="text-[11px] font-mono text-emerald-400 hover:underline flex items-center gap-1 justify-end"
+                          className="text-[11px] font-mono text-emerald-700 hover:underline flex items-center gap-1 justify-end"
                         >
                           <span>{rec.journal_id}</span>
                           <ExternalLink className="w-3 h-3" />

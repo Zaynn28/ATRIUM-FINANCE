@@ -136,53 +136,53 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+      <div className="bg-white/60 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <RefreshCw className="w-5 h-5 text-purple-400" />
             <span>Inter-Storeroom Stock Transfers</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Relocate materials across central and satellite storerooms with automatic dual-entry movement tracking.
           </p>
         </div>
 
         <button
           onClick={onOpenScanner}
-          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors"
+          className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 flex items-center gap-1.5 transition-colors"
         >
-          <Scan className="w-3.5 h-3.5 text-emerald-400" />
+          <Scan className="w-3.5 h-3.5 text-emerald-700" />
           <span>Scan Item</span>
         </button>
       </div>
 
       {notification && (
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-slate-900/10/40 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-red-600/10/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Transfer Form */}
-      <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-5 shadow-xl">
+      <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-5 space-y-5 shadow-xs">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           {/* From Storeroom */}
-          <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-            <span className="text-[11px] font-mono uppercase text-slate-400 flex items-center gap-1">
-              <Warehouse className="w-3.5 h-3.5 text-rose-400" />
+          <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
+            <span className="text-[11px] font-mono uppercase text-slate-500 flex items-center gap-1">
+              <Warehouse className="w-3.5 h-3.5 text-red-600" />
               <span>Source Storeroom (FROM)</span>
             </span>
             <select
               value={fromStoreroom}
               onChange={(e) => setFromStoreroom(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             >
               {storerooms.map((s) => (
                 <option key={s.storeroom_id} value={s.storeroom_id}>
@@ -199,9 +199,9 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
           </div>
 
           {/* To Storeroom */}
-          <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-            <span className="text-[11px] font-mono uppercase text-slate-400 flex items-center gap-1">
-              <Warehouse className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
+            <span className="text-[11px] font-mono uppercase text-slate-500 flex items-center gap-1">
+              <Warehouse className="w-3.5 h-3.5 text-emerald-700" />
               <span>Destination Storeroom (TO)</span>
             </span>
             <select
@@ -211,7 +211,7 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
                 const sObj = storerooms.find((s) => s.storeroom_id === e.target.value);
                 if (sObj) setToBin(`${sObj.default_bin_prefix || 'BIN'}-01`);
               }}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             >
               {storerooms.map((s) => (
                 <option key={s.storeroom_id} value={s.storeroom_id}>
@@ -224,24 +224,24 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Transfer Date</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Transfer Date</label>
             <input
               type="date"
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-mono text-slate-400 block mb-1">Target Bin Location</label>
+            <label className="text-xs font-mono text-slate-500 block mb-1">Target Bin Location</label>
             <input
               type="text"
               value={toBin}
               onChange={(e) => setToBin(e.target.value)}
               placeholder="e.g. K-DRY-01"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-white font-mono"
             />
           </div>
         </div>
@@ -249,15 +249,15 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
         {/* Items to Transfer */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-500">
               Items to Transfer
             </span>
             <button
               type="button"
               onClick={handleAddLine}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded flex items-center gap-1 border border-slate-700"
+              className="px-2.5 py-1 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded flex items-center gap-1 border border-slate-200"
             >
-              <Plus className="w-3 h-3 text-emerald-400" />
+              <Plus className="w-3 h-3 text-emerald-700" />
               <span>Add Item</span>
             </button>
           </div>
@@ -271,7 +271,7 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
               return (
                 <div
                   key={idx}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-slate-950/60 rounded-lg border border-slate-800"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-white/60 rounded-lg border border-slate-200"
                 >
                   <div className="flex-1 w-full">
                     <select
@@ -281,7 +281,7 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
                         newLines[idx].item_id = e.target.value;
                         setLines(newLines);
                       }}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                      className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-xs text-white"
                     >
                       {items.map((i) => (
                         <option key={i.item_id} value={i.item_id}>
@@ -292,9 +292,9 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
                   </div>
 
                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="text-right font-mono text-[11px] text-slate-400 min-w-[140px]">
+                    <div className="text-right font-mono text-[11px] text-slate-500 min-w-[140px]">
                       Source Stock ({fromStoreroom}):{' '}
-                      <span className={`font-bold ${sourceQty === 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                      <span className={`font-bold ${sourceQty === 0 ? 'text-red-600' : 'text-emerald-700'}`}>
                         {sourceQty} {selectedItem?.uom}
                       </span>
                     </div>
@@ -311,8 +311,8 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
                           newLines[idx].quantity = Number(e.target.value);
                           setLines(newLines);
                         }}
-                        className={`w-full bg-slate-900 border rounded px-2.5 py-1.5 text-xs text-white font-mono text-right ${
-                          isOverStock ? 'border-rose-500 text-rose-300' : 'border-slate-700'
+                        className={`w-full bg-white border rounded px-2.5 py-1.5 text-xs text-white font-mono text-right ${
+                          isOverStock ? 'border-rose-500 text-rose-300' : 'border-slate-200'
                         }`}
                       />
                     </div>
@@ -321,7 +321,7 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
                       type="button"
                       onClick={() => handleRemoveLine(idx)}
                       disabled={lines.length === 1}
-                      className="p-1 text-slate-400 hover:text-rose-400 disabled:opacity-20"
+                      className="p-1 text-slate-500 hover:text-red-600 disabled:opacity-20"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -333,20 +333,20 @@ export const StockTransferView: React.FC<StockTransferViewProps> = ({ onOpenScan
         </div>
 
         <div>
-          <label className="text-xs font-mono text-slate-400 block mb-1">Transfer Notes</label>
+          <label className="text-xs font-mono text-slate-500 block mb-1">Transfer Notes</label>
           <input
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200"
+            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700"
           />
         </div>
 
-        <div className="pt-4 border-t border-slate-800 flex justify-end">
+        <div className="pt-4 border-t border-slate-200 flex justify-end">
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-950 transition-colors"
+            className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-xs shadow-purple-950 transition-colors"
           >
             {submitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             <span>Execute Inter-Store Transfer</span>

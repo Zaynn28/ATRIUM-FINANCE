@@ -106,13 +106,13 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/85 backdrop-blur-md overflow-hidden animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex flex-col bg-white/85 backdrop-blur-md overflow-hidden animate-in fade-in duration-200">
       {/* Top Universal Print Action Toolbar */}
-      <div className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3 shrink-0 shadow-lg">
+      <div className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 shrink-0 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           {/* Document Title info */}
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="w-8 h-8 rounded-lg bg-emerald-950/80 border border-emerald-800/60 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-slate-900/10/80 border border-emerald-800/60 flex items-center justify-center text-emerald-700 shrink-0">
               <Eye className="w-4 h-4" />
             </div>
             <div>
@@ -120,11 +120,11 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
                 <h3 className="text-sm font-bold text-white tracking-wide truncate max-w-sm sm:max-w-md">
                   {title}
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950/80 border border-emerald-800/50 text-emerald-300 uppercase">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900/10/80 border border-emerald-800/50 text-emerald-700 uppercase">
                   A4 Print Preview
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 {property} &bull; {period ? `Period: ${period}` : 'Full Ledger Year'}
               </p>
             </div>
@@ -133,14 +133,14 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
           {/* Quick Settings & Actions */}
           <div className="flex flex-wrap items-center gap-2 justify-end w-full md:w-auto">
             {/* Orientation Switcher */}
-            <div className="flex items-center rounded-lg bg-slate-950 border border-slate-800 p-0.5 text-xs">
+            <div className="flex items-center rounded-lg bg-white border border-slate-200 p-0.5 text-xs">
               <button
                 type="button"
                 onClick={() => setOrientation('portrait')}
                 className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
                   orientation === 'portrait'
-                    ? 'bg-slate-800 text-white shadow-xs font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900 text-white shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 Portrait
@@ -150,8 +150,8 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
                 onClick={() => setOrientation('landscape')}
                 className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
                   orientation === 'landscape'
-                    ? 'bg-slate-800 text-white shadow-xs font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-900 text-white shadow-xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 Landscape
@@ -165,7 +165,7 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-xs hover:shadow-xs transition-all"
               title="Open print dialog — select 'Save as PDF' to generate clean PDF directly"
             >
               <Printer className="w-4 h-4" />
@@ -176,7 +176,7 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-1"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white transition-colors ml-1"
               title="Close Preview (Esc)"
             >
               <X className="w-5 h-5" />
@@ -186,12 +186,12 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
 
         {/* Feedback / Notification Bar */}
         {feedbackNotice && (
-          <div className="mt-2 text-xs py-1.5 px-3 rounded-lg bg-emerald-950/80 border border-emerald-800/60 text-emerald-300 flex items-center justify-between animate-in fade-in">
+          <div className="mt-2 text-xs py-1.5 px-3 rounded-lg bg-slate-900/10/80 border border-emerald-800/60 text-emerald-700 flex items-center justify-between animate-in fade-in">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               <span>{feedbackNotice}</span>
             </div>
-            <button onClick={() => setFeedbackNotice(null)} className="text-emerald-400 hover:text-white">
+            <button onClick={() => setFeedbackNotice(null)} className="text-emerald-700 hover:text-white">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -199,9 +199,9 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
       </div>
 
       {/* Main Preview Viewport: Simulating authentic A4 paper sheet */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-950 flex justify-center">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-white flex justify-center">
         <div
-          className={`w-full bg-white text-black shadow-2xl transition-all font-sans ${
+          className={`w-full bg-white text-black shadow-xs transition-all font-sans ${
             orientation === 'landscape' ? 'max-w-[297mm]' : 'max-w-[210mm]'
           } min-h-[297mm] p-8 sm:p-14 border border-slate-300 rounded-sm relative`}
           id="universal-modal-print-content"
@@ -347,7 +347,7 @@ export const UniversalPrintModal: React.FC<UniversalPrintModalProps> = ({
             <div>
               <span className="font-bold">{property}</span>
               {period && <span> | For the period {period}</span>}
-              <span className="ml-2 font-mono text-[9px] text-slate-600">
+              <span className="ml-2 font-mono text-[9px] text-slate-500">
                 (Generated: {new Date().toLocaleDateString('id-ID')})
               </span>
             </div>

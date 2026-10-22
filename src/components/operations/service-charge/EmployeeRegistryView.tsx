@@ -195,59 +195,59 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
     <div className="space-y-6">
       {/* Top Banner & Grade Matrix Explainer */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+        <div className="lg:col-span-2 p-5 rounded-xl bg-white border border-slate-200 space-y-3">
           <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-400" />
-            <h3 className="text-sm font-bold text-slate-100">
+            <Award className="w-5 h-5 text-amber-700" />
+            <h3 className="text-sm font-bold text-slate-900">
               Hospitality Grade Points &amp; Seniority System
             </h3>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             In standard Southeast Asian and global luxury hotel covenants, the 10% Service Charge Trust Liability is distributed proportionally to operational staff. Points reflect operational tier, scaled by attendance days and a +5%/year seniority longevity multiplier. General Manager and Executive Committee are legally excluded.
           </p>
           <div className="grid grid-cols-5 gap-2 pt-2 text-[11px] font-mono">
-            <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-center">
-              <span className="text-slate-400 block font-bold">Grade 1</span>
-              <span className="text-emerald-400 font-bold text-xs">1.0 pt</span>
+            <div className="p-2 rounded bg-white/60 border border-slate-200 text-center">
+              <span className="text-slate-500 block font-bold">Grade 1</span>
+              <span className="text-emerald-700 font-bold text-xs">1.0 pt</span>
               <span className="text-[10px] text-slate-500 block truncate">Steward/Linen</span>
             </div>
-            <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-center">
-              <span className="text-slate-400 block font-bold">Grade 2</span>
-              <span className="text-emerald-400 font-bold text-xs">1.2 pts</span>
+            <div className="p-2 rounded bg-white/60 border border-slate-200 text-center">
+              <span className="text-slate-500 block font-bold">Grade 2</span>
+              <span className="text-emerald-700 font-bold text-xs">1.2 pts</span>
               <span className="text-[10px] text-slate-500 block truncate">Waiter/Attendant</span>
             </div>
-            <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-center">
-              <span className="text-slate-400 block font-bold">Grade 3</span>
-              <span className="text-emerald-400 font-bold text-xs">1.5 pts</span>
+            <div className="p-2 rounded bg-white/60 border border-slate-200 text-center">
+              <span className="text-slate-500 block font-bold">Grade 3</span>
+              <span className="text-emerald-700 font-bold text-xs">1.5 pts</span>
               <span className="text-[10px] text-slate-500 block truncate">GSA/Therapist</span>
             </div>
-            <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-center">
-              <span className="text-slate-400 block font-bold">Grade 4</span>
-              <span className="text-emerald-400 font-bold text-xs">1.8 pts</span>
+            <div className="p-2 rounded bg-white/60 border border-slate-200 text-center">
+              <span className="text-slate-500 block font-bold">Grade 4</span>
+              <span className="text-emerald-700 font-bold text-xs">1.8 pts</span>
               <span className="text-[10px] text-slate-500 block truncate">Supervisor/CDP</span>
             </div>
-            <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-center">
-              <span className="text-slate-400 block font-bold">Grade 5</span>
-              <span className="text-emerald-400 font-bold text-xs">2.2 pts</span>
+            <div className="p-2 rounded bg-white/60 border border-slate-200 text-center">
+              <span className="text-slate-500 block font-bold">Grade 5</span>
+              <span className="text-emerald-700 font-bold text-xs">2.2 pts</span>
               <span className="text-[10px] text-slate-500 block truncate">Duty Mgr/Sous Chef</span>
             </div>
           </div>
         </div>
 
-        <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
+        <div className="p-5 rounded-xl bg-white border border-slate-200 flex flex-col justify-between">
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
               Registered Operational Staff
             </span>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-slate-100 font-mono">
+              <span className="text-3xl font-extrabold text-slate-900 font-mono">
                 {employees.filter((e) => e.active === 'Y').length}
               </span>
-              <span className="text-xs text-emerald-400 font-semibold">Active Participants</span>
+              <span className="text-xs text-emerald-700 font-semibold">Active Participants</span>
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-500">
               Total weighted base points:{' '}
-              <strong className="text-slate-200">
+              <strong className="text-slate-700">
                 {employees
                   .filter((e) => e.active === 'Y')
                   .reduce((sum, e) => sum + e.base_points, 0)
@@ -258,7 +258,7 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
           </div>
           <button
             onClick={handleOpenAdd}
-            className="mt-3 flex items-center justify-center gap-2 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+            className="mt-3 flex items-center justify-center gap-2 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>Add Staff Member</span>
@@ -267,7 +267,7 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row gap-3 items-center justify-between">
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-72">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
@@ -276,7 +276,7 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
               placeholder="Search by name, title, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+              className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
             />
           </div>
           <ReportExportButtons
@@ -292,13 +292,13 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
             <Filter className="w-3.5 h-3.5" />
             <span>Dept:</span>
             <select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
-              className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+              className="px-2 py-1 rounded bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
             >
               <option value="ALL">All Departments</option>
               {departments.map((d) => (
@@ -309,12 +309,12 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
             <span>Grade:</span>
             <select
               value={selectedGrade}
               onChange={(e) => setSelectedGrade(e.target.value)}
-              className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+              className="px-2 py-1 rounded bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
             >
               <option value="ALL">All Grades</option>
               <option value="Grade 1">Grade 1 (1.0 pt)</option>
@@ -328,10 +328,10 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
       </div>
 
       {/* Staff Table */}
-      <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900">
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400 tracking-wider">
+            <thead className="bg-white/80 border-b border-slate-200 text-[11px] font-mono uppercase text-slate-500 tracking-wider">
               <tr>
                 <th className="py-3 px-4">Employee ID &amp; Name</th>
                 <th className="py-3 px-4">Department &amp; Title</th>
@@ -355,40 +355,40 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                   const seniorityYears = calculateSeniority(emp.hire_date);
                   const bonusPct = Math.min(25, seniorityYears * 5);
                   return (
-                    <tr key={emp.employee_id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={emp.employee_id} className="hover:bg-white/40 transition-colors">
                       <td className="py-3 px-4">
-                        <div className="font-sans font-bold text-slate-100">{emp.employee_name}</div>
+                        <div className="font-sans font-bold text-slate-900">{emp.employee_name}</div>
                         <div className="text-[10px] text-slate-500 font-mono">{emp.employee_id}</div>
                       </td>
                       <td className="py-3 px-4 font-sans">
-                        <div className="text-slate-200 font-medium">{emp.job_title}</div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="text-slate-700 font-medium">{emp.job_title}</div>
+                        <div className="text-[11px] text-slate-500">
                           {emp.department_code} - {getDeptName(emp.department_code)}
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-200 border border-slate-700">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white text-slate-700 border border-slate-200">
                           {emp.grade_level}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="font-bold text-emerald-400 text-sm">
+                        <span className="font-bold text-emerald-700 text-sm">
                           {emp.base_points.toFixed(1)}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="text-slate-300">
+                        <div className="text-slate-700">
                           {seniorityYears} {seniorityYears === 1 ? 'yr' : 'yrs'}
                         </div>
-                        <div className="text-[10px] text-emerald-400">+{bonusPct}% bonus</div>
+                        <div className="text-[10px] text-emerald-700">+{bonusPct}% bonus</div>
                       </td>
                       <td className="py-3 px-4 font-sans text-[11px]">
-                        <div className="text-slate-300 font-mono">{emp.bank_account_number}</div>
+                        <div className="text-slate-700 font-mono">{emp.bank_account_number}</div>
                         <div className="text-slate-500 text-[10px]">{emp.bank_name}</div>
                       </td>
                       <td className="py-3 px-4 font-sans">
                         {emp.active === 'Y' && emp.is_eligible ? (
-                          <span className="inline-flex items-center gap-1 text-emerald-400 text-[11px] font-medium">
+                          <span className="inline-flex items-center gap-1 text-emerald-700 text-[11px] font-medium">
                             <CheckCircle2 className="w-3.5 h-3.5" /> Eligible
                           </span>
                         ) : (
@@ -401,7 +401,7 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleOpenEdit(emp)}
-                            className="p-1.5 text-slate-400 hover:text-slate-200 rounded hover:bg-slate-800 transition-colors"
+                            className="p-1.5 text-slate-500 hover:text-slate-700 rounded hover:bg-white transition-colors"
                             title="Edit Employee"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -409,7 +409,7 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                           {emp.active === 'Y' && (
                             <button
                               onClick={() => handleDeactivate(emp.employee_id, emp.employee_name)}
-                              className="p-1.5 text-slate-500 hover:text-rose-400 rounded hover:bg-slate-800 transition-colors"
+                              className="p-1.5 text-slate-500 hover:text-red-600 rounded hover:bg-white transition-colors"
                               title="Deactivate"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -428,18 +428,18 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
 
       {/* Add / Edit Employee Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden my-8">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-850">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs max-w-lg w-full overflow-hidden my-8">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-850">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-sm font-bold text-slate-100">
+                <Users className="w-5 h-5 text-emerald-700" />
+                <h3 className="text-sm font-bold text-slate-900">
                   {editingEmp ? 'Edit Operational Employee' : 'Register New Staff Member'}
                 </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm"
+                className="text-slate-500 hover:text-slate-700 text-sm"
               >
                 ✕
               </button>
@@ -447,30 +447,30 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
 
             <form onSubmit={handleSave} className="p-6 space-y-4 text-xs">
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800/60 text-rose-300 text-xs">
+                <div className="p-3 rounded-lg bg-red-600/10/60 border border-rose-800/60 text-rose-300 text-xs">
                   {errorMsg}
                 </div>
               )}
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Full Employee Name *</label>
+                <label className="block text-slate-700 font-semibold mb-1">Full Employee Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Wayan Darmayasa"
                   value={formData.employee_name}
                   onChange={(e) => setFormData({ ...formData, employee_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Department *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Department *</label>
                   <select
                     value={formData.department_code}
                     onChange={(e) => setFormData({ ...formData, department_code: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   >
                     {departments.map((d) => (
                       <option key={d.department_code} value={d.department_code}>
@@ -481,25 +481,25 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Job Title *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Job Title *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Duty Manager"
                     value={formData.job_title}
                     onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Grade Level *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Grade Level *</label>
                   <select
                     value={formData.grade_level}
                     onChange={(e) => handleGradeChange(e.target.value as StaffGradeLevel)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   >
                     <option value="Grade 1">Grade 1 (1.0 pt)</option>
                     <option value="Grade 2">Grade 2 (1.2 pts)</option>
@@ -510,7 +510,7 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Base Points (Weight)</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Base Points (Weight)</label>
                   <input
                     type="number"
                     step="0.1"
@@ -518,29 +518,29 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                     max="5.0"
                     value={formData.base_points}
                     onChange={(e) => setFormData({ ...formData, base_points: parseFloat(e.target.value) || 1.0 })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Date of Hire (Seniority) *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Date of Hire (Seniority) *</label>
                   <input
                     type="date"
                     required
                     value={formData.hire_date}
                     onChange={(e) => setFormData({ ...formData, hire_date: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Employment Status</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Employment Status</label>
                   <select
                     value={formData.employment_status}
                     onChange={(e) => setFormData({ ...formData, employment_status: e.target.value as EmploymentStatus })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   >
                     <option value="Permanent">Permanent</option>
                     <option value="Contract">Contract</option>
@@ -552,30 +552,30 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Bank Name</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Bank Name</label>
                   <input
                     type="text"
                     placeholder="e.g. BCA Bali"
                     value={formData.bank_name}
                     onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Bank Account Number</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Bank Account Number</label>
                   <input
                     type="text"
                     placeholder="e.g. 883-10291"
                     value={formData.bank_account_number}
                     onChange={(e) => setFormData({ ...formData, bank_account_number: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
               </div>
 
               <div className="flex items-center gap-4 pt-2">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+                <label className="flex items-center gap-2 cursor-pointer text-slate-700">
                   <input
                     type="checkbox"
                     checked={formData.is_eligible}
@@ -586,18 +586,18 @@ export const EmployeeRegistryView: React.FC<EmployeeRegistryViewProps> = ({
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                  className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors disabled:opacity-50"
                 >
                   {isSaving ? 'Saving...' : editingEmp ? 'Update Employee' : 'Save Employee'}
                 </button>

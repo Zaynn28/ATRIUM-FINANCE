@@ -98,7 +98,7 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
   };
 
   return (
-    <div className={`w-full ${previewMode ? 'bg-slate-950 p-3 sm:p-6 rounded-xl border border-slate-800' : ''}`}>
+    <div className={`w-full ${previewMode ? 'bg-white p-3 sm:p-6 rounded-xl border border-slate-200' : ''}`}>
       {/* Strict Corporate Accounting Print & Screen Preview Stylesheet */}
       <style>{`
         @page {
@@ -114,15 +114,15 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
         }
 
         .report-preview-active *,
-        .report-preview-active .bg-slate-900,
-        .report-preview-active .bg-slate-950,
-        .report-preview-active .bg-slate-900\\/90,
-        .report-preview-active .bg-slate-950\\/60,
-        .report-preview-active .bg-slate-950\\/50,
-        .report-preview-active .bg-slate-950\\/40,
-        .report-preview-active .bg-emerald-950\\/40,
-        .report-preview-active .bg-emerald-950\\/50,
-        .report-preview-active .bg-emerald-950\\/60,
+        .report-preview-active .bg-white,
+        .report-preview-active .bg-white,
+        .report-preview-active .bg-white\\/90,
+        .report-preview-active .bg-white\\/60,
+        .report-preview-active .bg-white\\/50,
+        .report-preview-active .bg-white\\/40,
+        .report-preview-active .bg-slate-900/10\\/40,
+        .report-preview-active .bg-slate-900/10\\/50,
+        .report-preview-active .bg-slate-900/10\\/60,
         .report-preview-active .bg-blue-950\\/40,
         .report-preview-active .bg-blue-950\\/50 {
           background-color: transparent !important;
@@ -143,21 +143,21 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
           color: #0f172a !important;
         }
 
-        .report-preview-active .text-emerald-400,
-        .report-preview-active .text-emerald-300,
-        .report-preview-active .text-emerald-500,
-        .report-preview-active .text-slate-100,
-        .report-preview-active .text-slate-200,
-        .report-preview-active .text-slate-300,
-        .report-preview-active .text-slate-400,
+        .report-preview-active .text-emerald-700,
+        .report-preview-active .text-emerald-700,
+        .report-preview-active .text-emerald-700,
+        .report-preview-active .text-slate-900,
+        .report-preview-active .text-slate-700,
+        .report-preview-active .text-slate-700,
         .report-preview-active .text-slate-500,
-        .report-preview-active .text-blue-400,
-        .report-preview-active .text-rose-400 {
+        .report-preview-active .text-slate-500,
+        .report-preview-active .text-slate-500,
+        .report-preview-active .text-red-600 {
           color: #0f172a !important;
         }
 
-        .report-preview-active .border-slate-800,
-        .report-preview-active .border-slate-700 {
+        .report-preview-active .border-slate-200,
+        .report-preview-active .border-slate-200 {
           border-color: #e2e8f0 !important;
         }
 
@@ -316,13 +316,13 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
 
       {/* When in preview mode, show an in-page quick action ribbon */}
       {previewMode && (
-        <div className="mb-4 p-3 bg-slate-900 border border-slate-800 rounded-lg flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
+        <div className="mb-4 p-3 bg-white border border-slate-200 rounded-lg flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-semibold text-slate-200">
+            <span className="font-semibold text-slate-700">
               A4 Document Preview Active
             </span>
-            <span className="text-slate-400 hidden sm:inline">
+            <span className="text-slate-500 hidden sm:inline">
               &bull; Monochrome Formal Presentation
             </span>
           </div>
@@ -331,7 +331,7 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
             <button
               type="button"
               onClick={() => setInternalModalOpen(true)}
-              className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-md font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Full Print Preview</span>
@@ -343,7 +343,7 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
               <button
                 type="button"
                 onClick={onExitPreview}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md font-medium transition-colors"
+                className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-md font-medium transition-colors"
               >
                 Exit Preview
               </button>
@@ -357,7 +357,7 @@ export const PrintableReportContainer: React.FC<PrintableReportContainerProps> =
         id="report-printable-area"
         className={`w-full transition-all ${
           previewMode
-            ? 'report-preview-active bg-white text-slate-900 p-8 sm:p-12 rounded-lg shadow-2xl max-w-4xl mx-auto border border-slate-300 font-sans'
+            ? 'report-preview-active bg-white text-slate-900 p-8 sm:p-12 rounded-lg shadow-xs max-w-4xl mx-auto border border-slate-300 font-sans'
             : ''
         }`}
       >

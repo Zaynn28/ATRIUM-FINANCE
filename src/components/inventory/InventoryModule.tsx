@@ -106,8 +106,8 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
     { id: 'CATEGORIES', label: 'Categories & GL', icon: <Layers className="w-4 h-4" />, group: 'Master Data' },
     { id: 'STOREROOMS', label: 'Storerooms', icon: <Warehouse className="w-4 h-4" />, group: 'Master Data' },
     { id: 'REQUISITIONS', label: 'Requisitions', icon: <ClipboardList className="w-4 h-4" />, group: 'Procurement' },
-    { id: 'PURCHASE_ORDERS', label: 'Purchase Orders', icon: <ShoppingCart className="w-4 h-4 text-blue-400" />, group: 'Procurement' },
-    { id: 'ACCOUNTS_PAYABLE', label: 'Accounts Payable (AP)', icon: <CreditCard className="w-4 h-4 text-amber-400" />, group: 'Procurement' },
+    { id: 'PURCHASE_ORDERS', label: 'Purchase Orders', icon: <ShoppingCart className="w-4 h-4 text-slate-500" />, group: 'Procurement' },
+    { id: 'ACCOUNTS_PAYABLE', label: 'Accounts Payable (AP)', icon: <CreditCard className="w-4 h-4 text-amber-700" />, group: 'Procurement' },
     { id: 'RECEIVING', label: 'Goods Receiving', icon: <ArrowDownLeft className="w-4 h-4" />, group: 'Stock In' },
     { id: 'ISSUE', label: 'Direct Issue', icon: <ArrowUpRight className="w-4 h-4" />, group: 'Issuance' },
     { id: 'TRANSFER', label: 'Inter-Store Transfer', icon: <RefreshCw className="w-4 h-4" />, group: 'Operations' },
@@ -120,7 +120,7 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
   return (
     <div className="space-y-6">
       {/* Sub-Navigation Bar */}
-      <div className="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-xl p-2 sticky top-16 z-30 shadow-xl">
+      <div className="bg-white/90 backdrop-blur border border-slate-200 rounded-xl p-2 sticky top-16 z-30 shadow-xs">
         <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-thin">
           <div className="flex items-center gap-1.5 min-w-max">
             {subTabs.map((tab) => {
@@ -131,8 +131,8 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-950 font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-blue-600 text-white shadow-xs shadow-blue-950 font-bold'
+                      : 'text-slate-500 hover:text-slate-700 hover:bg-white/60'
                   }`}
                 >
                   {tab.icon}
@@ -142,13 +142,13 @@ export const InventoryModule: React.FC<InventoryModuleProps> = ({
             })}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 border-l border-slate-800 pl-2">
+          <div className="flex items-center gap-2 shrink-0 border-l border-slate-200 pl-2">
             <button
               onClick={() => setScannerOpen(true)}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700/80 transition-colors"
+              className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-200/80 transition-colors"
               title="Open Barcode & QR Code Scanner"
             >
-              <Scan className="w-3.5 h-3.5 text-emerald-400" />
+              <Scan className="w-3.5 h-3.5 text-emerald-700" />
               <span className="hidden sm:inline">Scan SKU</span>
             </button>
           </div>

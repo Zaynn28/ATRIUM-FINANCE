@@ -146,37 +146,37 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
     <div className="space-y-6">
       {/* KPI Banner */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+        <div className="p-5 rounded-xl bg-white border border-slate-200">
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
             Filtered 10% Service Charge Inflow
           </span>
-          <div className="text-2xl font-extrabold text-emerald-400 font-mono mt-1">
+          <div className="text-2xl font-extrabold text-emerald-700 font-mono mt-1">
             Rp {totalServiceCharge.toLocaleString()}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">
+          <p className="text-[11px] text-slate-500 mt-1">
             Across {filtered.length} audited guest tranches
           </p>
         </div>
 
-        <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
-          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+        <div className="p-5 rounded-xl bg-white border border-slate-200">
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
             Underlying Gross Folio Volume
           </span>
-          <div className="text-2xl font-extrabold text-slate-100 font-mono mt-1">
+          <div className="text-2xl font-extrabold text-slate-900 font-mono mt-1">
             Rp {totalGross.toLocaleString()}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">
+          <p className="text-[11px] text-slate-500 mt-1">
             Rooms, Outlets, Banquets &amp; Spa checks
           </p>
         </div>
 
-        <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
-          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+        <div className="p-5 rounded-xl bg-white border border-slate-200 flex flex-col justify-between">
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">
             Night Audit &amp; POS Ingestion
           </span>
           <button
             onClick={handleOpenAdd}
-            className="mt-2 flex items-center justify-center gap-2 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+            className="mt-2 flex items-center justify-center gap-2 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>Record Guest Inflow Tranche</span>
@@ -185,7 +185,7 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row gap-3 items-center justify-between">
         <ReportExportButtons onExport={format => exportReport(`Service_Charge_Collections_${selectedPeriod}`, [{
           name: 'Collections', title: 'Service Charge Collections Log', period: selectedPeriod,
           subtitle: searchTerm ? `Search: ${searchTerm}` : undefined,
@@ -203,17 +203,17 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
             placeholder="Search by reference, source, or notes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           />
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-400">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
           <Calendar className="w-3.5 h-3.5" />
           <span>Period:</span>
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+            className="px-2 py-1 rounded bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
           >
             <option value="ALL">All Periods</option>
             {periods.map((p) => (
@@ -226,10 +226,10 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
       </div>
 
       {/* Collections Table */}
-      <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900">
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400 tracking-wider">
+            <thead className="bg-white/80 border-b border-slate-200 text-[11px] font-mono uppercase text-slate-500 tracking-wider">
               <tr>
                 <th className="py-3 px-4">Date &amp; ID</th>
                 <th className="py-3 px-4">Revenue Stream (Source)</th>
@@ -249,33 +249,33 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
                 </tr>
               ) : (
                 filtered.map((col) => (
-                  <tr key={col.collection_id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={col.collection_id} className="hover:bg-white/40 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-bold text-slate-200">{col.date}</div>
+                      <div className="font-bold text-slate-700">{col.date}</div>
                       <div className="text-[10px] text-slate-500">{col.collection_id}</div>
                     </td>
                     <td className="py-3 px-4 font-sans">
-                      <div className="font-semibold text-slate-200">{getSourceLabel(col.source)}</div>
-                      <div className="text-[11px] text-slate-400">Dept {col.department_code}</div>
+                      <div className="font-semibold text-slate-700">{getSourceLabel(col.source)}</div>
+                      <div className="text-[11px] text-slate-500">Dept {col.department_code}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-300 text-[11px]">
+                      <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 text-[11px]">
                         {col.reference_no}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right text-slate-300">
+                    <td className="py-3 px-4 text-right text-slate-700">
                       Rp {col.gross_sales_amount.toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-emerald-400 text-sm">
+                    <td className="py-3 px-4 text-right font-bold text-emerald-700 text-sm">
                       Rp {col.service_charge_amount.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 font-sans">
                       {col.status === 'DISTRIBUTED' ? (
-                        <span className="inline-flex items-center gap-1 text-slate-400 text-[11px]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" /> Distributed to Staff
+                        <span className="inline-flex items-center gap-1 text-slate-500 text-[11px]">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-slate-500" /> Distributed to Staff
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-emerald-400 text-[11px]">
+                        <span className="inline-flex items-center gap-1 text-emerald-700 text-[11px]">
                           <Clock className="w-3.5 h-3.5" /> In Trust Pool (Accrued)
                         </span>
                       )}
@@ -284,7 +284,7 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
                       {col.journal_id ? (
                         <button
                           onClick={() => onViewJournal && onViewJournal(col.journal_id!)}
-                          className="font-mono text-emerald-400 hover:text-emerald-300 underline text-xs"
+                          className="font-mono text-emerald-700 hover:text-emerald-700 underline text-xs"
                           title="Drilldown to Journal Voucher"
                         >
                           {col.journal_id}
@@ -303,18 +303,18 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
 
       {/* Record Inflow Tranche Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden my-8">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-850">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs max-w-lg w-full overflow-hidden my-8">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-850">
               <div className="flex items-center gap-2">
-                <ArrowDownLeft className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-sm font-bold text-slate-100">
+                <ArrowDownLeft className="w-5 h-5 text-emerald-700" />
+                <h3 className="text-sm font-bold text-slate-900">
                   Record 10% Service Charge Inflow Tranche
                 </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm"
+                className="text-slate-500 hover:text-slate-700 text-sm"
               >
                 ✕
               </button>
@@ -322,29 +322,29 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
 
             <form onSubmit={handleSave} className="p-6 space-y-4 text-xs">
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800/60 text-rose-300 text-xs">
+                <div className="p-3 rounded-lg bg-red-600/10/60 border border-rose-800/60 text-rose-300 text-xs">
                   {errorMsg}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Date *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Date *</label>
                   <input
                     type="date"
                     required
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Revenue Source *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Revenue Source *</label>
                   <select
                     value={formData.source}
                     onChange={(e) => handleSourceChange(e.target.value as ServiceChargeSource)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   >
                     <option value="PMS_ROOMS">PMS Room Charges (10%)</option>
                     <option value="POS_FB">Restaurant &amp; Bar POS (10%)</option>
@@ -357,11 +357,11 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Department</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Department</label>
                   <select
                     value={formData.department_code}
                     onChange={(e) => setFormData({ ...formData, department_code: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                   >
                     {departments.map((d) => (
                       <option key={d.department_code} value={d.department_code}>
@@ -372,21 +372,21 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Folio / Reference No.</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Folio / Reference No.</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. PMS-AUDIT-20260831"
                     value={formData.reference_no}
                     onChange={(e) => setFormData({ ...formData, reference_no: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Gross Sales Amount (IDR) *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Gross Sales Amount (IDR) *</label>
                   <input
                     type="number"
                     min="1000"
@@ -394,12 +394,12 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
                     required
                     value={formData.gross_sales_amount}
                     onChange={(e) => setFormData({ ...formData, gross_sales_amount: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Service Charge Rate</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Service Charge Rate</label>
                   <input
                     type="number"
                     min="1"
@@ -407,32 +407,32 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
                     step="0.5"
                     value={formData.service_charge_rate_pct}
                     onChange={(e) => setFormData({ ...formData, service_charge_rate_pct: parseFloat(e.target.value) || 10 })}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
               </div>
 
               {/* Live Preview of Tranche */}
-              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 flex justify-between items-center font-mono">
-                <span className="text-slate-400">10% Tranche to Pool:</span>
-                <span className="text-emerald-400 font-bold text-sm">
+              <div className="p-3 rounded-lg bg-white border border-slate-200 flex justify-between items-center font-mono">
+                <span className="text-slate-500">10% Tranche to Pool:</span>
+                <span className="text-emerald-700 font-bold text-sm">
                   Rp {calculatedServiceCharge.toLocaleString()}
                 </span>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Audit Notes / Shift Reference</label>
+                <label className="block text-slate-700 font-semibold mb-1">Audit Notes / Shift Reference</label>
                 <input
                   type="text"
                   placeholder="e.g. Audited against PMS night audit folio balancing report"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div className="pt-1">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+                <label className="flex items-center gap-2 cursor-pointer text-slate-700">
                   <input
                     type="checkbox"
                     checked={formData.auto_post_journal}
@@ -443,18 +443,18 @@ export const CollectionsLogView: React.FC<CollectionsLogViewProps> = ({
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                  className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors disabled:opacity-50"
                 >
                   {isSaving ? 'Recording...' : 'Record Tranche to Trust Pool'}
                 </button>

@@ -113,7 +113,7 @@ export const PoolPolicyConfigView: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-slate-400">Loading policy rules...</div>;
+    return <div className="p-8 text-center text-slate-500">Loading policy rules...</div>;
   }
 
   return (
@@ -123,7 +123,7 @@ export const PoolPolicyConfigView: React.FC = () => {
         <Info className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <span className="font-bold text-sm block">Effective-Dated Policy Enforcement</span>
-          <p className="text-slate-600">
+          <p className="text-slate-500">
             AMG ERP uses strict temporal immutability. Updating rules below will only apply to future or newly calculated monthly distribution cycles. Any historical batch that was posted retains the exact rules and configuration that were active at its calculation time.
           </p>
         </div>
@@ -348,7 +348,7 @@ export const PoolPolicyConfigView: React.FC = () => {
                   <span className="font-semibold text-slate-800">
                     {h.owner_pool_pct}% Pool / {h.amg_allocation_pct}% AMG
                   </span>
-                  <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-mono text-slate-600">
+                  <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-mono text-slate-500">
                     Effective {h.effective_date}
                   </span>
                 </div>
@@ -356,7 +356,7 @@ export const PoolPolicyConfigView: React.FC = () => {
                   {h.revision_notes || 'Standard configuration'} • By {h.updated_by}
                 </p>
               </div>
-              <div className="text-right text-[11px] text-slate-400 font-mono">
+              <div className="text-right text-[11px] text-slate-500 font-mono">
                 {h.updated_at ? h.updated_at.substring(0, 10) : ''}
               </div>
             </div>

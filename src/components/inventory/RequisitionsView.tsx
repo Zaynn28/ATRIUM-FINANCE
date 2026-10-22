@@ -197,13 +197,13 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/60 p-4 rounded-xl border border-slate-200">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <ClipboardList className="w-5 h-5 text-purple-400" />
             <span>Department Requisitions & Stock Issuance Workflow</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Departments submit material requisitions, heads approve, and storerooms issue stock with automated cost accounting.
           </p>
         </div>
@@ -230,7 +230,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
           />
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-950 transition-colors"
+            className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs shadow-purple-950 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Requisition</span>
@@ -240,17 +240,17 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
 
       {/* Notifications */}
       {notification && (
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-1.5">
-          <div className="flex items-center gap-2 font-bold text-emerald-300">
+        <div className="p-4 rounded-xl bg-slate-900/10/40 border border-emerald-500/40 text-emerald-200 text-xs space-y-1.5">
+          <div className="flex items-center gap-2 font-bold text-emerald-700">
             <CheckCircle2 className="w-4 h-4" />
             <span>{notification.text}</span>
           </div>
           {notification.journalId && onViewJournal && (
             <div className="flex items-center gap-2">
-              <span className="text-slate-300">Double-Entry Journal:</span>
+              <span className="text-slate-700">Double-Entry Journal:</span>
               <button
                 onClick={() => onViewJournal(notification.journalId!)}
-                className="px-2 py-0.5 bg-emerald-600/30 text-emerald-300 rounded font-mono font-bold flex items-center gap-1"
+                className="px-2 py-0.5 bg-slate-100 text-emerald-700 rounded font-mono font-bold flex items-center gap-1"
               >
                 <span>{notification.journalId}</span>
                 <ExternalLink className="w-3 h-3" />
@@ -261,17 +261,17 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
       )}
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-red-600/10/40 border border-rose-800/60 text-rose-200 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Requisitions List */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+            <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
               <tr>
                 <th className="px-4 py-3">Req #</th>
                 <th className="px-4 py-3">Date</th>
@@ -285,7 +285,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 text-slate-300">
+            <tbody className="divide-y divide-slate-800 text-slate-700">
               {requisitions.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-10 text-center text-slate-500 font-mono">
@@ -302,26 +302,26 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                   }, 0);
 
                   return (
-                    <tr key={req.requisition_id} className="hover:bg-slate-800/30 transition-colors">
+                    <tr key={req.requisition_id} className="hover:bg-white/30 transition-colors">
                       <td className="px-4 py-3 font-mono font-bold text-purple-400">
                         {req.requisition_number || req.requisition_id}
                       </td>
-                      <td className="px-4 py-3 font-mono text-slate-400">{req.date}</td>
+                      <td className="px-4 py-3 font-mono text-slate-500">{req.date}</td>
                       <td className="px-4 py-3 font-semibold text-white">{req.department_code}</td>
-                      <td className="px-4 py-3 text-slate-300">{req.requester_name}</td>
-                      <td className="px-4 py-3 font-mono text-slate-400">{req.storeroom_id}</td>
+                      <td className="px-4 py-3 text-slate-700">{req.requester_name}</td>
+                      <td className="px-4 py-3 font-mono text-slate-500">{req.storeroom_id}</td>
                       <td className="px-4 py-3 text-right font-mono font-medium">
                         {req.items.reduce((s, i) => s + (i.issued_quantity || i.requested_quantity), 0)} units (
                         {req.items.length} SKUs)
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-200">
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-700">
                         Rp {estReqCost.toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                             req.status === 'ISSUED'
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/30'
                               : req.status === 'APPROVED'
                               ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                               : req.status === 'PARTIALLY_ORDERED'
@@ -330,13 +330,13 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                               ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                               : req.status === 'PENDING'
                               ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-slate-800 text-slate-300'
+                              : 'bg-white text-slate-700'
                           }`}
                         >
                           {req.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[11px] text-slate-400">
+                      <td className="px-4 py-3 text-[11px] text-slate-500">
                         {req.approved_by ? `Appr: ${req.approved_by}` : 'Awaiting Dept Head'}
                         {req.issued_by ? ` • Issued: ${req.issued_by}` : ''}
                         {req.linked_po_ids && req.linked_po_ids.length > 0 && (
@@ -351,7 +351,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                           {/* Printable Form Trigger Button */}
                           <button
                             onClick={() => setActivePrintableReq(req)}
-                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-purple-900/40 text-purple-300 hover:text-white border border-slate-700 hover:border-purple-500/40 text-[11px] font-semibold flex items-center gap-1 transition-all shadow-sm"
+                            className="px-2.5 py-1 rounded bg-white hover:bg-purple-900/40 text-purple-300 hover:text-white border border-slate-200 hover:border-purple-500/40 text-[11px] font-semibold flex items-center gap-1 transition-all shadow-xs"
                             title="Open Printable Requisition Voucher / Form"
                           >
                             <Printer className="w-3 h-3 text-purple-400" />
@@ -373,7 +373,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                               title="Generate Purchase Order to Supplier (supports multi-supplier split)"
                               className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-[11px] font-semibold flex items-center gap-1"
                             >
-                              <ShoppingCart className="w-3 h-3 text-blue-400" />
+                              <ShoppingCart className="w-3 h-3 text-slate-500" />
                               <span>Create PO</span>
                             </button>
                           )}
@@ -381,7 +381,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                           {req.status === 'APPROVED' && (
                             <button
                               onClick={() => setIssuingReq(req)}
-                              className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 shadow-sm"
+                              className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold flex items-center gap-1 shadow-xs"
                             >
                               <PackageCheck className="w-3 h-3" />
                               <span>Issue Stock</span>
@@ -392,7 +392,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                             <button
                               onClick={() => onViewJournal(req.journal_id!)}
                               title="View Journal in Workbench"
-                              className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400"
+                              className="p-1 rounded bg-white hover:bg-slate-200 text-emerald-700"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
                             </button>
@@ -410,16 +410,16 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
 
       {/* Modal: New Requisition */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl shadow-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-xl shadow-xs p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <ClipboardList className="w-5 h-5 text-purple-400" />
                 <span>Submit Department Stock Requisition</span>
               </h3>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="p-1 rounded text-slate-400 hover:text-white"
+                className="p-1 rounded text-slate-500 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -428,11 +428,11 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="font-mono text-slate-400 block mb-1">Requesting Dept</label>
+                  <label className="font-mono text-slate-500 block mb-1">Requesting Dept</label>
                   <select
                     value={reqDept}
                     onChange={(e) => setReqDept(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                    className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white"
                   >
                     {departments.map((d) => (
                       <option key={d.department_code} value={d.department_code}>
@@ -443,22 +443,22 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="font-mono text-slate-400 block mb-1">Requester Name</label>
+                  <label className="font-mono text-slate-500 block mb-1">Requester Name</label>
                   <input
                     type="text"
                     required
                     value={requesterName}
                     onChange={(e) => setRequesterName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                    className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="font-mono text-slate-400 block mb-1">Target Storeroom</label>
+                  <label className="font-mono text-slate-500 block mb-1">Target Storeroom</label>
                   <select
                     value={targetStoreroom}
                     onChange={(e) => setTargetStoreroom(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white font-mono"
+                    className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white font-mono"
                   >
                     {storerooms.map((s) => (
                       <option key={s.storeroom_id} value={s.storeroom_id}>
@@ -472,11 +472,11 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
               {/* Items Table */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono uppercase text-slate-400">Requisition Items</span>
+                  <span className="font-mono uppercase text-slate-500">Requisition Items</span>
                   <button
                     type="button"
                     onClick={handleAddCreateLine}
-                    className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded font-semibold flex items-center gap-1"
+                    className="px-2 py-1 bg-white hover:bg-slate-200 text-slate-700 rounded font-semibold flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" />
                     <span>Add Item</span>
@@ -493,7 +493,7 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                           newLines[idx].item_id = e.target.value;
                           setCreateLines(newLines);
                         }}
-                        className="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                        className="flex-1 bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white"
                       >
                         {items.map((i) => (
                           <option key={i.item_id} value={i.item_id}>
@@ -512,14 +512,14 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                           newLines[idx].requested_quantity = Number(e.target.value);
                           setCreateLines(newLines);
                         }}
-                        className="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white font-mono text-right"
+                        className="w-24 bg-white border border-slate-200 rounded px-2 py-1.5 text-white font-mono text-right"
                       />
 
                       <button
                         type="button"
                         onClick={() => handleRemoveCreateLine(idx)}
                         disabled={createLines.length === 1}
-                        className="p-1 text-slate-400 hover:text-rose-400 disabled:opacity-20"
+                        className="p-1 text-slate-500 hover:text-red-600 disabled:opacity-20"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -529,27 +529,27 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
               </div>
 
               <div>
-                <label className="font-mono text-slate-400 block mb-1">Notes / Justification</label>
+                <label className="font-mono text-slate-500 block mb-1">Notes / Justification</label>
                 <input
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-semibold"
+                  className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-700 rounded font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded font-bold shadow-lg shadow-purple-950"
+                  className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded font-bold shadow-xs shadow-purple-950"
                 >
                   {submitting ? 'Submitting...' : 'Submit Requisition'}
                 </button>
@@ -561,16 +561,16 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
 
       {/* Modal: Approve Requisition */}
       {approvingReq && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-xs p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-blue-400" />
+                <CheckCircle2 className="w-5 h-5 text-slate-500" />
                 <span>Approve Requisition #{approvingReq.requisition_number}</span>
               </h3>
               <button
                 onClick={() => setApprovingReq(null)}
-                className="p-1 rounded text-slate-400 hover:text-white"
+                className="p-1 rounded text-slate-500 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -578,25 +578,25 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
 
             <form onSubmit={handleApproveSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="font-mono text-slate-400 block mb-1">Approver Name (Dept Head)</label>
+                <label className="font-mono text-slate-500 block mb-1">Approver Name (Dept Head)</label>
                 <input
                   type="text"
                   required
                   value={approverName}
                   onChange={(e) => setApproverName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white"
                 />
               </div>
 
-              <div className="space-y-2 border border-slate-800 rounded-lg p-3 bg-slate-950/50">
-                <span className="font-mono uppercase text-slate-400 block mb-2">
+              <div className="space-y-2 border border-slate-200 rounded-lg p-3 bg-white/50">
+                <span className="font-mono uppercase text-slate-500 block mb-2">
                   Verify or Adjust Approved Quantities:
                 </span>
                 {approvingReq.items.map((item) => (
                   <div key={item.item_id} className="flex items-center justify-between gap-3">
                     <div className="flex-1">
                       <div className="text-white font-medium">{item.item_name}</div>
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-[11px] text-slate-500">
                         Requested: {item.requested_quantity} {item.uom}
                       </div>
                     </div>
@@ -609,19 +609,19 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                         onChange={(e) =>
                           setApprovedQtys({ ...approvedQtys, [item.item_id]: Number(e.target.value) })
                         }
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-mono text-right"
+                        className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-white font-mono text-right"
                       />
-                      <span className="text-slate-400 text-[11px]">{item.uom}</span>
+                      <span className="text-slate-500 text-[11px]">{item.uom}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setApprovingReq(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-semibold"
+                  className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-700 rounded font-semibold"
                 >
                   Cancel
                 </button>
@@ -640,16 +640,16 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
 
       {/* Modal: Storekeeper Issue */}
       {issuingReq && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-xs p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <PackageCheck className="w-5 h-5 text-emerald-400" />
+                <PackageCheck className="w-5 h-5 text-emerald-700" />
                 <span>Fulfill & Issue Requisition #{issuingReq.requisition_number}</span>
               </h3>
               <button
                 onClick={() => setIssuingReq(null)}
-                className="p-1 rounded text-slate-400 hover:text-white"
+                className="p-1 rounded text-slate-500 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -657,27 +657,27 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
 
             <form onSubmit={handleIssueSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="font-mono text-slate-400 block mb-1">Storekeeper Name (Issuer)</label>
+                <label className="font-mono text-slate-500 block mb-1">Storekeeper Name (Issuer)</label>
                 <input
                   type="text"
                   required
                   value={issuerName}
                   onChange={(e) => setIssuerName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                  className="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-white"
                 />
               </div>
 
-              <div className="space-y-2 border border-slate-800 rounded-lg p-3 bg-slate-950/50">
-                <span className="font-mono uppercase text-slate-400 block mb-1">Items to Dispatch:</span>
+              <div className="space-y-2 border border-slate-200 rounded-lg p-3 bg-white/50">
+                <span className="font-mono uppercase text-slate-500 block mb-1">Items to Dispatch:</span>
                 {issuingReq.items.map((item) => (
-                  <div key={item.item_id} className="flex items-center justify-between py-1 border-b border-slate-800/60 last:border-none">
+                  <div key={item.item_id} className="flex items-center justify-between py-1 border-b border-slate-200/60 last:border-none">
                     <div>
                       <div className="text-white font-medium">{item.item_name}</div>
-                      <div className="text-[11px] text-slate-400 font-mono">
+                      <div className="text-[11px] text-slate-500 font-mono">
                         From Storeroom: {issuingReq.storeroom_id}
                       </div>
                     </div>
-                    <div className="text-right font-mono font-bold text-emerald-400">
+                    <div className="text-right font-mono font-bold text-emerald-700">
                       {item.approved_quantity || item.requested_quantity} {item.uom}
                     </div>
                   </div>
@@ -689,18 +689,18 @@ export const RequisitionsView: React.FC<RequisitionsViewProps> = ({
                 journal debiting departmental operational cost ({issuingReq.department_code}) and crediting Asset 1080 Inventory.
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIssuingReq(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-semibold"
+                  className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-700 rounded font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold"
+                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded font-bold"
                 >
                   {submitting ? 'Posting Issue...' : 'Confirm Issue & Post Journal'}
                 </button>

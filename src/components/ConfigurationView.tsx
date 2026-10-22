@@ -229,31 +229,31 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Configuration Header */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 shadow-sm backdrop-blur-sm">
+      <div className="bg-white/80 border border-slate-200 rounded-xl p-4 shadow-xs backdrop-blur-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <Settings className="w-5 h-5 text-emerald-400" />
-              <h2 className="text-lg font-bold text-slate-100 tracking-tight">
+              <Settings className="w-5 h-5 text-emerald-700" />
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
                 Configuration & Master Setup
               </h2>
-              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-950/60 border border-emerald-800/40 text-emerald-300">
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-slate-900/10/60 border border-emerald-800/40 text-emerald-700">
                 PILLAR 5
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Chart of Accounts, Departmental Cost Centers, and automated double-entry clearing rules (isolated from transaction activity)
             </p>
           </div>
 
           {/* Sub-Navigation Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-white border border-slate-200">
             <button
               onClick={() => setActiveConfigTab('coa')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeConfigTab === 'coa'
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200 font-semibold'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -264,8 +264,8 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               onClick={() => setActiveConfigTab('departments')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeConfigTab === 'departments'
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200 font-semibold'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -276,8 +276,8 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               onClick={() => setActiveConfigTab('mappings')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeConfigTab === 'mappings'
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200 font-semibold'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <Sliders className="w-3.5 h-3.5" />
@@ -288,8 +288,8 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               onClick={() => setActiveConfigTab('reports')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeConfigTab === 'reports'
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200 font-semibold'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -300,9 +300,9 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
       </div>
 
       {actionError && (
-        <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/50 text-rose-200 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-red-600/10/40 border border-rose-800/50 text-rose-200 text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <AlertCircle className="w-4 h-4 text-red-600" />
             <span>{actionError}</span>
           </div>
           <button onClick={() => setActionError(null)} className="text-[11px] font-mono hover:underline">
@@ -324,14 +324,14 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                   placeholder="Search code, title, USALI line..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:border-emerald-500 outline-none"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 placeholder-slate-500 focus:border-emerald-500 outline-none"
                 />
               </div>
 
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-200 focus:border-emerald-500 outline-none"
+                className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 focus:border-emerald-500 outline-none"
               >
                 <option value="ALL">All Account Types</option>
                 <option value="Asset">Assets (1000s)</option>
@@ -367,16 +367,16 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               <button
                 onClick={handleSeedUsali}
                 disabled={loading}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium border border-slate-200 transition-colors"
                 title="Populate standard USALI 12th Edition accounts"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                 <span>Seed USALI 12</span>
               </button>
 
               <button
                 onClick={handleOpenAddAccount}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Account</span>
@@ -385,10 +385,10 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
           </div>
 
           {/* Accounts Table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase font-mono text-[11px]">
+                <thead className="bg-white/70 border-b border-slate-200 text-slate-500 uppercase font-mono text-[11px]">
                   <tr>
                     <th className="py-3 px-4">Code</th>
                     <th className="py-3 px-4">Account Name</th>
@@ -408,11 +408,11 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                     </tr>
                   ) : (
                     filteredAccounts.map((acc) => (
-                      <tr key={acc.account_code} className="hover:bg-slate-800/30 transition-colors">
-                        <td className="py-2.5 px-4 font-bold text-emerald-400">
+                      <tr key={acc.account_code} className="hover:bg-white/30 transition-colors">
+                        <td className="py-2.5 px-4 font-bold text-emerald-700">
                           {acc.account_code}
                         </td>
-                        <td className="py-2.5 px-4 text-slate-200 font-sans font-medium">
+                        <td className="py-2.5 px-4 text-slate-700 font-sans font-medium">
                           {acc.account_name}
                         </td>
                         <td className="py-2.5 px-4">
@@ -421,24 +421,24 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                               acc.account_type === 'Asset'
                                 ? 'bg-blue-950/60 text-blue-300 border border-blue-800/40'
                                 : acc.account_type === 'Liability'
-                                ? 'bg-amber-950/60 text-amber-300 border border-amber-800/40'
+                                ? 'bg-slate-900/10/60 text-amber-300 border border-amber-800/40'
                                 : acc.account_type === 'Revenue'
-                                ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/40'
+                                ? 'bg-slate-900/10/60 text-emerald-700 border border-emerald-800/40'
                                 : 'bg-purple-950/60 text-purple-300 border border-purple-800/40'
                             }`}
                           >
                             {acc.account_type}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 text-slate-400">
+                        <td className="py-2.5 px-4 text-slate-500">
                           {acc.normal_balance}
                         </td>
-                        <td className="py-2.5 px-4 text-slate-300 text-[11px] font-sans">
+                        <td className="py-2.5 px-4 text-slate-700 text-[11px] font-sans">
                           {acc.usali_line || '—'}
                         </td>
                         <td className="py-2.5 px-4 text-center">
                           {acc.active === 'Y' ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-semibold">
+                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-semibold">
                               <CheckCircle2 className="w-3 h-3" /> Active
                             </span>
                           ) : (
@@ -451,7 +451,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleOpenEditAccount(acc)}
-                              className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-200"
+                              className="p-1 hover:bg-white rounded text-slate-500 hover:text-slate-700"
                               title="Edit Account"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -459,7 +459,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                             {acc.active === 'Y' ? (
                               <button
                                 onClick={() => handleDeactivateAccount(acc.account_code)}
-                                className="p-1 hover:bg-slate-800 rounded text-amber-400/80 hover:text-amber-400"
+                                className="p-1 hover:bg-white rounded text-amber-700/80 hover:text-amber-700"
                                 title="Deactivate Account"
                               >
                                 <PowerOff className="w-3.5 h-3.5" />
@@ -467,7 +467,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                             ) : null}
                             <button
                               onClick={() => handleDeleteAccount(acc.account_code)}
-                              className="p-1 hover:bg-slate-800 rounded text-rose-400/80 hover:text-rose-400"
+                              className="p-1 hover:bg-white rounded text-red-600/80 hover:text-red-600"
                               title="Delete Account (if no transactions)"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -495,7 +495,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                 placeholder="Search department code or title..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:border-emerald-500 outline-none"
+                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 placeholder-slate-500 focus:border-emerald-500 outline-none"
               />
             </div>
 
@@ -512,7 +512,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               />
               <button
                 onClick={handleOpenAddDept}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Department</span>
@@ -520,10 +520,10 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
             </div>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase font-mono text-[11px]">
+                <thead className="bg-white/70 border-b border-slate-200 text-slate-500 uppercase font-mono text-[11px]">
                   <tr>
                     <th className="py-3 px-4">Cost Center Code</th>
                     <th className="py-3 px-4">Department / Division Name</th>
@@ -540,14 +540,14 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                     </tr>
                   ) : (
                     filteredDepartments.map((dept) => (
-                      <tr key={dept.department_code} className="hover:bg-slate-800/30 transition-colors">
-                        <td className="py-2.5 px-4 font-bold text-emerald-400">
+                      <tr key={dept.department_code} className="hover:bg-white/30 transition-colors">
+                        <td className="py-2.5 px-4 font-bold text-emerald-700">
                           {dept.department_code}
                         </td>
-                        <td className="py-2.5 px-4 text-slate-200 font-sans font-medium">
+                        <td className="py-2.5 px-4 text-slate-700 font-sans font-medium">
                           {dept.department_name}
                         </td>
-                        <td className="py-2.5 px-4 text-slate-400 font-sans text-[11px]">
+                        <td className="py-2.5 px-4 text-slate-500 font-sans text-[11px]">
                           {dept.department_code === '100'
                             ? 'Operated Department: Rooms (Schedule 1)'
                             : dept.department_code === '200'
@@ -564,7 +564,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                         </td>
                         <td className="py-2.5 px-4 text-center">
                           {dept.active === 'Y' ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-semibold">
+                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-semibold">
                               <CheckCircle2 className="w-3 h-3" /> Active
                             </span>
                           ) : (
@@ -590,12 +590,12 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
             <div
               className={`p-4 rounded-xl text-xs flex items-center justify-between ${
                 mappingMessage.type === 'success'
-                  ? 'bg-emerald-950/40 border border-emerald-800/50 text-emerald-200'
-                  : 'bg-rose-950/40 border border-rose-800/50 text-rose-200'
+                  ? 'bg-slate-900/10/40 border border-emerald-800/50 text-emerald-200'
+                  : 'bg-red-600/10/40 border border-rose-800/50 text-rose-200'
               }`}
             >
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                 <span>{mappingMessage.text}</span>
               </div>
               <button type="button" onClick={() => setMappingMessage(null)} className="text-[11px] font-mono hover:underline">
@@ -604,23 +604,23 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
             </div>
           )}
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-100">Automated Journal Clearing Rules</h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h3 className="text-sm font-bold text-slate-900">Automated Journal Clearing Rules</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
                 These default counterpart accounts are automatically assigned during operational transaction ingestion to guarantee balanced double-entry journals.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-                <label className="block text-slate-200 font-semibold">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 space-y-2">
+                <label className="block text-slate-700 font-semibold">
                   Revenue Default Debit Account (Guest Settlement):
                 </label>
                 <select
                   value={mappings.revenue_default_debit_account || '1020'}
                   onChange={(e) => setMappings({ ...mappings, revenue_default_debit_account: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-mono focus:border-emerald-500 outline-none"
                 >
                   {accounts
                     .filter((a) => a.account_type === 'Asset')
@@ -630,19 +630,19 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                       </option>
                     ))}
                 </select>
-                <span className="text-[11px] text-slate-400 block">
+                <span className="text-[11px] text-slate-500 block">
                   Typically: 1020 (Guest Ledger Clearing) or 1010 (Cash in Bank)
                 </span>
               </div>
 
-              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-                <label className="block text-slate-200 font-semibold">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 space-y-2">
+                <label className="block text-slate-700 font-semibold">
                   Procurement Default Credit Account (Accounts Payable):
                 </label>
                 <select
                   value={mappings.spending_procurement_credit_account || '2010'}
                   onChange={(e) => setMappings({ ...mappings, spending_procurement_credit_account: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-mono focus:border-emerald-500 outline-none"
                 >
                   {accounts
                     .filter((a) => a.account_type === 'Liability')
@@ -652,19 +652,19 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                       </option>
                     ))}
                 </select>
-                <span className="text-[11px] text-slate-400 block">
+                <span className="text-[11px] text-slate-500 block">
                   Typically: 2010 (Accounts Payable - Trade)
                 </span>
               </div>
 
-              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-                <label className="block text-slate-200 font-semibold">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 space-y-2">
+                <label className="block text-slate-700 font-semibold">
                   Payroll Default Credit Account (Staff Accrual):
                 </label>
                 <select
                   value={mappings.spending_payroll_credit_account || '2020'}
                   onChange={(e) => setMappings({ ...mappings, spending_payroll_credit_account: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-mono focus:border-emerald-500 outline-none"
                 >
                   {accounts
                     .filter((a) => a.account_type === 'Liability')
@@ -674,19 +674,19 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                       </option>
                     ))}
                 </select>
-                <span className="text-[11px] text-slate-400 block">
+                <span className="text-[11px] text-slate-500 block">
                   Typically: 2020 (Accrued Payroll & Benefits)
                 </span>
               </div>
 
-              <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
-                <label className="block text-slate-200 font-semibold">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 space-y-2">
+                <label className="block text-slate-700 font-semibold">
                   Other Spending Default Credit Account (Cash Out):
                 </label>
                 <select
                   value={mappings.spending_other_credit_account || '1010'}
                   onChange={(e) => setMappings({ ...mappings, spending_other_credit_account: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-mono focus:border-emerald-500 outline-none"
                 >
                   {accounts
                     .filter((a) => a.account_type === 'Asset')
@@ -696,7 +696,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                       </option>
                     ))}
                 </select>
-                <span className="text-[11px] text-slate-400 block">
+                <span className="text-[11px] text-slate-500 block">
                   Typically: 1010 (Operating Cash in Bank)
                 </span>
               </div>
@@ -706,7 +706,7 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               <button
                 type="submit"
                 disabled={savingMapping}
-                className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors"
+                className="flex items-center gap-2 px-5 py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors"
               >
                 {savingMapping ? <RotateCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 <span>{savingMapping ? 'Saving Rules...' : 'Save Clearing Rules'}</span>
@@ -729,14 +729,14 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
       {/* Account Add/Edit Modal */}
       {isAccountModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-slate-100">
+          <div className="bg-white border border-slate-200 rounded-xl max-w-md w-full p-5 space-y-4 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900">
               {editingAccount ? 'Edit Account' : 'Add New Account'}
             </h3>
 
             <form onSubmit={handleSaveAccount} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Account Code:</label>
+                <label className="block text-slate-700 font-medium mb-1">Account Code:</label>
                 <input
                   type="text"
                   required
@@ -744,29 +744,29 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                   value={accountForm.account_code}
                   onChange={(e) => setAccountForm({ ...accountForm, account_code: e.target.value })}
                   placeholder="e.g. 1010"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 font-mono focus:border-emerald-500 outline-none disabled:opacity-50"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-mono focus:border-emerald-500 outline-none disabled:opacity-50"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Account Name:</label>
+                <label className="block text-slate-700 font-medium mb-1">Account Name:</label>
                 <input
                   type="text"
                   required
                   value={accountForm.account_name}
                   onChange={(e) => setAccountForm({ ...accountForm, account_name: e.target.value })}
                   placeholder="e.g. Operating Cash in Bank"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-emerald-500 outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Type:</label>
+                  <label className="block text-slate-700 font-medium mb-1">Type:</label>
                   <select
                     value={accountForm.account_type}
                     onChange={(e) => setAccountForm({ ...accountForm, account_type: e.target.value as AccountType })}
-                    className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-emerald-500 outline-none"
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-emerald-500 outline-none"
                   >
                     <option value="Asset">Asset</option>
                     <option value="Liability">Liability</option>
@@ -777,11 +777,11 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Normal Balance:</label>
+                  <label className="block text-slate-700 font-medium mb-1">Normal Balance:</label>
                   <select
                     value={accountForm.normal_balance}
                     onChange={(e) => setAccountForm({ ...accountForm, normal_balance: e.target.value as NormalBalance })}
-                    className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-emerald-500 outline-none"
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-emerald-500 outline-none"
                   >
                     <option value="Debit">Debit</option>
                     <option value="Credit">Credit</option>
@@ -790,39 +790,39 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">USALI 12th Edition Schedule Line:</label>
+                <label className="block text-slate-700 font-medium mb-1">USALI 12th Edition Schedule Line:</label>
                 <input
                   type="text"
                   value={accountForm.usali_line}
                   onChange={(e) => setAccountForm({ ...accountForm, usali_line: e.target.value })}
                   placeholder="e.g. Schedule 1 - Rooms Revenue"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-emerald-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Statutory Tax / Financial Line:</label>
+                <label className="block text-slate-700 font-medium mb-1">Statutory Tax / Financial Line:</label>
                 <input
                   type="text"
                   value={accountForm.statutory_line}
                   onChange={(e) => setAccountForm({ ...accountForm, statutory_line: e.target.value })}
                   placeholder="e.g. Current Assets / Cash & Equivalents"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-emerald-500 outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsAccountModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                  className="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold"
                 >
                   {loading ? 'Saving...' : 'Save Account'}
                 </button>
@@ -835,46 +835,46 @@ export const ConfigurationView: React.FC<ConfigurationViewProps> = ({
       {/* Department Add Modal */}
       {isDeptModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 className="text-sm font-bold text-slate-100">Add Cost Center / Department</h3>
+          <div className="bg-white border border-slate-200 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900">Add Cost Center / Department</h3>
 
             <form onSubmit={handleSaveDept} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Cost Center Code:</label>
+                <label className="block text-slate-700 font-medium mb-1">Cost Center Code:</label>
                 <input
                   type="text"
                   required
                   value={deptForm.department_code}
                   onChange={(e) => setDeptForm({ ...deptForm, department_code: e.target.value })}
                   placeholder="e.g. 100"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-mono focus:border-emerald-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Department Name:</label>
+                <label className="block text-slate-700 font-medium mb-1">Department Name:</label>
                 <input
                   type="text"
                   required
                   value={deptForm.department_name}
                   onChange={(e) => setDeptForm({ ...deptForm, department_name: e.target.value })}
                   placeholder="e.g. Rooms Division"
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:border-emerald-500 outline-none"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:border-emerald-500 outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsDeptModalOpen(false)}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                  className="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold"
                 >
                   {loading ? 'Saving...' : 'Save Department'}
                 </button>

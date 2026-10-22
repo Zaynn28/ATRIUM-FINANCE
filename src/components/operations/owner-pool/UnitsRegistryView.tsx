@@ -282,7 +282,7 @@ export const UnitsRegistryView: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
         <div className="flex flex-1 items-center gap-2">
           <div className="relative flex-1 max-w-sm">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               placeholder="Search unit #, owner, or unit type..."
@@ -293,7 +293,7 @@ export const UnitsRegistryView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5 text-xs">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <Filter className="w-3.5 h-3.5 text-slate-500" />
             <select
               value={floorFilter}
               onChange={(e) => setFloorFilter(e.target.value)}
@@ -334,7 +334,7 @@ export const UnitsRegistryView: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold text-[11px] font-mono uppercase tracking-wider">
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold text-[11px] font-mono uppercase tracking-wider">
                 <th className="py-2.5 px-3">Unit &amp; Type</th>
                 <th className="py-2.5 px-3">Owner / Investor</th>
                 <th className="py-2.5 px-3">Opsi &amp; Tipe Kontrak</th>
@@ -349,13 +349,13 @@ export const UnitsRegistryView: React.FC = () => {
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="py-8 text-center text-slate-400">
+                  <td colSpan={9} className="py-8 text-center text-slate-500">
                     Loading apartment master database...
                   </td>
                 </tr>
               ) : (filteredUnits || []).length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-8 text-center text-slate-400">
+                  <td colSpan={9} className="py-8 text-center text-slate-500">
                     No apartment units found matching the filter criteria.
                   </td>
                 </tr>
@@ -410,7 +410,7 @@ export const UnitsRegistryView: React.FC = () => {
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono text-[11px]">
                         <div className="font-semibold text-slate-900">{formatIDR(netBasis)}</div>
-                        <div className="text-slate-400 font-sans text-[10px]">Basis Return 10%</div>
+                        <div className="text-slate-500 font-sans text-[10px]">Basis Return 10%</div>
                       </td>
                       <td className="py-2.5 px-3 font-mono text-[11px]">
                         {unit.contract_payment_type === 'PARTIALLY_PAID_GUARANTEED_INSTALLMENT' ? (
@@ -421,7 +421,7 @@ export const UnitsRegistryView: React.FC = () => {
                             <div className="text-slate-500 text-[10px]">
                               Terbayar: {formatIDR(unit.total_paid_to_date || 0)}
                             </div>
-                            <div className="text-slate-400 text-[10px]">
+                            <div className="text-slate-500 text-[10px]">
                               Sisa: {formatIDR(remainingDue)}
                             </div>
                           </div>
@@ -435,7 +435,7 @@ export const UnitsRegistryView: React.FC = () => {
                         <span className="font-mono font-semibold text-slate-800 text-xs">
                           {unit.stay_days_used_ytd || 0} / {unit.stay_days_quota_annual || 28}
                         </span>
-                        <span className="block text-[10px] text-slate-400">Hari Terpakai</span>
+                        <span className="block text-[10px] text-slate-500">Hari Terpakai</span>
                       </td>
                       <td className="py-2.5 px-3">
                         <div className="text-[11px] font-semibold text-slate-800">
@@ -445,7 +445,7 @@ export const UnitsRegistryView: React.FC = () => {
                           className={`px-1.5 py-0.2 rounded-full text-[10px] font-semibold inline-block mt-0.5 ${
                             unit.distribution_status === 'Eligible'
                               ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-100 text-slate-600'
+                              : 'bg-slate-100 text-slate-500'
                           }`}
                         >
                           {unit.distribution_status}
@@ -480,15 +480,15 @@ export const UnitsRegistryView: React.FC = () => {
 
       {/* Add / Edit Unit Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-xs border border-slate-200 max-w-xl w-full overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
             <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
               <h3 className="font-bold text-sm">
                 {editingUnit ? `Edit Apartment Unit ${editingUnit.unit_number}` : 'Register New Apartment Unit'}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-md"
+                className="text-slate-500 hover:text-white p-1 rounded-md"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -555,7 +555,7 @@ export const UnitsRegistryView: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, unit_sqm: parseFloat(e.target.value) || 0 })}
                     className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono font-bold text-blue-900"
                   />
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Used in dynamic pro-rata share</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Used in dynamic pro-rata share</span>
                 </div>
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Purchase Price (IDR) *</label>
@@ -581,7 +581,7 @@ export const UnitsRegistryView: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, vat_amount: parseFloat(e.target.value) || 0 })}
                     className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
                   />
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Deducted for return basis</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Deducted for return basis</span>
                 </div>
               </div>
 
@@ -698,7 +698,7 @@ export const UnitsRegistryView: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, stay_days_quota_annual: parseInt(e.target.value, 10) || 28 })}
                     className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
                   />
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Default: 28 hari per tahun (10% market rate)</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Default: 28 hari per tahun (10% market rate)</span>
                 </div>
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Hari Terpakai Tahun Ini</label>
@@ -708,7 +708,7 @@ export const UnitsRegistryView: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, stay_days_used_ytd: parseInt(e.target.value, 10) || 0 })}
                     className="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-mono"
                   />
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Hari ke-29+ dikenakan tarif 75% tanpa potong return</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Hari ke-29+ dikenakan tarif 75% tanpa potong return</span>
                 </div>
               </div>
 
@@ -723,7 +723,7 @@ export const UnitsRegistryView: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, contract_start_date: e.target.value })}
                     className="w-full px-3 py-1.5 border border-slate-300 rounded-lg"
                   />
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Determines 3-year guarantee period</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Determines 3-year guarantee period</span>
                 </div>
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Contract End Date</label>
@@ -803,7 +803,7 @@ export const UnitsRegistryView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-1.5 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
+                  className="px-4 py-1.5 border border-slate-300 rounded-lg text-slate-500 hover:bg-slate-50 font-medium"
                 >
                   Cancel
                 </button>

@@ -179,7 +179,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
     switch (status) {
       case 'DRAFT':
         return (
-          <span className="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-amber-950/60 text-amber-300 border border-amber-800/50 flex items-center gap-1">
+          <span className="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-slate-900/10/60 text-amber-300 border border-amber-800/50 flex items-center gap-1">
             <Clock className="w-3 h-3" /> DRAFT
           </span>
         );
@@ -197,13 +197,13 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
         );
       case 'POSTED':
         return (
-          <span className="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/50 flex items-center gap-1">
-            <Lock className="w-3 h-3 text-emerald-400" /> POSTED (LOCKED)
+          <span className="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-slate-900/10/60 text-emerald-700 border border-emerald-800/50 flex items-center gap-1">
+            <Lock className="w-3 h-3 text-emerald-700" /> POSTED (LOCKED)
           </span>
         );
       case 'REVERSED':
         return (
-          <span className="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1">
+          <span className="px-2 py-0.5 rounded text-[11px] font-sans font-semibold bg-white text-slate-500 border border-slate-200 flex items-center gap-1">
             <RotateCcw className="w-3 h-3 text-slate-500" /> REVERSED
           </span>
         );
@@ -291,13 +291,13 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
-            <Clock className="w-5 h-5 text-emerald-400" />
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <Clock className="w-5 h-5 text-emerald-700" />
             <span>Journal Workbench (Approval &amp; Posting Engine)</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Rigorous double-entry governance: Draft &rarr; Validate &rarr; Approve &rarr; Post (Locked) &rarr; Reverse
           </p>
         </div>
@@ -311,7 +311,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
               previewMode
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
             }`}
             title="Toggle Paper Print/PDF Preview"
           >
@@ -322,7 +322,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
           {/* Print Button */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
             title="Print Journal Entries"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -332,7 +332,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
           <button
             id="btn-new-manual-journal"
             onClick={onOpenManualJournalModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>Manual Journal Voucher</span>
@@ -357,16 +357,16 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       )}
 
       {successMessage && (
-        <div className="p-3.5 bg-emerald-950/40 border border-emerald-800/60 rounded-xl flex items-center justify-between text-xs text-emerald-200">
+        <div className="p-3.5 bg-slate-900/10/40 border border-emerald-800/60 rounded-xl flex items-center justify-between text-xs text-emerald-200">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
             <span className="font-sans">{successMessage}</span>
           </div>
           <div className="flex items-center gap-3">
             {onNavigateToLedger && (
               <button
                 onClick={() => onNavigateToLedger()}
-                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-medium flex items-center gap-1 transition-colors"
+                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-medium flex items-center gap-1 transition-colors"
               >
                 <span>View in General Ledger</span>
                 <ArrowRight className="w-3 h-3" />
@@ -374,7 +374,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
             )}
             <button
               onClick={() => setSuccessMessage(null)}
-              className="text-emerald-400 hover:text-emerald-300 text-xs px-2 py-0.5 rounded hover:bg-emerald-900/40"
+              className="text-emerald-700 hover:text-emerald-700 text-xs px-2 py-0.5 rounded hover:bg-emerald-900/40"
             >
               Dismiss
             </button>
@@ -392,7 +392,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search Journal ID, reference, period..."
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+            className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
           />
         </div>
 
@@ -407,8 +407,8 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
               onClick={() => setStatusFilter(st)}
               className={`px-2.5 py-1 rounded text-xs whitespace-nowrap font-medium transition-colors ${
                 statusFilter === st
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               {st}
@@ -430,9 +430,9 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
         {/* Journals List */}
         <div className="space-y-3">
         {filteredJournals.length === 0 ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl py-14 text-center text-slate-500">
-            <Clock className="w-9 h-9 mx-auto text-slate-600 mb-2 opacity-40" />
-            <p className="font-medium text-slate-400">No journals found</p>
+          <div className="bg-white border border-slate-200 rounded-xl py-14 text-center text-slate-500">
+            <Clock className="w-9 h-9 mx-auto text-slate-500 mb-2 opacity-40" />
+            <p className="font-medium text-slate-500">No journals found</p>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               {journals.length === 0
                 ? 'Create a transaction in Revenue or Spending Cycle, or click "Manual Journal Voucher" above to begin.'
@@ -448,21 +448,21 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
               <div
                 key={journal.journal_id}
                 id={`journal-${journal.journal_id}`}
-                className={`bg-slate-900 border rounded-xl overflow-hidden transition-all ${
+                className={`bg-white border rounded-xl overflow-hidden transition-all ${
                   journal.status === 'POSTED'
-                    ? 'border-slate-800 hover:border-slate-700'
+                    ? 'border-slate-200 hover:border-slate-200'
                     : journal.status === 'APPROVED'
                     ? 'border-indigo-900/40 hover:border-indigo-800/60'
-                    : 'border-slate-800/80 hover:border-slate-700'
+                    : 'border-slate-200/80 hover:border-slate-200'
                 }`}
               >
                 {/* Journal Row Header */}
                 <div
                   onClick={() => toggleExpand(journal.journal_id)}
-                  className="px-5 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer bg-slate-900/60 hover:bg-slate-800/30 select-none"
+                  className="px-5 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer bg-white/60 hover:bg-white/30 select-none"
                 >
                   <div className="flex items-center gap-3">
-                    <button className="text-slate-500 hover:text-slate-300">
+                    <button className="text-slate-500 hover:text-slate-700">
                       {isExpanded ? (
                         <ChevronDown className="w-4 h-4" />
                       ) : (
@@ -472,15 +472,15 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
 
                     <div>
                       <div className="flex items-center gap-2 font-mono">
-                        <span className="font-bold text-slate-100 text-sm">
+                        <span className="font-bold text-slate-900 text-sm">
                           {journal.journal_id}
                         </span>
                         {getStatusBadge(journal.status)}
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white text-slate-500 border border-slate-200">
                           {journal.source_type}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-400 mt-1 font-mono">
+                      <div className="flex items-center gap-3 text-xs text-slate-500 mt-1 font-mono">
                         <span>Date: {journal.journal_date}</span>
                         <span>&bull;</span>
                         <span>Period: {journal.period}</span>
@@ -495,7 +495,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                         {journal.reversal_of && (
                           <>
                             <span>&bull;</span>
-                            <span className="text-amber-400">Reversal of: {journal.reversal_of}</span>
+                            <span className="text-amber-700">Reversal of: {journal.reversal_of}</span>
                           </>
                         )}
                       </div>
@@ -509,12 +509,12 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                   >
                     {/* Amount & Balance indicator */}
                     <div className="text-right font-mono">
-                      <div className="text-xs text-slate-400">
-                        Total: <span className="text-slate-200 font-semibold">Rp {journal.total_debit.toLocaleString('id-ID')}</span>
+                      <div className="text-xs text-slate-500">
+                        Total: <span className="text-slate-700 font-semibold">Rp {journal.total_debit.toLocaleString('id-ID')}</span>
                       </div>
                       <div className="text-[11px]">
                         {journal.is_balanced ? (
-                          <span className="text-emerald-400 font-medium">Debits = Credits</span>
+                          <span className="text-emerald-700 font-medium">Debits = Credits</span>
                         ) : (
                           <span className="text-red-400 font-medium">Out of Balance</span>
                         )}
@@ -530,7 +530,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             id={`btn-validate-${journal.journal_id}`}
                             onClick={() => handleValidate(journal.journal_id)}
                             disabled={isLoading}
-                            className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm flex items-center gap-1"
+                            className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-medium transition-colors shadow-xs flex items-center gap-1"
                             title="Verify Debits = Credits balance"
                           >
                             <FileCheck className="w-3.5 h-3.5" />
@@ -540,7 +540,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             id={`btn-post-draft-${journal.journal_id}`}
                             onClick={() => setPostingJournal(journal)}
                             disabled={isLoading}
-                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                            className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs flex items-center gap-1.5"
                             title="Post to General Ledger (auto-validates and approves)"
                           >
                             <Lock className="w-3.5 h-3.5" />
@@ -549,7 +549,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                           <button
                             onClick={() => setDeletingDraftId(journal.journal_id)}
                             disabled={isLoading}
-                            className="p-1.5 text-slate-500 hover:text-red-400 rounded-lg hover:bg-slate-800"
+                            className="p-1.5 text-slate-500 hover:text-red-400 rounded-lg hover:bg-white"
                             title="Delete Draft"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -564,7 +564,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             id={`btn-approve-${journal.journal_id}`}
                             onClick={() => handleApprove(journal.journal_id)}
                             disabled={isLoading}
-                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm flex items-center gap-1"
+                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition-colors shadow-xs flex items-center gap-1"
                           >
                             <Check className="w-3.5 h-3.5" />
                             <span>Approve</span>
@@ -573,7 +573,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             id={`btn-post-val-${journal.journal_id}`}
                             onClick={() => setPostingJournal(journal)}
                             disabled={isLoading}
-                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                            className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs flex items-center gap-1.5"
                             title="Post to General Ledger (Permanent & Immutable)"
                           >
                             <Lock className="w-3.5 h-3.5" />
@@ -588,7 +588,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                           id={`btn-post-${journal.journal_id}`}
                           onClick={() => setPostingJournal(journal)}
                           disabled={isLoading}
-                          className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs flex items-center gap-1.5"
                           title="Post to General Ledger (Permanent & Immutable)"
                         >
                           <Lock className="w-3.5 h-3.5" />
@@ -602,7 +602,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                           {onNavigateToLedger && (
                             <button
                               onClick={() => onNavigateToLedger()}
-                              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+                              className="px-2.5 py-1.5 bg-white hover:bg-slate-200 text-emerald-700 border border-slate-200 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
                               title="View entries in General Ledger"
                             >
                               <span>View in GL</span>
@@ -616,7 +616,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                               setReversalDateInput(new Date().toISOString().split('T')[0]);
                             }}
                             disabled={isLoading}
-                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+                            className="px-3 py-1.5 bg-white hover:bg-slate-200 text-amber-300 border border-slate-200 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
                             title="Post offsetting reversal journal (Original remains locked)"
                           >
                             <RotateCcw className="w-3.5 h-3.5" />
@@ -637,14 +637,14 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
 
                 {/* Expanded Details: Lines & Audit Trail */}
                 {isExpanded && (
-                  <div className="border-t border-slate-800/80 bg-slate-950/60 p-5 space-y-4">
+                  <div className="border-t border-slate-200/80 bg-white/60 p-5 space-y-4">
                     {/* Audit Metadata */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-slate-900/70 p-3 rounded-lg border border-slate-800 font-mono">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-white/70 p-3 rounded-lg border border-slate-200 font-mono">
                       <div>
                         <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
                           Created By
                         </span>
-                        <span className="text-slate-200">{journal.created_by}</span>
+                        <span className="text-slate-700">{journal.created_by}</span>
                         <span className="text-[10px] text-slate-500 block truncate">
                           {journal.created_at ? new Date(journal.created_at).toLocaleString() : '—'}
                         </span>
@@ -653,13 +653,13 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                         <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
                           Approved By
                         </span>
-                        <span className="text-slate-200">{journal.approved_by || 'Pending'}</span>
+                        <span className="text-slate-700">{journal.approved_by || 'Pending'}</span>
                       </div>
                       <div>
                         <span className="text-slate-500 block text-[10px] uppercase tracking-wider">
                           Posted Timestamp
                         </span>
-                        <span className="text-slate-200">
+                        <span className="text-slate-700">
                           {journal.posted_at ? new Date(journal.posted_at).toLocaleString() : 'Unposted'}
                         </span>
                       </div>
@@ -670,8 +670,8 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                         <span
                           className={
                             journal.status === 'POSTED'
-                              ? 'text-emerald-400 font-semibold'
-                              : 'text-amber-400 font-semibold'
+                              ? 'text-emerald-700 font-semibold'
+                              : 'text-amber-700 font-semibold'
                           }
                         >
                           {journal.status === 'POSTED' ? 'LOCKED & IMMUTABLE' : 'MUTABLE DRAFT'}
@@ -680,9 +680,9 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                     </div>
 
                     {/* Journal Lines Table */}
-                    <div className="overflow-x-auto rounded-lg border border-slate-800">
+                    <div className="overflow-x-auto rounded-lg border border-slate-200">
                       <table className="w-full text-xs font-mono">
-                        <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 text-left">
+                        <thead className="bg-white text-slate-500 border-b border-slate-200 text-left">
                           <tr>
                             <th className="py-2 px-3">#</th>
                             <th className="py-2 px-3">Account Code</th>
@@ -693,55 +693,55 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                             <th className="py-2 px-3">Description</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
+                        <tbody className="divide-y divide-slate-800/60 bg-white/40">
                           {journal.lines.map((line) => {
                             const acc = (accounts || []).find((a) => a.account_code === line.account_code);
                             const dept = (departments || []).find(
                               (d) => d.department_code === line.department_code
                             );
                             return (
-                              <tr key={line.line_number} className="hover:bg-slate-900/50">
+                              <tr key={line.line_number} className="hover:bg-white/50">
                                 <td className="py-2 px-3 text-slate-500">{line.line_number}</td>
-                                <td className="py-2 px-3 font-semibold text-slate-200">
+                                <td className="py-2 px-3 font-semibold text-slate-700">
                                   {line.account_code}
                                 </td>
-                                <td className="py-2 px-3 font-sans text-slate-300">
+                                <td className="py-2 px-3 font-sans text-slate-700">
                                   {acc ? acc.account_name : 'Unknown Account'}
                                 </td>
-                                <td className="py-2 px-3 text-slate-400">
+                                <td className="py-2 px-3 text-slate-500">
                                   {dept ? `[${dept.department_code}] ${dept.department_name}` : line.department_code || '—'}
                                 </td>
-                                <td className="py-2 px-3 text-right font-semibold text-emerald-400">
+                                <td className="py-2 px-3 text-right font-semibold text-emerald-700">
                                   {(line.debit ?? 0) > 0
                                     ? (line.debit ?? 0).toLocaleString('id-ID')
                                     : '—'}
                                 </td>
-                                <td className="py-2 px-3 text-right font-semibold text-blue-400">
+                                <td className="py-2 px-3 text-right font-semibold text-slate-500">
                                   {(line.credit ?? 0) > 0
                                     ? (line.credit ?? 0).toLocaleString('id-ID')
                                     : '—'}
                                 </td>
-                                <td className="py-2 px-3 font-sans text-slate-300">
+                                <td className="py-2 px-3 font-sans text-slate-700">
                                   {line.description || '—'}
                                 </td>
                               </tr>
                             );
                           })}
                         </tbody>
-                        <tfoot className="bg-slate-900 border-t border-slate-800 font-semibold">
+                        <tfoot className="bg-white border-t border-slate-200 font-semibold">
                           <tr>
-                            <td colSpan={4} className="py-2 px-3 text-right text-slate-400 font-sans text-xs">
+                            <td colSpan={4} className="py-2 px-3 text-right text-slate-500 font-sans text-xs">
                               Journal Totals:
                             </td>
-                            <td className="py-2 px-3 text-right text-emerald-400">
+                            <td className="py-2 px-3 text-right text-emerald-700">
                               Rp {journal.total_debit.toLocaleString('id-ID')}
                             </td>
-                            <td className="py-2 px-3 text-right text-blue-400">
+                            <td className="py-2 px-3 text-right text-slate-500">
                               Rp {journal.total_credit.toLocaleString('id-ID')}
                             </td>
                             <td className="py-2 px-3">
                               {journal.is_balanced ? (
-                                <span className="text-emerald-400 text-[11px] font-sans flex items-center gap-1 font-medium">
+                                <span className="text-emerald-700 text-[11px] font-sans flex items-center gap-1 font-medium">
                                   <CheckCircle2 className="w-3 h-3" /> Balanced
                                 </span>
                               ) : (
@@ -757,9 +757,9 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
 
                     {/* Immutable Rule Notice for POSTED journals */}
                     {journal.status === 'POSTED' && (
-                      <div className="p-3 bg-emerald-950/20 border border-emerald-900/40 rounded-lg flex items-center justify-between gap-3 text-xs text-emerald-300/80">
+                      <div className="p-3 bg-slate-900/10/20 border border-emerald-900/40 rounded-lg flex items-center justify-between gap-3 text-xs text-emerald-700/80">
                         <div className="flex items-center gap-2">
-                          <Lock className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <Lock className="w-4 h-4 text-emerald-700 shrink-0" />
                           <span>
                             <strong>Immutable Record:</strong> This journal is locked. Editing or deletion is disabled per accounting standards. To correct errors, use the <strong>Reverse</strong> button to post an offsetting entry.
                           </span>
@@ -767,7 +767,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                         {onNavigateToLedger && (
                           <button
                             onClick={() => onNavigateToLedger()}
-                            className="px-2.5 py-1 text-xs bg-emerald-950/80 text-emerald-300 border border-emerald-800/50 rounded-lg hover:bg-emerald-900/60 flex items-center gap-1 font-medium shrink-0 transition-colors"
+                            className="px-2.5 py-1 text-xs bg-slate-900/10/80 text-emerald-700 border border-emerald-800/50 rounded-lg hover:bg-emerald-900/60 flex items-center gap-1 font-medium shrink-0 transition-colors"
                           >
                             <span>Open in GL</span>
                             <ArrowRight className="w-3 h-3" />
@@ -787,60 +787,60 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       {/* MODAL: In-app Post Confirmation (Replaces window.confirm) */}
       {postingJournal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl space-y-4 p-6">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-lg overflow-hidden shadow-xs space-y-4 p-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 rounded-lg">
+                <div className="p-2 bg-slate-900/10/80 text-emerald-700 border border-emerald-800/50 rounded-lg">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-slate-900">
                     Post Journal to General Ledger
                   </h3>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-xs text-slate-500 font-mono">
                     {postingJournal.journal_id} &bull; Period: {postingJournal.period}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setPostingJournal(null)}
-                className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+                className="text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-white"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300">
-              <div className="bg-slate-950/70 border border-slate-800/80 rounded-lg p-3 space-y-1.5 font-mono">
+            <div className="space-y-3 text-xs text-slate-700">
+              <div className="bg-white/70 border border-slate-200/80 rounded-lg p-3 space-y-1.5 font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Journal Date:</span>
-                  <span className="text-slate-200">{postingJournal.journal_date}</span>
+                  <span className="text-slate-500">Journal Date:</span>
+                  <span className="text-slate-700">{postingJournal.journal_date}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Source:</span>
-                  <span className="text-slate-200">{postingJournal.source_type} ({postingJournal.source_reference || 'Manual'})</span>
+                  <span className="text-slate-500">Source:</span>
+                  <span className="text-slate-700">{postingJournal.source_type} ({postingJournal.source_reference || 'Manual'})</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Total Debits:</span>
-                  <span className="text-emerald-400 font-semibold">Rp {postingJournal.total_debit.toLocaleString('id-ID')}</span>
+                  <span className="text-slate-500">Total Debits:</span>
+                  <span className="text-emerald-700 font-semibold">Rp {postingJournal.total_debit.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Total Credits:</span>
-                  <span className="text-blue-400 font-semibold">Rp {postingJournal.total_credit.toLocaleString('id-ID')}</span>
+                  <span className="text-slate-500">Total Credits:</span>
+                  <span className="text-slate-500 font-semibold">Rp {postingJournal.total_credit.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between pt-1 border-t border-slate-800">
-                  <span className="text-slate-400">Double-Entry Status:</span>
-                  <span className={postingJournal.is_balanced ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>
+                <div className="flex justify-between pt-1 border-t border-slate-200">
+                  <span className="text-slate-500">Double-Entry Status:</span>
+                  <span className={postingJournal.is_balanced ? "text-emerald-700 font-semibold" : "text-red-400 font-semibold"}>
                     {postingJournal.is_balanced ? "Balanced (Debits = Credits)" : "Out of Balance!"}
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 bg-amber-950/30 border border-amber-800/40 rounded-lg flex items-start gap-2.5 text-amber-300/90 text-xs">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="p-3 bg-slate-900/10/30 border border-amber-800/40 rounded-lg flex items-start gap-2.5 text-amber-300/90 text-xs">
+                <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-amber-200">Audit Rule (Permanent Immutable Lock)</p>
-                  <p className="mt-0.5 text-slate-300 text-[11px]">
+                  <p className="mt-0.5 text-slate-700 text-[11px]">
                     Once posted, this journal is permanently locked. It will immediately update the General Ledger balances and the Trial Balance.
                   </p>
                 </div>
@@ -856,12 +856,12 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setPostingJournal(null)}
                 disabled={actionLoading === postingJournal.journal_id}
-                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                className="px-3.5 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -869,7 +869,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                 type="button"
                 onClick={() => executePost(postingJournal.journal_id)}
                 disabled={actionLoading === postingJournal.journal_id || !postingJournal.is_balanced}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
+                className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 {actionLoading === postingJournal.journal_id ? (
                   <>
@@ -891,51 +891,51 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       {/* MODAL: In-app Reversal Date Picker (Replaces window.prompt) */}
       {reversingJournal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md overflow-hidden shadow-2xl space-y-4 p-6">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-md overflow-hidden shadow-xs space-y-4 p-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-amber-950/80 text-amber-400 border border-amber-800/50 rounded-lg">
+                <div className="p-2 bg-slate-900/10/80 text-amber-700 border border-amber-800/50 rounded-lg">
                   <RotateCcw className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-slate-900">
                     Reverse Posted Journal
                   </h3>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-xs text-slate-500 font-mono">
                     {reversingJournal.journal_id} &bull; Original: {reversingJournal.journal_date}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setReversingJournal(null)}
-                className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+                className="text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-white"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300">
+            <div className="space-y-3 text-xs text-slate-700">
               <p>
                 Reversing will create a linked offsetting journal entry with inverted debits and credits. The original journal remains locked for complete audit trail compliance.
               </p>
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-slate-300">
+                <label className="block text-xs font-medium text-slate-700">
                   Reversal Effective Date
                 </label>
                 <input
                   type="date"
                   value={reversalDateInput}
                   onChange={(e) => setReversalDateInput(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 font-mono"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-500 font-mono"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setReversingJournal(null)}
-                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                className="px-3.5 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -943,7 +943,7 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
                 type="button"
                 onClick={() => executeReverse(reversingJournal.journal_id)}
                 disabled={actionLoading === reversingJournal.journal_id || !reversalDateInput}
-                className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
+                className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 {actionLoading === reversingJournal.journal_id ? (
                   <>
@@ -965,28 +965,28 @@ export const JournalWorkbenchView: React.FC<JournalWorkbenchViewProps> = ({
       {/* MODAL: In-app Discard Draft Confirmation (Replaces window.confirm) */}
       {deletingDraftId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-sm overflow-hidden shadow-2xl space-y-4 p-6">
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-sm overflow-hidden shadow-xs space-y-4 p-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-950/80 text-red-400 border border-red-800/50 rounded-lg">
                 <Trash2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-100">
+                <h3 className="text-base font-bold text-slate-900">
                   Discard Draft Voucher
                 </h3>
-                <p className="text-xs text-slate-400 font-mono">
+                <p className="text-xs text-slate-500 font-mono">
                   {deletingDraftId}
                 </p>
               </div>
             </div>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-slate-700">
               Are you sure you want to permanently discard this unposted draft journal? This action cannot be undone.
             </p>
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setDeletingDraftId(null)}
-                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                className="px-3.5 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors"
               >
                 Cancel
               </button>

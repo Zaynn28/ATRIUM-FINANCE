@@ -101,31 +101,31 @@ export const TrialBalanceView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
-            <Scale className="w-5 h-5 text-emerald-400" />
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <Scale className="w-5 h-5 text-emerald-700" />
             <span>Trial Balance Report</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Comprehensive verification of debit and credit ledger balances for POSTED transactions
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Period Filter */}
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs">
-            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs">
+            <Calendar className="w-3.5 h-3.5 text-slate-500" />
             <input
               type="month"
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
-              className="bg-transparent text-slate-200 font-mono outline-none"
+              className="bg-transparent text-slate-700 font-mono outline-none"
             />
             {period && (
               <button
                 onClick={() => setPeriod('')}
-                className="text-[11px] text-slate-400 hover:text-slate-200 ml-1"
+                className="text-[11px] text-slate-500 hover:text-slate-700 ml-1"
               >
                 Clear
               </button>
@@ -140,7 +140,7 @@ export const TrialBalanceView: React.FC = () => {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
               previewMode
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
             }`}
           >
             <span>{previewMode ? 'Screen View' : 'PDF Preview'}</span>
@@ -148,7 +148,7 @@ export const TrialBalanceView: React.FC = () => {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print to PDF</span>
@@ -171,13 +171,13 @@ export const TrialBalanceView: React.FC = () => {
             <div
               className={`p-4 rounded-xl border flex items-center justify-between gap-4 ${
                 report.is_balanced
-                  ? 'bg-emerald-950/30 border-emerald-800/50 text-emerald-300 print:bg-emerald-50 print:border-emerald-300 print:text-emerald-900'
+                  ? 'bg-slate-900/10/30 border-emerald-800/50 text-emerald-700 print:bg-emerald-50 print:border-emerald-300 print:text-emerald-900'
                   : 'bg-red-950/40 border-red-800/60 text-red-200 print:bg-red-50 print:border-red-300 print:text-red-900'
               }`}
             >
               <div className="flex items-center gap-3">
                 {report.is_balanced ? (
-                  <div className="p-2 bg-emerald-900/40 rounded-lg text-emerald-400 print:bg-emerald-100 print:text-emerald-800">
+                  <div className="p-2 bg-emerald-900/40 rounded-lg text-emerald-700 print:bg-emerald-100 print:text-emerald-800">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                 ) : (
@@ -208,10 +208,10 @@ export const TrialBalanceView: React.FC = () => {
           )}
 
       {/* Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider">
+            <thead className="bg-white/80 border-b border-slate-200 text-slate-500 uppercase tracking-wider">
               <tr>
                 <th className="py-3 px-4">Account Code</th>
                 <th className="py-3 px-4">Account Name</th>
@@ -233,8 +233,8 @@ export const TrialBalanceView: React.FC = () => {
               ) : !report || report.items.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-14 text-center text-slate-500 font-sans">
-                    <Scale className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
-                    <p className="font-medium text-slate-400">No posted transactions recorded</p>
+                    <Scale className="w-8 h-8 mx-auto text-slate-500 mb-2 opacity-50" />
+                    <p className="font-medium text-slate-500">No posted transactions recorded</p>
                     <p className="text-xs text-slate-500 mt-1">
                       Trial Balance is computed exclusively from POSTED journals. Pending drafts are excluded.
                     </p>
@@ -246,28 +246,28 @@ export const TrialBalanceView: React.FC = () => {
                   return (
                     <tr
                       key={item.account_code}
-                      className={`hover:bg-slate-800/40 ${!hasActivity ? 'opacity-40' : ''}`}
+                      className={`hover:bg-white/40 ${!hasActivity ? 'opacity-40' : ''}`}
                     >
-                      <td className="py-2.5 px-4 font-semibold text-slate-200">{item.account_code}</td>
-                      <td className="py-2.5 px-4 font-sans text-slate-100 font-medium">{item.account_name}</td>
-                      <td className="py-2.5 px-4 font-sans text-slate-400">{item.account_type}</td>
-                      <td className="py-2.5 px-4 text-slate-400">{item.normal_balance}</td>
-                      <td className="py-2.5 px-4 text-right text-slate-300">
+                      <td className="py-2.5 px-4 font-semibold text-slate-700">{item.account_code}</td>
+                      <td className="py-2.5 px-4 font-sans text-slate-900 font-medium">{item.account_name}</td>
+                      <td className="py-2.5 px-4 font-sans text-slate-500">{item.account_type}</td>
+                      <td className="py-2.5 px-4 text-slate-500">{item.normal_balance}</td>
+                      <td className="py-2.5 px-4 text-right text-slate-700">
                         {(item.debit_sum ?? 0) > 0
                           ? (item.debit_sum ?? 0).toLocaleString('id-ID')
                           : '—'}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-300">
+                      <td className="py-2.5 px-4 text-right text-slate-700">
                         {(item.credit_sum ?? 0) > 0
                           ? (item.credit_sum ?? 0).toLocaleString('id-ID')
                           : '—'}
                       </td>
-                      <td className="py-2.5 px-4 text-right font-semibold text-emerald-400 bg-slate-950/30">
+                      <td className="py-2.5 px-4 text-right font-semibold text-emerald-700 bg-white/30">
                         {(item.net_debit ?? 0) > 0
                           ? (item.net_debit ?? 0).toLocaleString('id-ID')
                           : '—'}
                       </td>
-                      <td className="py-2.5 px-4 text-right font-semibold text-blue-400 bg-slate-950/30">
+                      <td className="py-2.5 px-4 text-right font-semibold text-slate-500 bg-white/30">
                         {(item.net_credit ?? 0) > 0
                           ? (item.net_credit ?? 0).toLocaleString('id-ID')
                           : '—'}
@@ -279,15 +279,15 @@ export const TrialBalanceView: React.FC = () => {
             </tbody>
             {/* Grand Totals */}
             {report && (
-              <tfoot className="bg-slate-950 border-t-2 border-slate-700 font-bold text-xs">
+              <tfoot className="bg-white border-t-2 border-slate-200 font-bold text-xs">
                 <tr>
-                  <td colSpan={6} className="py-3 px-4 text-right text-slate-300 font-sans uppercase">
+                  <td colSpan={6} className="py-3 px-4 text-right text-slate-700 font-sans uppercase">
                     Grand Totals:
                   </td>
-                  <td className="py-3 px-4 text-right text-emerald-400 text-sm">
+                  <td className="py-3 px-4 text-right text-emerald-700 text-sm">
                     Rp {(report.total_debits ?? 0).toLocaleString('id-ID')}
                   </td>
-                  <td className="py-3 px-4 text-right text-blue-400 text-sm">
+                  <td className="py-3 px-4 text-right text-slate-500 text-sm">
                     Rp {(report.total_credits ?? 0).toLocaleString('id-ID')}
                   </td>
                 </tr>

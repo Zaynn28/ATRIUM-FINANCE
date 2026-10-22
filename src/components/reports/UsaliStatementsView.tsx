@@ -281,13 +281,13 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
       />
 
       {/* Sub-Navigation: USALI Schedules & Perspectives */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto print:hidden">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto print:hidden">
         <button
           onClick={() => setActiveTab('summary-operator')}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
             activeTab === 'summary-operator'
-              ? 'bg-emerald-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           Summary Operating Statement — Operator
@@ -296,8 +296,8 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onClick={() => setActiveTab('summary-owner')}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
             activeTab === 'summary-owner'
-              ? 'bg-emerald-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           Summary Operating Statement — Owner
@@ -306,8 +306,8 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onClick={() => setActiveTab('schedule-rooms')}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
             activeTab === 'schedule-rooms'
-              ? 'bg-emerald-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           Schedule 1 — Rooms
@@ -316,8 +316,8 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onClick={() => setActiveTab('schedule-fb')}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
             activeTab === 'schedule-fb'
-              ? 'bg-emerald-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           Schedule 2 — Food & Beverage
@@ -326,8 +326,8 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onClick={() => setActiveTab('undistributed')}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
             activeTab === 'undistributed'
-              ? 'bg-emerald-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           Undistributed Schedules (A&G / POM / S&M / Energy)
@@ -336,8 +336,8 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onClick={() => setActiveTab('kpis')}
           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
             activeTab === 'kpis'
-              ? 'bg-emerald-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white'
           }`}
         >
           USALI 12 Metrics & KPIs
@@ -347,38 +347,38 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
       {/* KPI Cards Row */}
       {report && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 print:hidden">
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <span>Gross Operating Profit (GOP)</span>
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-700" />
             </div>
-            <div className="text-xl font-bold font-mono text-slate-100 mt-1">
+            <div className="text-xl font-bold font-mono text-slate-900 mt-1">
               {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
             </div>
-            <div className="text-[11px] font-mono text-emerald-400 mt-1">
+            <div className="text-[11px] font-mono text-emerald-700 mt-1">
               GOP Margin: {gopMargin}%
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <span>Total Operating Revenue</span>
-              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-400" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
             </div>
-            <div className="text-xl font-bold font-mono text-slate-100 mt-1">
+            <div className="text-xl font-bold font-mono text-slate-900 mt-1">
               {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
             </div>
-            <div className="text-[11px] font-mono text-slate-400 mt-1">
+            <div className="text-[11px] font-mono text-slate-500 mt-1">
               Rooms: {formatAmount(report.schedules_summary?.rooms_revenue ?? 0, report.formatting)}
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <span>Rooms Dept Profit</span>
               <Percent className="w-3.5 h-3.5 text-indigo-400" />
             </div>
-            <div className="text-xl font-bold font-mono text-slate-100 mt-1">
+            <div className="text-xl font-bold font-mono text-slate-900 mt-1">
               {formatAmount(report.schedules_summary?.rooms_profit ?? 0, report.formatting)}
             </div>
             <div className="text-[11px] font-mono text-indigo-400 mt-1">
@@ -386,15 +386,15 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="p-4 rounded-xl bg-white/60 border border-slate-200">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <span>Food & Beverage Profit</span>
-              <Percent className="w-3.5 h-3.5 text-amber-400" />
+              <Percent className="w-3.5 h-3.5 text-amber-700" />
             </div>
-            <div className="text-xl font-bold font-mono text-slate-100 mt-1">
+            <div className="text-xl font-bold font-mono text-slate-900 mt-1">
               {formatAmount(report.schedules_summary?.fb_profit ?? 0, report.formatting)}
             </div>
-            <div className="text-[11px] font-mono text-amber-400 mt-1">
+            <div className="text-[11px] font-mono text-amber-700 mt-1">
               F&B Margin: {fbMargin}%
             </div>
           </div>
@@ -412,19 +412,19 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           onExitPreview={() => setPreviewMode(false)}
           onExportExcel={handleExportExcel}
         >
-          <div className="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-xl print:border-none print:shadow-none print:rounded-none">
+          <div className="bg-white/90 border border-slate-200 rounded-xl overflow-hidden shadow-xs print:border-none print:shadow-none print:rounded-none">
             {!previewMode && (
-              <div className="px-6 py-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between print:hidden no-print preview-hidden">
+              <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between print:hidden no-print preview-hidden">
                 <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
+                  <div className="text-xs font-mono uppercase tracking-wider text-slate-500">
                     {property}
                   </div>
-                  <h2 className="text-base font-bold text-slate-100">
+                  <h2 className="text-base font-bold text-slate-900">
                     {getStatementTitle()}
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-slate-400">
-                  Period: <strong className="text-slate-200">{period || 'All Available Posted Periods'}</strong>
+                <span className="text-xs font-mono text-slate-500">
+                  Period: <strong className="text-slate-700">{period || 'All Available Posted Periods'}</strong>
                 </span>
               </div>
             )}
@@ -432,7 +432,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
             <div className="p-6 overflow-x-auto print:p-0">
               {activeTab === 'summary-operator' && (
                 <table className="w-full text-xs">
-                  <thead className="bg-slate-950/60 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
+                  <thead className="bg-white/60 text-slate-500 font-mono uppercase tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-2.5 px-4 text-left">USALI 12 Line Description</th>
                       <th className="py-2.5 px-4 text-right">Amount (Rp)</th>
@@ -446,7 +446,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   </thead>
                 <tbody className="divide-y divide-slate-800/60 font-mono">
                   {/* OPERATING REVENUE */}
-                  <tr className="bg-slate-950/40 text-emerald-400 font-bold uppercase tracking-wider">
+                  <tr className="bg-white/40 text-emerald-700 font-bold uppercase tracking-wider">
                     <td colSpan={previewMode ? 3 : 4} className="py-2 px-4">
                       Operating Revenue
                     </td>
@@ -455,22 +455,22 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     <tr
                       key={row.line_id}
                       onClick={() => !previewMode && handleDrilldown(row.line_id)}
-                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
+                      className={`${!previewMode ? 'hover:bg-white/60 cursor-pointer' : ''} transition-colors`}
                     >
-                      <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
+                      <td className="py-2.5 px-4 pl-8 text-slate-700 font-medium">
                         {row.label}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
+                      <td className="py-2.5 px-4 text-right text-slate-900 font-semibold">
                         {formatAmount(row.amount, report.formatting)}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-400">
+                      <td className="py-2.5 px-4 text-right text-slate-500">
                         {(report.total_operating_revenue ?? 0) > 0
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                       {!previewMode && (
                         <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 hover:underline">
                             <span>Inspect</span>
                             <ChevronRight className="w-3 h-3" />
                           </span>
@@ -478,9 +478,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       )}
                     </tr>
                   ))}
-                  <tr className="bg-slate-900 font-bold border-t-2 border-slate-700 text-slate-100">
+                  <tr className="bg-white font-bold border-t-2 border-slate-200 text-slate-900">
                     <td className="py-3 px-4 pl-4 uppercase">Total Operating Revenue</td>
-                    <td className="py-3 px-4 text-right text-emerald-400 text-sm">
+                    <td className="py-3 px-4 text-right text-emerald-700 text-sm">
                       {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">100.0%</td>
@@ -490,7 +490,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   </tr>
 
                   {/* DEPARTMENTAL EXPENSES */}
-                  <tr className="bg-slate-950/40 text-rose-400 font-bold uppercase tracking-wider">
+                  <tr className="bg-white/40 text-red-600 font-bold uppercase tracking-wider">
                     <td colSpan={previewMode ? 3 : 4} className="py-2 px-4 pt-4">
                       Departmental Expenses
                     </td>
@@ -499,22 +499,22 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     <tr
                       key={row.line_id}
                       onClick={() => !previewMode && handleDrilldown(row.line_id)}
-                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
+                      className={`${!previewMode ? 'hover:bg-white/60 cursor-pointer' : ''} transition-colors`}
                     >
-                      <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
+                      <td className="py-2.5 px-4 pl-8 text-slate-700 font-medium">
                         {row.label}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
+                      <td className="py-2.5 px-4 text-right text-slate-900 font-semibold">
                         {formatAmount(row.amount, report.formatting)}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-400">
+                      <td className="py-2.5 px-4 text-right text-slate-500">
                         {(report.total_operating_revenue ?? 0) > 0
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                       {!previewMode && (
                         <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 hover:underline">
                             <span>Inspect</span>
                             <ChevronRight className="w-3 h-3" />
                           </span>
@@ -522,7 +522,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       )}
                     </tr>
                   ))}
-                  <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
+                  <tr className="bg-white font-bold border-t border-slate-200 text-slate-700">
                     <td className="py-2.5 px-4 pl-4 uppercase">Total Departmental Expenses</td>
                     <td className="py-2.5 px-4 text-right text-rose-300">
                       {formatAmount(report.total_departmental_expenses ?? 0, report.formatting)}
@@ -536,9 +536,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">—</td>
                     )}
                   </tr>
-                  <tr className="bg-emerald-950/30 font-bold border-t border-b border-emerald-800/50 text-emerald-300">
+                  <tr className="bg-slate-900/10/30 font-bold border-t border-b border-emerald-800/50 text-emerald-700">
                     <td className="py-3 px-4 pl-4 uppercase">Total Departmental Profit</td>
-                    <td className="py-3 px-4 text-right text-sm font-bold text-emerald-300">
+                    <td className="py-3 px-4 text-right text-sm font-bold text-emerald-700">
                       {formatAmount(report.total_departmental_profit ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -552,7 +552,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   </tr>
 
                   {/* UNDISTRIBUTED OPERATING EXPENSES */}
-                  <tr className="bg-slate-950/40 text-amber-400 font-bold uppercase tracking-wider">
+                  <tr className="bg-white/40 text-amber-700 font-bold uppercase tracking-wider">
                     <td colSpan={previewMode ? 3 : 4} className="py-2 px-4 pt-4">
                       Undistributed Operating Expenses
                     </td>
@@ -561,22 +561,22 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     <tr
                       key={row.line_id}
                       onClick={() => !previewMode && handleDrilldown(row.line_id)}
-                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
+                      className={`${!previewMode ? 'hover:bg-white/60 cursor-pointer' : ''} transition-colors`}
                     >
-                      <td className="py-2.5 px-4 pl-8 text-slate-200 font-medium">
+                      <td className="py-2.5 px-4 pl-8 text-slate-700 font-medium">
                         {row.label}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-100 font-semibold">
+                      <td className="py-2.5 px-4 text-right text-slate-900 font-semibold">
                         {formatAmount(row.amount, report.formatting)}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-400">
+                      <td className="py-2.5 px-4 text-right text-slate-500">
                         {(report.total_operating_revenue ?? 0) > 0
                           ? `${(((row.amount ?? 0) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
                       </td>
                       {!previewMode && (
                         <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 hover:underline">
                             <span>Inspect</span>
                             <ChevronRight className="w-3 h-3" />
                           </span>
@@ -584,7 +584,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       )}
                     </tr>
                   ))}
-                  <tr className="bg-slate-900 font-bold border-t border-slate-700 text-slate-300">
+                  <tr className="bg-white font-bold border-t border-slate-200 text-slate-700">
                     <td className="py-2.5 px-4 pl-4 uppercase">Total Undistributed Expenses</td>
                     <td className="py-2.5 px-4 text-right text-amber-300">
                       {formatAmount(report.total_undistributed_expenses ?? 0, report.formatting)}
@@ -600,9 +600,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   </tr>
 
                   {/* GROSS OPERATING PROFIT (GOP) */}
-                  <tr className="bg-emerald-950/60 font-bold border-t-2 border-b-2 border-emerald-500/50 text-emerald-200 text-sm">
+                  <tr className="bg-slate-900/10/60 font-bold border-t-2 border-b-2 border-emerald-500/50 text-emerald-200 text-sm">
                     <td className="py-3.5 px-4 pl-4 uppercase">Gross Operating Profit (GOP)</td>
-                    <td className="py-3.5 px-4 text-right text-emerald-300 font-mono text-base">
+                    <td className="py-3.5 px-4 text-right text-emerald-700 font-mono text-base">
                       {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
                     </td>
                     <td className="py-3.5 px-4 text-right">{gopMargin}%</td>
@@ -616,18 +616,18 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     <tr
                       key={row.line_id}
                       onClick={() => !previewMode && handleDrilldown(row.line_id)}
-                      className={`${!previewMode ? 'hover:bg-slate-800/60 cursor-pointer' : ''} transition-colors`}
+                      className={`${!previewMode ? 'hover:bg-white/60 cursor-pointer' : ''} transition-colors`}
                     >
-                      <td className="py-2.5 px-4 pl-8 text-slate-300 font-medium">
+                      <td className="py-2.5 px-4 pl-8 text-slate-700 font-medium">
                         {row.label}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-300">
+                      <td className="py-2.5 px-4 text-right text-slate-700">
                         {formatAmount(row.amount, report.formatting)}
                       </td>
-                      <td className="py-2.5 px-4 text-right text-slate-400">—</td>
+                      <td className="py-2.5 px-4 text-right text-slate-500">—</td>
                       {!previewMode && (
                         <td data-non-printable="true" className="py-2.5 px-4 text-center print:hidden no-print preview-hidden non-printable-col">
-                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 hover:underline">
                             <span>Inspect</span>
                             <ChevronRight className="w-3 h-3" />
                           </span>
@@ -635,9 +635,9 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       )}
                     </tr>
                   ))}
-                  <tr className="bg-slate-900 font-bold border-t border-b border-slate-800 text-slate-200">
+                  <tr className="bg-white font-bold border-t border-b border-slate-200 text-slate-700">
                     <td className="py-3 px-4 pl-4 uppercase">EBITDA</td>
-                    <td className="py-3 px-4 text-right text-sm font-bold text-slate-100">
+                    <td className="py-3 px-4 text-right text-sm font-bold text-slate-900">
                       {formatAmount(report.ebitda ?? 0, report.formatting)}
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -655,17 +655,17 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
 
             {activeTab === 'summary-owner' && (
               <div className="space-y-6">
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
-                  <p className="font-semibold text-slate-100 mb-1">
+                <div className="p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-700">
+                  <p className="font-semibold text-slate-900 mb-1">
                     USALI 12 Summary Operating Statement — Owner Perspective
                   </p>
-                  <p className="text-slate-400">
+                  <p className="text-slate-500">
                     Distinguishes hotel operating activity from operator fees, capital reserves, and owner economics.
                   </p>
                 </div>
 
                 <table className="w-full text-xs font-mono">
-                  <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                  <thead className="bg-white text-slate-500 uppercase tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-2.5 px-4 text-left">Line Item</th>
                       <th className="py-2.5 px-4 text-right">Amount ({report.formatting?.currency_symbol || 'IDR'})</th>
@@ -674,14 +674,14 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                   </thead>
                   <tbody className="divide-y divide-slate-800">
                     <tr>
-                      <td className="py-3 px-4 text-slate-200">Total Operating Revenue</td>
-                      <td className="py-3 px-4 text-right font-bold text-slate-100">
+                      <td className="py-3 px-4 text-slate-700">Total Operating Revenue</td>
+                      <td className="py-3 px-4 text-right font-bold text-slate-900">
                         {formatAmount(report.total_operating_revenue ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">100.0%</td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-4 text-slate-200">Total Operating Expenses (Dept + Undistributed)</td>
+                      <td className="py-3 px-4 text-slate-700">Total Operating Expenses (Dept + Undistributed)</td>
                       <td className="py-3 px-4 text-right text-rose-300">
                         {formatAmount(((report.total_departmental_expenses ?? 0) + (report.total_undistributed_expenses ?? 0)), report.formatting)}
                       </td>
@@ -691,7 +691,7 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                           : '0.0%'}
                       </td>
                     </tr>
-                    <tr className="bg-emerald-950/40 font-bold text-emerald-300">
+                    <tr className="bg-slate-900/10/40 font-bold text-emerald-700">
                       <td className="py-3 px-4 uppercase">Gross Operating Profit (GOP)</td>
                       <td className="py-3 px-4 text-right text-sm">
                         {formatAmount(report.gross_operating_profit ?? 0, report.formatting)}
@@ -699,22 +699,22 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                       <td className="py-3 px-4 text-right">{gopMargin}%</td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-4 text-slate-400 pl-8">Less: Operator Management Fees</td>
-                      <td className="py-3 px-4 text-right text-slate-300">
+                      <td className="py-3 px-4 text-slate-500 pl-8">Less: Operator Management Fees</td>
+                      <td className="py-3 px-4 text-right text-slate-700">
                         {formatAmount(report.total_management_fees ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">—</td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-4 text-slate-400 pl-8">Less: Non-Operating Income & Expenses</td>
-                      <td className="py-3 px-4 text-right text-slate-300">
+                      <td className="py-3 px-4 text-slate-500 pl-8">Less: Non-Operating Income & Expenses</td>
+                      <td className="py-3 px-4 text-right text-slate-700">
                         {formatAmount(report.total_non_operating_expenses ?? 0, report.formatting)}
                       </td>
                       <td className="py-3 px-4 text-right">—</td>
                     </tr>
-                    <tr className="bg-slate-900 font-bold text-base text-slate-100 border-t-2 border-slate-700">
+                    <tr className="bg-white font-bold text-base text-slate-900 border-t-2 border-slate-200">
                       <td className="py-3.5 px-4 uppercase">Net Operating Profit for Owner (EBITDA)</td>
-                      <td className="py-3.5 px-4 text-right text-emerald-400 font-mono">
+                      <td className="py-3.5 px-4 text-right text-emerald-700 font-mono">
                         {formatAmount(report.ebitda ?? 0, report.formatting)}
                       </td>
                       <td className="py-3.5 px-4 text-right">
@@ -730,35 +730,35 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
 
             {activeTab === 'schedule-rooms' && (
               <div className="space-y-4 font-mono text-xs">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                  <h3 className="font-bold text-slate-200">Schedule 1 — Rooms Department Performance</h3>
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <h3 className="font-bold text-slate-700">Schedule 1 — Rooms Department Performance</h3>
                   <button
                     onClick={() => handleDrilldown('USALI-REV-ROOMS')}
-                    className="text-emerald-400 hover:underline"
+                    className="text-emerald-700 hover:underline"
                   >
                     Drill-Down Rooms Revenue
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Total Rooms Revenue</div>
-                    <div className="text-lg font-bold text-emerald-400 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Total Rooms Revenue</div>
+                    <div className="text-lg font-bold text-emerald-700 mt-1">
                       {formatAmount(report.schedules_summary?.rooms_revenue ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Total Rooms Expenses</div>
-                    <div className="text-lg font-bold text-rose-400 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Total Rooms Expenses</div>
+                    <div className="text-lg font-bold text-red-600 mt-1">
                       {formatAmount(report.schedules_summary?.rooms_expense ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Rooms Departmental Profit</div>
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Rooms Departmental Profit</div>
                     <div className="text-lg font-bold text-indigo-400 mt-1">
                       {formatAmount(report.schedules_summary?.rooms_profit ?? 0, report.formatting)}
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">
+                    <div className="text-[11px] text-slate-500 mt-0.5">
                       Margin: {roomsMargin}%
                     </div>
                   </div>
@@ -768,35 +768,35 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
 
             {activeTab === 'schedule-fb' && (
               <div className="space-y-4 font-mono text-xs">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                  <h3 className="font-bold text-slate-200">Schedule 2 — Food & Beverage Department</h3>
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <h3 className="font-bold text-slate-700">Schedule 2 — Food & Beverage Department</h3>
                   <button
                     onClick={() => handleDrilldown('USALI-REV-FB')}
-                    className="text-emerald-400 hover:underline"
+                    className="text-emerald-700 hover:underline"
                   >
                     Drill-Down F&B Revenue
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">F&B Total Revenue</div>
-                    <div className="text-lg font-bold text-emerald-400 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">F&B Total Revenue</div>
+                    <div className="text-lg font-bold text-emerald-700 mt-1">
                       {formatAmount(report.schedules_summary?.fb_revenue ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">F&B Departmental Expenses</div>
-                    <div className="text-lg font-bold text-rose-400 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">F&B Departmental Expenses</div>
+                    <div className="text-lg font-bold text-red-600 mt-1">
                       {formatAmount(report.schedules_summary?.fb_expense ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">F&B Departmental Profit</div>
-                    <div className="text-lg font-bold text-amber-400 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">F&B Departmental Profit</div>
+                    <div className="text-lg font-bold text-amber-700 mt-1">
                       {formatAmount(report.schedules_summary?.fb_profit ?? 0, report.formatting)}
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">
+                    <div className="text-[11px] text-slate-500 mt-0.5">
                       Margin: {fbMargin}%
                     </div>
                   </div>
@@ -806,31 +806,31 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
 
             {activeTab === 'undistributed' && (
               <div className="space-y-4 font-mono text-xs">
-                <h3 className="font-bold text-slate-200 pb-2 border-b border-slate-800">
+                <h3 className="font-bold text-slate-700 pb-2 border-b border-slate-200">
                   Undistributed Operating Expenses Breakdown
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Administrative & General (A&G)</div>
-                    <div className="text-base font-bold text-slate-100 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Administrative & General (A&G)</div>
+                    <div className="text-base font-bold text-slate-900 mt-1">
                       {formatAmount(report.schedules_summary?.ag_expense ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Property Maintenance (POM)</div>
-                    <div className="text-base font-bold text-slate-100 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Property Maintenance (POM)</div>
+                    <div className="text-base font-bold text-slate-900 mt-1">
                       {formatAmount(report.schedules_summary?.pom_expense ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Sales & Marketing</div>
-                    <div className="text-base font-bold text-slate-100 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Sales & Marketing</div>
+                    <div className="text-base font-bold text-slate-900 mt-1">
                       {formatAmount(report.schedules_summary?.sm_expense ?? 0, report.formatting)}
                     </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                    <div className="text-slate-400">Energy, Water & Waste</div>
-                    <div className="text-base font-bold text-slate-100 mt-1">
+                  <div className="p-4 rounded-xl bg-white border border-slate-200">
+                    <div className="text-slate-500">Energy, Water & Waste</div>
+                    <div className="text-base font-bold text-slate-900 mt-1">
                       {formatAmount(report.schedules_summary?.energy_expense ?? 0, report.formatting)}
                     </div>
                   </div>
@@ -840,12 +840,12 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
 
             {activeTab === 'kpis' && (
               <div className="space-y-4 font-mono text-xs">
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                  <h3 className="font-bold text-slate-200 mb-2">USALI 12 Operating Performance Metrics</h3>
+                <div className="p-4 rounded-xl bg-white border border-slate-200">
+                  <h3 className="font-bold text-slate-700 mb-2">USALI 12 Operating Performance Metrics</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                     <div>
                       <span className="text-slate-500 block">GOP Margin:</span>
-                      <span className="text-emerald-400 font-bold text-sm">{gopMargin}%</span>
+                      <span className="text-emerald-700 font-bold text-sm">{gopMargin}%</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Rooms Margin:</span>
@@ -853,11 +853,11 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-500 block">F&B Margin:</span>
-                      <span className="text-amber-400 font-bold text-sm">{fbMargin}%</span>
+                      <span className="text-amber-700 font-bold text-sm">{fbMargin}%</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Operating Ratio:</span>
-                      <span className="text-slate-200 font-bold text-sm">
+                      <span className="text-slate-700 font-bold text-sm">
                         {(report.total_operating_revenue ?? 0) > 0
                           ? `${((((report.total_departmental_expenses ?? 0) + (report.total_undistributed_expenses ?? 0)) / report.total_operating_revenue) * 100).toFixed(1)}%`
                           : '0.0%'}
@@ -870,37 +870,37 @@ export const UsaliStatementsView: React.FC<UsaliStatementsViewProps> = ({
           </div>
 
           {/* Section 32: Drill-Down Reconciliation Banner */}
-          <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+          <div className="px-6 py-4 border-t border-slate-200 bg-white/80 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
             <div className="flex items-center gap-3">
               {report.reconciliation?.is_reconciled ? (
-                <div className="flex items-center gap-2 text-emerald-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center gap-2 text-emerald-700">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                   <span>Report 100% Reconciled with Posted Ledger Entries</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-amber-300">
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  <AlertTriangle className="w-4 h-4 text-amber-700" />
                   <span>Reconciliation Exception: Variance of {formatAmount(report.reconciliation?.variance ?? 0, report.formatting)} detected</span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center gap-6 text-slate-400">
+            <div className="flex items-center gap-6 text-slate-500">
               <div>
                 <span>Posted Revenue: </span>
-                <strong className="text-slate-200">
+                <strong className="text-slate-700">
                   {formatAmount(report.reconciliation?.posted_revenue_total ?? 0, report.formatting)}
                 </strong>
               </div>
               <div>
                 <span>Posted Expense: </span>
-                <strong className="text-slate-200">
+                <strong className="text-slate-700">
                   {formatAmount(report.reconciliation?.posted_expense_total ?? 0, report.formatting)}
                 </strong>
               </div>
               <div>
                 <span>Variance: </span>
-                <strong className={report.reconciliation?.is_reconciled ? 'text-emerald-400' : 'text-red-400'}>
+                <strong className={report.reconciliation?.is_reconciled ? 'text-emerald-700' : 'text-red-400'}>
                   {formatAmount(report.reconciliation?.variance ?? 0, report.formatting)}
                 </strong>
               </div>

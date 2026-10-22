@@ -178,36 +178,36 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-xl shadow-xs overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-white/90">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            <div className="p-2 rounded-lg bg-slate-900/10 border border-emerald-500/30 text-emerald-700">
               <Scan className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-white">Interactive Barcode Scanner</h3>
-              <p className="text-xs text-slate-400">Scan manufacturer or ATRIUM internal barcodes</p>
+              <p className="text-xs text-slate-500">Scan manufacturer or ATRIUM internal barcodes</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Mode Selector */}
-        <div className="px-5 pt-3 flex gap-2 border-b border-slate-800/60 pb-3 bg-slate-900">
+        <div className="px-5 pt-3 flex gap-2 border-b border-slate-200/60 pb-3 bg-white">
           <button
             type="button"
             onClick={() => setMode('camera')}
             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-colors ${
               mode === 'camera'
-                ? 'bg-emerald-600 text-white font-semibold'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                ? 'bg-slate-900 text-white font-semibold'
+                : 'bg-white/80 text-slate-700 hover:bg-white'
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
@@ -219,8 +219,8 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             onClick={() => setMode('manual')}
             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-colors ${
               mode === 'manual'
-                ? 'bg-emerald-600 text-white font-semibold'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                ? 'bg-slate-900 text-white font-semibold'
+                : 'bg-white/80 text-slate-700 hover:bg-white'
             }`}
           >
             <Keyboard className="w-3.5 h-3.5" />
@@ -232,7 +232,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
         <div className="p-5 overflow-y-auto space-y-4">
           {/* Camera Viewfinder */}
           {mode === 'camera' && (
-            <div className="relative rounded-xl overflow-hidden bg-black border border-slate-800 aspect-video flex items-center justify-center">
+            <div className="relative rounded-xl overflow-hidden bg-black border border-slate-200 aspect-video flex items-center justify-center">
               <video
                 ref={videoRef}
                 className="w-full h-full object-cover"
@@ -253,14 +253,14 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
               </div>
 
               {!cameraActive && (
-                <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center text-center p-4">
+                <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-center p-4">
                   <Camera className="w-8 h-8 text-slate-500 mb-2" />
-                  <p className="text-xs text-slate-300 mb-2">
+                  <p className="text-xs text-slate-700 mb-2">
                     {cameraError || 'Initializing video feed...'}
                   </p>
                   <button
                     onClick={() => setMode('manual')}
-                    className="text-xs text-emerald-400 underline hover:text-emerald-300"
+                    className="text-xs text-emerald-700 underline hover:text-emerald-700"
                   >
                     Switch to manual barcode input
                   </button>
@@ -271,25 +271,25 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
           {/* Barcode Input Form (Physical Scanner / Manual) */}
           <form onSubmit={handleSubmitManual} className="space-y-2">
-            <label className="text-xs font-mono text-slate-400 uppercase tracking-wider block">
+            <label className="text-xs font-mono text-slate-500 uppercase tracking-wider block">
               Scan with USB Scanner or Enter Barcode:
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Scan className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Scan className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   ref={inputRef}
                   type="text"
                   value={manualInput}
                   onChange={(e) => setManualInput(e.target.value)}
                   placeholder="e.g. 8991234567890 or ATR-FB-CHK01"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+                  className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading || !manualInput.trim()}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
               >
                 {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Lookup'}
               </button>
@@ -298,7 +298,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
           {/* Quick Preset Barcode Chips */}
           <div className="pt-1">
-            <span className="text-[11px] font-mono text-slate-400 block mb-1.5">
+            <span className="text-[11px] font-mono text-slate-500 block mb-1.5">
               Quick Test Presets (Instant Simulation):
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -310,10 +310,10 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                     setManualInput(p.barcode);
                     handleLookup(p.barcode);
                   }}
-                  className="text-[11px] px-2.5 py-1 rounded bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
+                  className="text-[11px] px-2.5 py-1 rounded bg-white/80 hover:bg-slate-200 border border-slate-200 text-slate-700 hover:text-white transition-colors flex items-center gap-1.5"
                 >
-                  <span className="text-emerald-400 font-mono font-medium">{p.barcode}</span>
-                  <span className="text-slate-400">({p.label})</span>
+                  <span className="text-emerald-700 font-mono font-medium">{p.barcode}</span>
+                  <span className="text-slate-500">({p.label})</span>
                 </button>
               ))}
             </div>
@@ -321,37 +321,37 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
           {/* Error notice */}
           {error && (
-            <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-lg bg-red-600/10/40 border border-rose-800/60 text-rose-300 text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Scanned Item Detail Card */}
           {scannedItem && (
-            <div className="rounded-xl border border-emerald-500/40 bg-slate-950/80 p-4 space-y-3">
+            <div className="rounded-xl border border-emerald-500/40 bg-white/80 p-4 space-y-3">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[11px] font-mono font-bold">
+                    <span className="px-2 py-0.5 rounded bg-slate-900/20 text-emerald-700 text-[11px] font-mono font-bold">
                       {scannedItem.item_code}
                     </span>
-                    <span className="text-xs text-slate-400 font-mono">
+                    <span className="text-xs text-slate-500 font-mono">
                       Barcode: {scannedItem.barcode}
                     </span>
                   </div>
                   <h4 className="text-sm font-bold text-white">{scannedItem.item_name}</h4>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Category: {scannedItem.subcategory} • Supplier: {scannedItem.supplier}
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block">Total Hotel Stock</span>
-                  <div className="text-lg font-bold font-mono text-emerald-400">
+                  <span className="text-[10px] font-mono uppercase text-slate-500 block">Total Hotel Stock</span>
+                  <div className="text-lg font-bold font-mono text-emerald-700">
                     {(scannedItem.current_stock ?? 0).toLocaleString()} {scannedItem.uom}
                   </div>
-                  <span className="text-[11px] font-mono text-slate-400 block">
+                  <span className="text-[11px] font-mono text-slate-500 block">
                     Avg Cost: Rp {(scannedItem.average_cost ?? 0).toLocaleString('id-ID')}
                   </span>
                 </div>
@@ -359,20 +359,20 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
               {/* Storeroom Stocks */}
               {scannedItem.storeroom_stocks && scannedItem.storeroom_stocks.length > 0 && (
-                <div className="pt-2 border-t border-slate-800">
-                  <span className="text-[11px] font-mono text-slate-400 block mb-1">
+                <div className="pt-2 border-t border-slate-200">
+                  <span className="text-[11px] font-mono text-slate-500 block mb-1">
                     Stock Breakdown by Storeroom:
                   </span>
                   <div className="grid grid-cols-2 gap-2">
                     {scannedItem.storeroom_stocks.map((st) => (
                       <div
                         key={st.storeroom_id}
-                        className="p-2 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"
+                        className="p-2 rounded-lg bg-white border border-slate-200 flex items-center justify-between text-xs"
                       >
                         <div className="flex items-center gap-1.5">
-                          <MapPin className="w-3 h-3 text-emerald-400" />
-                          <span className="font-mono text-slate-300">{st.storeroom_id}</span>
-                          <span className="text-slate-400 text-[10px] font-mono">({st.bin_location})</span>
+                          <MapPin className="w-3 h-3 text-emerald-700" />
+                          <span className="font-mono text-slate-700">{st.storeroom_id}</span>
+                          <span className="text-slate-500 text-[10px] font-mono">({st.bin_location})</span>
                         </div>
                         <span className="font-mono font-bold text-white">
                           {(st.quantity ?? 0).toLocaleString()} {scannedItem.uom}
@@ -384,15 +384,15 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
               )}
 
               {/* Quick Actions */}
-              <div className="pt-3 border-t border-slate-800">
-                <span className="text-[11px] font-mono text-slate-400 block mb-2">
+              <div className="pt-3 border-t border-slate-200">
+                <span className="text-[11px] font-mono text-slate-500 block mb-2">
                   Execute Inventory Action with Scanned Item:
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   <button
                     type="button"
                     onClick={() => handleAction('RECEIVE')}
-                    className="p-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                    className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
                   >
                     <ArrowDownLeft className="w-3.5 h-3.5" />
                     <span>Receive (IN)</span>
@@ -419,7 +419,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAction('STOCK_CARD')}
-                    className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                    className="p-2 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
                   >
                     <FileSpreadsheet className="w-3.5 h-3.5" />
                     <span>Stock Card</span>
@@ -431,12 +431,12 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-slate-800 bg-slate-900 flex items-center justify-between text-xs text-slate-400">
+        <div className="px-5 py-3 border-t border-slate-200 bg-white flex items-center justify-between text-xs text-slate-500">
           <span>Supported: EAN-13, Code-128, QR, Internal ATRIUM barcodes</span>
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 hover:text-white transition-colors"
           >
             Close
           </button>

@@ -97,7 +97,7 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
     return (
       <div className="flex flex-col items-center justify-center py-24 space-y-4">
         <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-mono text-slate-400">Loading Staff Service Charge &amp; Gratuities Pool...</p>
+        <p className="text-xs font-mono text-slate-500">Loading Staff Service Charge &amp; Gratuities Pool...</p>
       </div>
     );
   }
@@ -105,21 +105,21 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
   return (
     <div className="space-y-6">
       {/* Module Title Header Bar */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-xl bg-amber-950/80 border border-amber-600/50 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
+          <div className="w-12 h-12 rounded-xl bg-slate-900/10/80 border border-amber-600/50 flex items-center justify-center text-amber-700 shrink-0 shadow-inner">
             <Coins className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-slate-100 uppercase tracking-tight">
+              <h1 className="text-lg font-bold text-slate-900 uppercase tracking-tight">
                 Staff Service Charge &amp; Gratuities Distribution Pool
               </h1>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/80 font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900/10 text-emerald-700 border border-emerald-800/80 font-bold">
                 10% TRANCHE &amp; POINTS
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
+            <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
               Autonomous fiduciary trust accounting for Southeast Asian and global hospitality. Pools 10% guest folio charges into Trust Liability (Account 2030), calculates employee grade points, attendance, and seniority multipliers, and executes month-end payroll reconciliation.
             </p>
           </div>
@@ -168,7 +168,7 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
               if (onRefreshStore) onRefreshStore();
             }}
             disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors border border-slate-700"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors border border-slate-200"
             title="Refresh Data"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
@@ -177,7 +177,7 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
 
           <button
             onClick={handleResetDefaults}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors border border-slate-700"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-500 hover:text-slate-700 text-xs font-medium transition-colors border border-slate-200"
             title="Reset to Southeast Asian Standard Seed Data"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -187,15 +187,15 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
       </div>
 
       {/* Primary Sub-Tabs Navigation */}
-      <div className="border-b border-slate-800 flex items-center justify-between gap-2 overflow-x-auto pb-px">
+      <div className="border-b border-slate-200 flex items-center justify-between gap-2 overflow-x-auto pb-px">
         <div className="flex items-center gap-1">
           <button
             id="tab-sc-overview"
             onClick={() => setActiveTab('overview')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === 'overview'
-                ? 'border-emerald-500 bg-slate-900 text-emerald-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                ? 'border-emerald-500 bg-white text-emerald-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-white/50'
             }`}
           >
             <LayoutDashboard className="w-4 h-4" />
@@ -207,8 +207,8 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
             onClick={() => setActiveTab('engine')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === 'engine'
-                ? 'border-emerald-500 bg-slate-900 text-emerald-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                ? 'border-emerald-500 bg-white text-emerald-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-white/50'
             }`}
           >
             <Calculator className="w-4 h-4" />
@@ -223,8 +223,8 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
             onClick={() => setActiveTab('employees')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === 'employees'
-                ? 'border-emerald-500 bg-slate-900 text-emerald-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                ? 'border-emerald-500 bg-white text-emerald-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-white/50'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -236,8 +236,8 @@ export const ServiceChargeModule: React.FC<ServiceChargeModuleProps> = ({
             onClick={() => setActiveTab('collections')}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 ${
               activeTab === 'collections'
-                ? 'border-emerald-500 bg-slate-900 text-emerald-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                ? 'border-emerald-500 bg-white text-emerald-700'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-white/50'
             }`}
           >
             <Receipt className="w-4 h-4" />

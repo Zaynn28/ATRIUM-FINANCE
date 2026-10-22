@@ -139,7 +139,7 @@ export const AtriumLogo: React.FC<AtriumLogoProps> = ({
         {showSubtitle && (
           <div
             className={`mt-2 text-[10px] tracking-[0.25em] uppercase font-bold ${
-              theme === 'light' ? 'text-slate-800 border-t border-slate-300 pt-1.5' : 'text-amber-400/90'
+              theme === 'light' ? 'text-slate-800 border-t border-slate-300 pt-1.5' : 'text-amber-700/90'
             }`}
           >
             PT ATRIUM MANAGEMENT GROUP
@@ -163,7 +163,7 @@ export const AtriumLogo: React.FC<AtriumLogoProps> = ({
         <div className="flex items-center gap-1.5">
           <span
             className={`font-bold tracking-tight text-sm uppercase ${
-              isLight ? 'text-slate-900' : 'text-slate-100'
+              isLight ? 'text-slate-900' : 'text-slate-900'
             }`}
           >
             PT ATRIUM MANAGEMENT GROUP
@@ -175,8 +175,8 @@ export const AtriumLogo: React.FC<AtriumLogoProps> = ({
             <span className={isLight ? 'text-amber-800 font-semibold' : 'text-[#DFBA73] font-semibold'}>
               ATRIUM SUITES
             </span>
-            <span className={isLight ? 'text-slate-400' : 'text-slate-500'}>•</span>
-            <span className={isLight ? 'text-slate-600' : 'text-slate-400'}>
+            <span className={isLight ? 'text-slate-500' : 'text-slate-500'}>•</span>
+            <span className={isLight ? 'text-slate-500' : 'text-slate-500'}>
               Hospitality Finance &amp; Operations
             </span>
           </div>

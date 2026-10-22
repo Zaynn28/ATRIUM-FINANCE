@@ -165,21 +165,21 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
   return (
     <div className="space-y-6">
       {/* Executive Header Banner */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-6 text-white shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-700 border border-amber-500/30 flex items-center justify-center shrink-0">
             <Briefcase className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold tracking-tight text-slate-100">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">
                 Executive Owner Return &amp; Cashflow Matrix
               </h2>
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 Scott's Executive Overview (PT Keen Eye MD)
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
+            <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
               Comprehensive apartment unit ownership matrix: Detailed breakdown of 10% Guaranteed Return (Fully Paid), PT Keen Eye Installment Deductions, 65% Revenue Share Pool, and Zero-Return Units.
             </p>
           </div>
@@ -187,27 +187,27 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
 
         {/* Period Selector & Action */}
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
-          <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5 text-xs shadow-inner">
+          <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 text-xs shadow-inner">
             <button
               onClick={() => navigatePeriod(-1)}
-              className="p-1.5 rounded hover:bg-slate-700 text-slate-300 transition-colors"
+              className="p-1.5 rounded hover:bg-slate-200 text-slate-700 transition-colors"
               title="Previous Month"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <div className="flex items-center gap-1.5 px-2 py-1">
-              <Calendar className="w-3.5 h-3.5 text-amber-400" />
+              <Calendar className="w-3.5 h-3.5 text-amber-700" />
               <input
                 type="month"
                 value={period}
                 onChange={(e) => e.target.value && setPeriod(e.target.value)}
                 style={{ colorScheme: 'dark' }}
-                className="bg-transparent font-mono font-bold text-slate-100 outline-none cursor-pointer text-xs"
+                className="bg-transparent font-mono font-bold text-slate-900 outline-none cursor-pointer text-xs"
               />
             </div>
             <button
               onClick={() => navigatePeriod(1)}
-              className="p-1.5 rounded hover:bg-slate-700 text-slate-300 transition-colors"
+              className="p-1.5 rounded hover:bg-slate-200 text-slate-700 transition-colors"
               title="Next Month"
             >
               <ChevronRight className="w-3.5 h-3.5" />
@@ -216,7 +216,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
 
           <button
             onClick={() => loadMatrix(period)}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            className="p-2 rounded-lg bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
             title="Refresh Data"
           >
             <RefreshCw className="w-4 h-4" />
@@ -228,7 +228,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition-colors"
             title="Print / Save PDF"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -253,7 +253,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               <span className="text-[11px] font-mono text-emerald-800 uppercase tracking-wider font-semibold">
                 Group 1: 10% Guaranteed (Fully Paid)
               </span>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-slate-900" />
             </div>
             <div className="flex items-baseline justify-between mt-2">
               <span className="text-2xl font-bold font-mono text-slate-900">
@@ -261,13 +261,13 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               </span>
               <span className="text-xs text-slate-500">Fully Paid Units</span>
             </div>
-            <div className="mt-3 text-[11px] text-slate-600 border-t border-slate-100 pt-2 flex items-center justify-between">
+            <div className="mt-3 text-[11px] text-slate-500 border-t border-slate-100 pt-2 flex items-center justify-between">
               <span>Cash Payout to Owners:</span>
               <span className="font-mono font-bold text-emerald-700">
                 Rp {((matrix?.units.filter((u) => u.category === '10_PCT_GUARANTEED_FULLY_PAID').reduce((s, u) => s + u.cash_payout_amount, 0)) || 0).toLocaleString('id-ID')}
               </span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">
+            <div className="text-[10px] text-slate-500 mt-1">
               Payout Schedule: 15th of Each Month
             </div>
           </div>
@@ -293,13 +293,13 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               </span>
               <span className="text-xs text-amber-700 font-medium">Return Applied to Payable</span>
             </div>
-            <div className="mt-3 text-[11px] text-slate-600 border-t border-slate-100 pt-2 flex items-center justify-between">
+            <div className="mt-3 text-[11px] text-slate-500 border-t border-slate-100 pt-2 flex items-center justify-between">
               <span>Collected by PT Keen Eye:</span>
               <span className="font-mono font-bold text-amber-700">
                 Rp {(matrix?.total_installments_collected_by_keen_eye || 0).toLocaleString('id-ID')}
               </span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">
+            <div className="text-[10px] text-slate-500 mt-1">
               Reduces principal payable to Keen Eye
             </div>
           </div>
@@ -325,11 +325,11 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               </span>
               <span className="text-xs text-blue-600 font-medium">65% Owner Revenue Pool</span>
             </div>
-            <div className="mt-3 text-[11px] text-slate-600 border-t border-slate-100 pt-2 flex items-center justify-between">
+            <div className="mt-3 text-[11px] text-slate-500 border-t border-slate-100 pt-2 flex items-center justify-between">
               <span>Distribution Basis:</span>
               <span className="font-semibold text-slate-700">Pro-Rata Unit SQM</span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">
+            <div className="text-[10px] text-slate-500 mt-1">
               Standard pool post-guarantee period
             </div>
           </div>
@@ -339,12 +339,12 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
             onClick={() => setCategoryFilter(categoryFilter === 'GROUP_4' ? 'ALL' : 'GROUP_4')}
             className={`bg-white border rounded-xl p-4 shadow-xs cursor-pointer transition-all ${
               categoryFilter === 'GROUP_4'
-                ? 'border-slate-500 ring-2 ring-slate-500/20 bg-slate-50'
+                ? 'border-slate-200 ring-2 ring-slate-500/20 bg-slate-50'
                 : 'border-slate-200 hover:border-slate-400'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-slate-600 uppercase tracking-wider font-semibold">
+              <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
                 Group 4: Non-Eligible / Zero Return
               </span>
               <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
@@ -353,13 +353,13 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               <span className="text-2xl font-bold font-mono text-slate-500">
                 {matrix?.group4_zero_return_count || 0}
               </span>
-              <span className="text-xs text-slate-400">Return = Rp 0</span>
+              <span className="text-xs text-slate-500">Return = Rp 0</span>
             </div>
-            <div className="mt-3 text-[11px] text-slate-600 border-t border-slate-100 pt-2 flex items-center justify-between">
+            <div className="mt-3 text-[11px] text-slate-500 border-t border-slate-100 pt-2 flex items-center justify-between">
               <span>Contractual Clause:</span>
               <span className="text-slate-700 font-semibold">No Return Till Fully Paid</span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">
+            <div className="text-[10px] text-slate-500 mt-1">
               Returns commence upon 100% final settlement
             </div>
           </div>
@@ -386,13 +386,13 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               </p>
               <div className="pt-2 border-t border-amber-200 space-y-1.5 font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Guaranteed Shortfall Subsidized:</span>
+                  <span className="text-slate-500">Guaranteed Shortfall Subsidized:</span>
                   <span className="font-bold text-rose-600">
                     -Rp {(matrix?.total_shortfall_covered_by_keen_eye || 0).toLocaleString('id-ID')}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Installments Received from Return:</span>
+                  <span className="text-slate-500">Installments Received from Return:</span>
                   <span className="font-bold text-emerald-700">
                     +Rp {(matrix?.total_installments_collected_by_keen_eye || 0).toLocaleString('id-ID')}
                   </span>
@@ -419,13 +419,13 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               </p>
               <div className="pt-2 border-t border-indigo-200 space-y-1.5 font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Base Operator Share (35% Room Rev):</span>
+                  <span className="text-slate-500">Base Operator Share (35% Room Rev):</span>
                   <span className="font-bold text-indigo-900">
                     Rp {(matrix?.total_atrium_base_35_pct || 0).toLocaleString('id-ID')}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Excess Absorb (Surplus &gt; 10%):</span>
+                  <span className="text-slate-500">Excess Absorb (Surplus &gt; 10%):</span>
                   <span className="font-bold text-emerald-700">
                     +Rp {(matrix?.total_atrium_excess_absorbed || 0).toLocaleString('id-ID')}
                   </span>
@@ -452,13 +452,13 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               </p>
               <div className="pt-2 border-t border-emerald-200 space-y-1.5 font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Gross Return Accrued:</span>
+                  <span className="text-slate-500">Gross Return Accrued:</span>
                   <span className="font-bold text-slate-800">
                     Rp {(matrix?.total_gross_return_accrued || 0).toLocaleString('id-ID')}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Deductions (Tax, Stays &amp; Installments):</span>
+                  <span className="text-slate-500">Deductions (Tax, Stays &amp; Installments):</span>
                   <span className="font-bold text-slate-700">
                     -Rp {(((matrix?.total_tax_withheld || 0) + (matrix?.total_installments_collected_by_keen_eye || 0) + (matrix?.total_stay_deductions_applied || 0))).toLocaleString('id-ID')}
                   </span>
@@ -493,7 +493,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                 onClick={() => setCategoryFilter('GROUP_1')}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
                   categoryFilter === 'GROUP_1'
-                    ? 'bg-emerald-600 text-white font-semibold'
+                    ? 'bg-slate-900 text-white font-semibold'
                     : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                 }`}
               >
@@ -503,7 +503,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                 onClick={() => setCategoryFilter('GROUP_2')}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
                   categoryFilter === 'GROUP_2'
-                    ? 'bg-amber-600 text-white font-semibold'
+                    ? 'bg-slate-900 text-white font-semibold'
                     : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                 }`}
               >
@@ -533,7 +533,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
 
             <div className="flex items-center gap-2">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search unit or owner name..."
@@ -549,7 +549,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-600 font-mono text-[11px] uppercase tracking-wider">
+                <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-500 font-mono text-[11px] uppercase tracking-wider">
                   <th className="py-3 px-3">Unit &amp; Owner</th>
                   <th className="py-3 px-3">Contract Category</th>
                   <th className="py-3 px-3 text-right">Return Basis (Ex-VAT)</th>
@@ -565,7 +565,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
               <tbody className="divide-y divide-slate-200 font-mono">
                 {filteredUnits.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-10 text-center text-slate-400 font-sans">
+                    <td colSpan={10} className="py-10 text-center text-slate-500 font-sans">
                       No units found matching the selected filter criteria.
                     </td>
                   </tr>
@@ -589,7 +589,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                           ? 'Rp 0'
                           : `Rp ${u.monthly_guaranteed_return.toLocaleString('id-ID')}`}
                       </td>
-                      <td className="py-2.5 px-3 text-right text-slate-600">
+                      <td className="py-2.5 px-3 text-right text-slate-500">
                         Rp {u.sqm_pool_share_amount.toLocaleString('id-ID')}
                       </td>
                       <td className="py-2.5 px-3 text-right">
@@ -598,7 +598,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                             +Rp {u.shortfall_covered_by_keen_eye.toLocaleString('id-ID')}
                           </span>
                         ) : (
-                          <span className="text-slate-300">-</span>
+                          <span className="text-slate-700">-</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-right">
@@ -607,7 +607,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                             +Rp {u.excess_to_atrium_management.toLocaleString('id-ID')}
                           </span>
                         ) : (
-                          <span className="text-slate-300">-</span>
+                          <span className="text-slate-700">-</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-right">
@@ -616,12 +616,12 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                             <span className="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 block">
                               -Rp {u.installment_offset_to_keen_eye.toLocaleString('id-ID')}
                             </span>
-                            <span className="text-[10px] text-slate-400 font-sans block mt-0.5">
+                            <span className="text-[10px] text-slate-500 font-sans block mt-0.5">
                               Rem: Rp {u.remaining_payable_to_keen_eye.toLocaleString('id-ID')}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-slate-300">-</span>
+                          <span className="text-slate-700">-</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-right font-bold">
@@ -630,7 +630,7 @@ export const ScottExecutiveMatrixView: React.FC<ScottExecutiveMatrixViewProps> =
                             Rp {u.cash_payout_amount.toLocaleString('id-ID')}
                           </span>
                         ) : (
-                          <span className="text-slate-400 font-normal">Rp 0 (Offset)</span>
+                          <span className="text-slate-500 font-normal">Rp 0 (Offset)</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-center font-sans">

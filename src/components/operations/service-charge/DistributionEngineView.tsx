@@ -250,35 +250,35 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
         <div
           className={`p-4 rounded-xl border flex items-center justify-between text-xs font-sans ${
             notice.type === 'success'
-              ? 'bg-emerald-950/70 border-emerald-800 text-emerald-300'
-              : 'bg-rose-950/70 border-rose-800 text-rose-300'
+              ? 'bg-slate-900/10/70 border-emerald-800 text-emerald-700'
+              : 'bg-red-600/10/70 border-rose-800 text-rose-300'
           }`}
         >
           <div className="flex items-center gap-2">
             {notice.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-rose-400" />
+              <AlertCircle className="w-4 h-4 text-red-600" />
             )}
             <span>{notice.message}</span>
           </div>
-          <button onClick={() => setNotice(null)} className="text-slate-400 hover:text-slate-200">
+          <button onClick={() => setNotice(null)} className="text-slate-500 hover:text-slate-700">
             ✕
           </button>
         </div>
       )}
 
       {/* Cycle Selector & Engine Configuration Controls */}
-      <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="p-5 rounded-xl bg-white border border-slate-200 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-amber-400" />
-              <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wide font-sans">
+              <Calculator className="w-5 h-5 text-amber-700" />
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide font-sans">
                 Month-End Service Charge Pool Distribution Engine
               </h3>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Aggregates guest check tranches into Trust Liability (Account 2030), factors attendance &amp; seniority points, and calculates exact rate per point.
             </p>
           </div>
@@ -289,18 +289,18 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
             {/* Print Button */}
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
               title="Print Service Charge Distribution"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print</span>
             </button>
 
-            <label className="text-xs text-slate-400 font-mono ml-2">Select Cycle:</label>
+            <label className="text-xs text-slate-500 font-mono ml-2">Select Cycle:</label>
             <select
               value={selectedCycleId}
               onChange={(e) => setSelectedCycleId(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-mono text-slate-700 focus:outline-none focus:border-emerald-500"
             >
               {cycles.map((c) => (
                 <option key={c.cycle_id} value={c.cycle_id}>
@@ -314,17 +314,17 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
         {/* Calculation Parameters / Simulator Bar */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block text-slate-400 font-mono mb-1">Target Period (YYYY-MM)</label>
+            <label className="block text-slate-500 font-mono mb-1">Target Period (YYYY-MM)</label>
             <input
               type="month"
               value={calcPeriod}
               onChange={(e) => setCalcPeriod(e.target.value)}
-              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+              className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 font-mono mb-1">
+            <label className="block text-slate-500 font-mono mb-1">
               Breakage / Reserve Retention (%): {retentionPct}%
             </label>
             <input
@@ -339,7 +339,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-400 font-mono mb-1">
+            <label className="block text-slate-500 font-mono mb-1">
               Manual Pool Override (Optional)
             </label>
             <input
@@ -349,7 +349,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
               onChange={(e) =>
                 setCustomPoolAmount(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+              className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
             />
           </div>
 
@@ -357,7 +357,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
             <button
               onClick={handleRunCalculation}
               disabled={isCalculating}
-              className="w-full flex items-center justify-center gap-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-sm"
+              className="w-full flex items-center justify-center gap-2 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs"
             >
               <Calculator className="w-4 h-4" />
               <span>{isCalculating ? 'Computing...' : 'Calculate Distribution Pool'}</span>
@@ -368,22 +368,22 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
 
       {/* Active Cycle Status & Financial Proof Card */}
       {activeCycle && (
-        <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div className="p-5 rounded-xl bg-white border border-slate-200 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-slate-400">{activeCycle.cycle_id}</span>
+                <span className="font-mono text-xs font-bold text-slate-500">{activeCycle.cycle_id}</span>
                 <span
                   className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase tracking-wider ${
                     activeCycle.status === 'POSTED_TO_PAYROLL'
                       ? 'bg-blue-950 text-blue-300 border border-blue-800/60'
-                      : 'bg-emerald-950 text-emerald-300 border border-emerald-800/60'
+                      : 'bg-slate-900/10 text-emerald-700 border border-emerald-800/60'
                   }`}
                 >
                   {activeCycle.status}
                 </span>
               </div>
-              <h2 className="text-base font-bold text-slate-100 mt-1 font-sans">{activeCycle.title}</h2>
+              <h2 className="text-base font-bold text-slate-900 mt-1 font-sans">{activeCycle.title}</h2>
             </div>
 
             {/* Approval & Ledger Action Button */}
@@ -391,13 +391,13 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
               {activeCycle.status === 'POSTED_TO_PAYROLL' ? (
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-800 text-blue-300 text-xs font-semibold">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                    <CheckCircle2 className="w-4 h-4 text-slate-500" />
                     <span>Disbursed &amp; Posted to Payroll</span>
                   </span>
                   {activeCycle.journal_id && onViewJournal && (
                     <button
                       onClick={() => onViewJournal(activeCycle.journal_id!)}
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-mono font-bold transition-colors border border-slate-700"
+                      className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-emerald-700 text-xs font-mono font-bold transition-colors border border-slate-200"
                     >
                       View Journal {activeCycle.journal_id}
                     </button>
@@ -407,7 +407,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
                 <button
                   onClick={handleApproveAndPost}
                   disabled={isApproving}
-                  className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-md"
+                  className="flex items-center gap-2 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs"
                 >
                   <Send className="w-4 h-4" />
                   <span>{isApproving ? 'Posting...' : 'Approve & Post to USALI General Ledger'}</span>
@@ -418,11 +418,11 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
 
           {/* Key Pool Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 font-mono">
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+            <div className="p-3 rounded-lg bg-white/60 border border-slate-200">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">
                 Total Trust Inflow
               </span>
-              <span className="text-sm font-bold text-slate-200">
+              <span className="text-sm font-bold text-slate-700">
                 Rp {activeCycle.total_collected_amount.toLocaleString()}
               </span>
               <span className="text-[10px] text-slate-500 block">
@@ -430,21 +430,21 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+            <div className="p-3 rounded-lg bg-white/60 border border-slate-200">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">
                 Net Distributable Pool
               </span>
-              <span className="text-sm font-bold text-emerald-400">
+              <span className="text-sm font-bold text-emerald-700">
                 Rp {activeCycle.distributable_pool_amount.toLocaleString()}
               </span>
               <span className="text-[10px] text-slate-500 block">Account 2030 (Debit)</span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+            <div className="p-3 rounded-lg bg-white/60 border border-slate-200">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">
                 Total Weighted Points
               </span>
-              <span className="text-sm font-bold text-slate-200">
+              <span className="text-sm font-bold text-slate-700">
                 {activeCycle.total_weighted_points.toFixed(2)} pts
               </span>
               <span className="text-[10px] text-slate-500 block">
@@ -452,8 +452,8 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 ring-1 ring-amber-500/30">
-              <span className="text-[10px] text-amber-400 uppercase tracking-wider block font-bold">
+            <div className="p-3 rounded-lg bg-white/60 border border-slate-200 ring-1 ring-amber-500/30">
+              <span className="text-[10px] text-amber-700 uppercase tracking-wider block font-bold">
                 Rate Per Point (Value)
               </span>
               <span className="text-base font-extrabold text-amber-300">
@@ -462,40 +462,40 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
               <span className="text-[10px] text-slate-500 block">Pool ÷ Weighted Pts</span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+            <div className="p-3 rounded-lg bg-white/60 border border-slate-200">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">
                 Net Staff Disbursement
               </span>
-              <span className="text-sm font-bold text-slate-200">
+              <span className="text-sm font-bold text-slate-700">
                 Rp {activeCycle.total_net_payout.toLocaleString()}
               </span>
-              <span className="text-[10px] text-rose-400 block">
+              <span className="text-[10px] text-red-600 block">
                 Tax: Rp {activeCycle.total_tax_withheld.toLocaleString()}
               </span>
             </div>
           </div>
 
           {/* Double-Entry Ledger Posting Preview */}
-          <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs font-mono space-y-1.5">
-            <div className="flex items-center justify-between text-slate-400 text-[11px]">
-              <span className="font-bold text-slate-300">USALI Double-Entry General Ledger Reconciliation Proof:</span>
+          <div className="p-3 rounded-lg bg-white/80 border border-slate-200 text-xs font-mono space-y-1.5">
+            <div className="flex items-center justify-between text-slate-500 text-[11px]">
+              <span className="font-bold text-slate-700">USALI Double-Entry General Ledger Reconciliation Proof:</span>
               <span>Balanced Verification: Debits == Credits</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div className="p-2 rounded bg-slate-900 border border-slate-800 space-y-1">
-                <span className="text-emerald-400 font-bold block">DEBIT (Clearing Liability Pool):</span>
+              <div className="p-2 rounded bg-white border border-slate-200 space-y-1">
+                <span className="text-emerald-700 font-bold block">DEBIT (Clearing Liability Pool):</span>
                 <div className="flex justify-between">
                   <span>2030 - Staff Service Charge Fund:</span>
                   <span className="font-bold">Rp {activeCycle.total_gross_payout.toLocaleString()}</span>
                 </div>
               </div>
-              <div className="p-2 rounded bg-slate-900 border border-slate-800 space-y-1">
-                <span className="text-blue-400 font-bold block">CREDIT (Accrued Payroll &amp; Tax):</span>
+              <div className="p-2 rounded bg-white border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-bold block">CREDIT (Accrued Payroll &amp; Tax):</span>
                 <div className="flex justify-between">
                   <span>2020 - Accrued Staff Payroll (Net):</span>
                   <span>Rp {activeCycle.total_net_payout.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-rose-400">
+                <div className="flex justify-between text-red-600">
                   <span>2040 - PPh 21 Tax Withholding:</span>
                   <span>Rp {activeCycle.total_tax_withheld.toLocaleString()}</span>
                 </div>
@@ -506,8 +506,8 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
       )}
 
       {/* Staff Allocation Sheet Table */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between">
-        <div className="text-xs font-bold text-slate-200 font-sans">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div className="text-xs font-bold text-slate-700 font-sans">
           Staff Points &amp; Payout Allocation Sheet ({displayedLines.length} employees)
         </div>
 
@@ -517,13 +517,13 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
             placeholder="Search staff or title..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           />
 
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
-            className="px-2 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+            className="px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           >
             <option value="ALL">All Departments</option>
             {departments.map((d) => (
@@ -535,10 +535,10 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
         </div>
       </div>
 
-      <div id="service-charge-distribution-table" className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900">
+      <div id="service-charge-distribution-table" className="border border-slate-200 rounded-xl overflow-hidden bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400 tracking-wider">
+            <thead className="bg-white/80 border-b border-slate-200 text-[11px] font-mono uppercase text-slate-500 tracking-wider">
               <tr>
                 <th className="py-3 px-4">Employee</th>
                 <th className="py-3 px-4">Dept &amp; Title</th>
@@ -561,24 +561,24 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
                 </tr>
               ) : (
                 displayedLines.map((line) => (
-                  <tr key={line.employee_id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={line.employee_id} className="hover:bg-white/40 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-sans font-bold text-slate-100">{line.employee_name}</div>
+                      <div className="font-sans font-bold text-slate-900">{line.employee_name}</div>
                       <div className="text-[10px] text-slate-500 font-mono">{line.employee_id}</div>
                     </td>
                     <td className="py-3 px-4 font-sans">
-                      <div className="text-slate-200">{line.job_title}</div>
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-slate-700">{line.job_title}</div>
+                      <div className="text-[11px] text-slate-500">
                         {line.department_code} - {getDeptName(line.department_code)}
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="font-bold text-slate-300">{line.grade_level}</span>
-                      <div className="text-[10px] text-emerald-400">{line.base_points.toFixed(1)} pts</div>
+                      <span className="font-bold text-slate-700">{line.grade_level}</span>
+                      <div className="text-[10px] text-emerald-700">{line.base_points.toFixed(1)} pts</div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-slate-300">{line.years_of_service} yrs</span>
-                      <div className="text-[10px] text-emerald-400">+{line.seniority_bonus_pct}%</div>
+                      <span className="text-slate-700">{line.years_of_service} yrs</span>
+                      <div className="text-[10px] text-emerald-700">+{line.seniority_bonus_pct}%</div>
                     </td>
                     <td className="py-3 px-4">
                       {activeCycle?.status !== 'POSTED_TO_PAYROLL' ? (
@@ -588,7 +588,7 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
                           max={line.standard_calendar_days}
                           value={overrideDays[line.employee_id] !== undefined ? overrideDays[line.employee_id] : line.days_worked}
                           onChange={(e) => handleDaysChange(line.employee_id, parseInt(e.target.value, 10) || 1)}
-                          className="w-16 px-1.5 py-1 rounded bg-slate-950 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                          className="w-16 px-1.5 py-1 rounded bg-white border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
                         />
                       ) : (
                         <span>
@@ -596,25 +596,25 @@ export const DistributionEngineView: React.FC<DistributionEngineViewProps> = ({
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 font-bold text-emerald-300">
+                    <td className="py-3 px-4 font-bold text-emerald-700">
                       {line.effective_points.toFixed(2)}
                     </td>
-                    <td className="py-3 px-4 text-right text-slate-300">
+                    <td className="py-3 px-4 text-right text-slate-700">
                       Rp {line.gross_payout.toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right text-rose-400 text-[11px]">
+                    <td className="py-3 px-4 text-right text-red-600 text-[11px]">
                       - Rp {line.tax_withheld_amount.toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-emerald-400 text-sm">
+                    <td className="py-3 px-4 text-right font-bold text-emerald-700 text-sm">
                       Rp {line.net_payout.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-center font-sans">
                       <button
                         onClick={() => setSelectedStaffLine(line)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs transition-colors border border-slate-700"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-200 text-slate-700 text-xs transition-colors border border-slate-200"
                         title="View Individual Pay Slip"
                       >
-                        <Eye className="w-3.5 h-3.5 text-amber-400" />
+                        <Eye className="w-3.5 h-3.5 text-amber-700" />
                         <span>Slip</span>
                       </button>
                     </td>

@@ -139,13 +139,13 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white/60 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5 text-blue-400" />
+            <FileSpreadsheet className="w-5 h-5 text-slate-500" />
             <span>Perpetual Stock Card &amp; Bin Movement History</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Audit-ready chronological transaction trail for any SKU across receipts, dispatches, transfers, and counts.
           </p>
         </div>
@@ -157,7 +157,7 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
           {/* Print Button */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
             title="Print Stock Card"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
             <select
               value={selectedItemId}
               onChange={(e) => setSelectedItemId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-white"
             >
               {items.map((it) => (
                 <option key={it.item_id} value={it.item_id}>
@@ -184,7 +184,7 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
             <select
               value={selectedStoreroom}
               onChange={(e) => setSelectedStoreroom(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
             >
               <option value="ALL">All Storerooms</option>
               {storerooms.map((s) => (
@@ -199,34 +199,34 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
 
       {/* Item Profile Card */}
       {activeItem && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">SKU Code</span>
-            <span className="text-sm font-bold font-mono text-emerald-400">{activeItem.item_code}</span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase block">SKU Code</span>
+            <span className="text-sm font-bold font-mono text-emerald-700">{activeItem.item_code}</span>
           </div>
 
           <div className="col-span-2">
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">Description</span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase block">Description</span>
             <span className="text-sm font-bold text-white line-clamp-1">{activeItem.item_name}</span>
           </div>
 
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">Total On-Hand</span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase block">Total On-Hand</span>
             <span className="text-sm font-bold font-mono text-white">
               {(activeItem.current_stock ?? 0).toLocaleString()} {activeItem.uom}
             </span>
           </div>
 
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">Moving Avg Cost</span>
-            <span className="text-sm font-bold font-mono text-blue-400">
+            <span className="text-[10px] font-mono text-slate-500 uppercase block">Moving Avg Cost</span>
+            <span className="text-sm font-bold font-mono text-slate-500">
               Rp {(activeItem.average_cost ?? 0).toLocaleString('id-ID')}
             </span>
           </div>
 
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">Valuation Total</span>
-            <span className="text-sm font-bold font-mono text-emerald-400">
+            <span className="text-[10px] font-mono text-slate-500 uppercase block">Valuation Total</span>
+            <span className="text-sm font-bold font-mono text-emerald-700">
               Rp {(((activeItem.current_stock ?? 0) * (activeItem.average_cost ?? 0)) || 0).toLocaleString('id-ID')}
             </span>
           </div>
@@ -234,10 +234,10 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
       )}
 
       {/* Ledger Table */}
-      <div id="stock-card-printable-area" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      <div id="stock-card-printable-area" className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+            <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
               <tr>
                 <th className="px-4 py-3">Date & Time</th>
                 <th className="px-4 py-3">Movement Type</th>
@@ -251,7 +251,7 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
                 <th className="px-4 py-3">User / Notes</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 text-slate-300">
+            <tbody className="divide-y divide-slate-800 text-slate-700">
               {movements.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-10 text-center text-slate-500 font-mono">
@@ -275,13 +275,13 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
                   const transValue = qtyAbsolute * m.unit_cost;
 
                   return (
-                    <tr key={m.movement_id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-4 py-2.5 font-mono text-slate-400">{m.date}</td>
+                    <tr key={m.movement_id} className="hover:bg-white/30 transition-colors">
+                      <td className="px-4 py-2.5 font-mono text-slate-500">{m.date}</td>
                       <td className="px-4 py-2.5">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold inline-flex items-center gap-1 ${
                             isIn
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/30'
                               : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                           }`}
                         >
@@ -289,27 +289,27 @@ export const StockCardView: React.FC<StockCardViewProps> = ({ initialItemId }) =
                           <span>{m.type}</span>
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 font-mono text-slate-300">{m.storeroom_id}</td>
-                      <td className="px-4 py-2.5 font-mono text-blue-400 font-semibold">
+                      <td className="px-4 py-2.5 font-mono text-slate-700">{m.storeroom_id}</td>
+                      <td className="px-4 py-2.5 font-mono text-slate-500 font-semibold">
                         {m.reference_id}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-400">
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">
                         {isIn ? `+${qtyAbsolute}` : '-'}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono font-bold text-rose-400">
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-red-600">
                         {isOut ? `-${qtyAbsolute}` : '-'}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono font-bold text-white bg-slate-950/40">
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-white bg-white/40">
                         {m.balance_after}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-slate-400">
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-500">
                         Rp {(m.unit_cost ?? 0).toLocaleString('id-ID')}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono font-medium text-slate-200">
+                      <td className="px-4 py-2.5 text-right font-mono font-medium text-slate-700">
                         Rp {(transValue ?? 0).toLocaleString('id-ID')}
                       </td>
-                      <td className="px-4 py-2.5 text-[11px] text-slate-400">
-                        <span className="text-slate-300">{m.performed_by}</span>
+                      <td className="px-4 py-2.5 text-[11px] text-slate-500">
+                        <span className="text-slate-700">{m.performed_by}</span>
                         {m.notes ? ` • ${m.notes}` : ''}
                       </td>
                     </tr>

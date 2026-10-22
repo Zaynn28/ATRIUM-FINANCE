@@ -87,33 +87,33 @@ export const MappingModal: React.FC<MappingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl">
+      <div className="bg-white border border-slate-200 rounded-xl w-full max-w-2xl overflow-hidden shadow-xs">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-emerald-950/60 border border-emerald-800/60 rounded-lg text-emerald-400">
+            <div className="p-2 bg-slate-900/10/60 border border-emerald-800/60 rounded-lg text-emerald-700">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-100">
+              <h2 className="text-base font-semibold text-slate-900">
                 Accounting Counterpart Rules
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Controller authorization for automated double-entry journal mappings
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+            className="text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-white"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Warning Banner */}
-        <div className="bg-amber-950/30 border-y border-amber-800/40 px-6 py-3 flex items-start gap-3">
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+        <div className="bg-slate-900/10/30 border-y border-amber-800/40 px-6 py-3 flex items-start gap-3">
+          <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-200/90 leading-relaxed">
             Per accounting governance rules, transactions will <strong>not</strong> auto-generate
             journals with guessed counterpart accounts. Confirm the default accounts below or
@@ -125,10 +125,10 @@ export const MappingModal: React.FC<MappingModalProps> = ({
         <form onSubmit={handleSave} className="p-6 space-y-5">
           {/* Revenue Mapping */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
               Revenue Default Settlement Account (Debit)
             </label>
-            <p className="text-xs text-slate-400 mb-2">
+            <p className="text-xs text-slate-500 mb-2">
               Default Asset/Receivable account debited when revenue transactions (Rooms, F&B, Events) are recorded.
             </p>
             <select
@@ -137,7 +137,7 @@ export const MappingModal: React.FC<MappingModalProps> = ({
               onChange={(e) =>
                 setFormData({ ...formData, revenue_default_debit_account: e.target.value })
               }
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
             >
               <option value="">-- Select Counterpart Asset Account --</option>
               {assetAccounts.map((acc) => (
@@ -155,14 +155,14 @@ export const MappingModal: React.FC<MappingModalProps> = ({
             </select>
           </div>
 
-          <div className="border-t border-slate-800 pt-4 space-y-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+          <div className="border-t border-slate-200 pt-4 space-y-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700">
               Spending Default Counterpart Accounts (Credit)
             </h3>
 
             {/* Procurement AP */}
             <div className="space-y-1">
-              <label className="block text-xs text-slate-300">
+              <label className="block text-xs text-slate-700">
                 1. Procurement & Vendor Purchases (Credit Account)
               </label>
               <select
@@ -174,7 +174,7 @@ export const MappingModal: React.FC<MappingModalProps> = ({
                     spending_procurement_credit_account: e.target.value,
                   })
                 }
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
               >
                 <option value="">-- Select Accounts Payable Account --</option>
                 {liabilityAccounts.map((acc) => (
@@ -193,7 +193,7 @@ export const MappingModal: React.FC<MappingModalProps> = ({
 
             {/* Payroll Accrual */}
             <div className="space-y-1">
-              <label className="block text-xs text-slate-300">
+              <label className="block text-xs text-slate-700">
                 2. Payroll & Staff Compensation (Credit Account)
               </label>
               <select
@@ -205,7 +205,7 @@ export const MappingModal: React.FC<MappingModalProps> = ({
                     spending_payroll_credit_account: e.target.value,
                   })
                 }
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
               >
                 <option value="">-- Select Accrued Payroll / Bank Account --</option>
                 {allActiveAccounts.map((acc) => (
@@ -218,7 +218,7 @@ export const MappingModal: React.FC<MappingModalProps> = ({
 
             {/* Other Spending */}
             <div className="space-y-1">
-              <label className="block text-xs text-slate-300">
+              <label className="block text-xs text-slate-700">
                 3. Direct Disbursements / Other Spending (Credit Account)
               </label>
               <select
@@ -230,7 +230,7 @@ export const MappingModal: React.FC<MappingModalProps> = ({
                     spending_other_credit_account: e.target.value,
                   })
                 }
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
               >
                 <option value="">-- Select Cash / Bank Account --</option>
                 {allActiveAccounts.map((acc) => (
@@ -243,18 +243,18 @@ export const MappingModal: React.FC<MappingModalProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800"
+              className="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs rounded-lg shadow-sm transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-xs transition-colors"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{saving ? 'Saving...' : 'Confirm & Authorize Mappings'}</span>

@@ -283,7 +283,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
           <div className="flex items-center bg-slate-50 border border-slate-300 rounded-lg p-0.5 shadow-xs">
             <button
               onClick={() => navigatePeriod(-1)}
-              className="p-1 rounded hover:bg-slate-200 text-slate-600 transition-colors"
+              className="p-1 rounded hover:bg-slate-200 text-slate-500 transition-colors"
               title="Previous Month"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
@@ -298,7 +298,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             </div>
             <button
               onClick={() => navigatePeriod(1)}
-              className="p-1 rounded hover:bg-slate-200 text-slate-600 transition-colors"
+              className="p-1 rounded hover:bg-slate-200 text-slate-500 transition-colors"
               title="Next Month"
             >
               <ChevronRight className="w-3.5 h-3.5" />
@@ -330,7 +330,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
 
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
                 title="Print Distribution Run"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -364,7 +364,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
               <button
                 onClick={handleReview}
                 disabled={actionLoading}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-xs"
               >
                 Mark Under Review
               </button>
@@ -398,7 +398,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             <button
               onClick={handlePost}
               disabled={actionLoading || !currentBatch.reconciliation.is_reconciled}
-              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-xs transition-colors"
             >
               <FileCheck className="w-4 h-4" />
               {actionLoading ? 'Posting to GL...' : 'Post to General Ledger'}
@@ -699,7 +699,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
         <div id="owner-distribution-table-area" className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
                 <th className="py-2.5 px-3">Unit</th>
                 <th className="py-2.5 px-3">Owner</th>
                 <th className="py-2.5 px-3 text-right">SQM</th>
@@ -715,7 +715,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-slate-400">
+                  <td colSpan={10} className="py-12 text-center text-slate-500">
                     Loading distribution batch data...
                   </td>
                 </tr>
@@ -723,14 +723,14 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
                 <tr>
                   <td colSpan={10} className="py-12 text-center text-slate-500 space-y-2">
                     <p className="font-semibold text-sm">No distribution calculated for {period}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500">
                       Click "Calculate Distribution for {period}" above to run the 14-step dynamic allocation.
                     </p>
                   </td>
                 </tr>
               ) : filteredLines.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-8 text-center text-slate-400">
+                  <td colSpan={10} className="py-8 text-center text-slate-500">
                     No unit records match your search criteria.
                   </td>
                 </tr>
@@ -742,14 +742,14 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
                     </td>
                     <td className="py-2.5 px-3">
                       <div className="font-medium text-slate-800">{line.owner_name}</div>
-                      <div className="text-[10px] text-slate-400">
+                      <div className="text-[10px] text-slate-500">
                         {line.is_within_guarantee_period ? `Year ${line.contract_year_number} of 3 (Guarantee)` : `Year ${line.contract_year_number} (Post-Guarantee)`}
                       </div>
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono font-semibold text-blue-900">
                       {line.unit_sqm.toFixed(2)} m²
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-[11px] text-slate-600">
+                    <td className="py-2.5 px-3 text-right font-mono text-[11px] text-slate-500">
                       {(line.allocation_pct * 100).toFixed(4)}%
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono text-slate-700">
@@ -765,13 +765,13 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
                         ) : line.difference_flag === 'SURPLUS' ? (
                           <span className="text-emerald-600 font-medium">Surplus: +{formatIDR(Math.abs(line.guarantee_pool_difference))}</span>
                         ) : (
-                          <span className="text-slate-400">Exact match</span>
+                          <span className="text-slate-500">Exact match</span>
                         )}
                       </div>
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono text-rose-600">
                       - {formatIDR(line.tax_withheld_amount)}
-                      <span className="block text-[10px] text-slate-400">{line.tax_rate_pct}%</span>
+                      <span className="block text-[10px] text-slate-500">{line.tax_rate_pct}%</span>
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800 text-sm">
                       {formatIDR(line.net_distribution_amount)}
@@ -802,7 +802,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
                         {onNavigateToStatement && (
                           <button
                             onClick={() => onNavigateToStatement(line.unit_id)}
-                            className="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors"
+                            className="p-1 text-slate-500 hover:text-slate-700 rounded transition-colors"
                             title="Open Printable Statement"
                           >
                             <FileText className="w-3.5 h-3.5" />
@@ -811,7 +811,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
                         {onNavigateToEmail && (
                           <button
                             onClick={() => onNavigateToEmail(period)}
-                            className="p-1 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                            className="p-1 text-slate-500 hover:text-indigo-600 rounded transition-colors"
                             title="See / Edit Email Draft for this Investor"
                           >
                             <Mail className="w-3.5 h-3.5" />
@@ -838,13 +838,13 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
 
       {/* Reversal Confirmation Modal */}
       {showReversalModal && currentBatch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl shadow-xs border border-slate-200 max-w-md w-full p-6 space-y-4">
             <div className="flex items-center gap-3 text-rose-700">
               <AlertTriangle className="w-6 h-6 shrink-0" />
               <h3 className="font-bold text-base">Reverse Posted Distribution</h3>
             </div>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-500">
               Reversing batch <strong>{currentBatch.batch_id}</strong> will create an offsetting journal voucher to balance General Ledger accounts 5030, 2060, and 2070. Historical records will be marked as REVERSED.
             </p>
             <div>
@@ -861,7 +861,7 @@ export const MonthlyDistributionView: React.FC<MonthlyDistributionViewProps> = (
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowReversalModal(false)}
-                className="px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50"
+                className="px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-50"
               >
                 Cancel
               </button>

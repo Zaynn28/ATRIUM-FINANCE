@@ -237,13 +237,13 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
   return (
     <div className="space-y-6">
       {/* View Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2.5">
-            <BookOpen className="w-5 h-5 text-emerald-400" />
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <BookOpen className="w-5 h-5 text-emerald-700" />
             <span>Chart of Accounts &amp; Departments</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Master ledger account taxonomy and departmental hierarchy for hotel financial reporting
           </p>
         </div>
@@ -257,7 +257,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
               previewMode
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
             }`}
             title="Toggle Paper Print/PDF Preview"
           >
@@ -268,7 +268,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
           {/* Print Button */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
             title="Print Chart of Accounts"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -280,10 +280,10 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
               id="btn-seed-usali"
               onClick={handleSeedUSALI}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium transition-colors"
               title="Preload standard hotel accounts"
             >
-              <DownloadCloud className="w-3.5 h-3.5 text-emerald-400" />
+              <DownloadCloud className="w-3.5 h-3.5 text-emerald-700" />
               <span>Seed USALI Accounts</span>
             </button>
           )}
@@ -292,7 +292,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
             <button
               id="btn-add-account"
               onClick={handleOpenCreateAccount}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition-colors shadow-xs"
             >
               <Plus className="w-4 h-4" />
               <span>Add Account</span>
@@ -304,7 +304,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                 setDeptForm({ department_code: '', department_name: '', active: 'Y' });
                 setIsDeptModalOpen(true);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium transition-colors shadow-xs"
             >
               <Plus className="w-4 h-4" />
               <span>Add Department</span>
@@ -327,12 +327,12 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
       )}
 
       {successMessage && (
-        <div className="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-lg flex items-center justify-between text-xs text-emerald-200">
+        <div className="p-3 bg-slate-900/10/40 border border-emerald-800/50 rounded-lg flex items-center justify-between text-xs text-emerald-200">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-700" />
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-emerald-400 hover:text-emerald-300">
+          <button onClick={() => setSuccessMessage(null)} className="text-emerald-700 hover:text-emerald-700">
             Dismiss
           </button>
         </div>
@@ -353,13 +353,13 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
       >
         <div className="space-y-6">
           {/* Section Switcher */}
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-2 print:hidden">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2 print:hidden">
             <button
               onClick={() => setActiveTab('accounts')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeTab === 'accounts'
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <BookOpen className="w-4 h-4" />
@@ -369,8 +369,8 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
               onClick={() => setActiveTab('departments')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 activeTab === 'departments'
-                  ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-emerald-700 border border-slate-200'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               <Building2 className="w-4 h-4" />
@@ -391,7 +391,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search account code, name, USALI..."
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-emerald-500 font-mono"
               />
             </div>
 
@@ -406,8 +406,8 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                   onClick={() => setSelectedType(type)}
                   className={`px-2.5 py-1 rounded text-xs whitespace-nowrap font-medium transition-colors ${
                     selectedType === type
-                      ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-emerald-700 border border-slate-200'
+                      : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   {type}
@@ -417,10 +417,10 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
           </div>
 
           {/* Accounts Table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider font-mono">
+                <thead className="bg-white/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider font-mono">
                   <tr>
                     <th className="py-3 px-4">Account Code</th>
                     <th className="py-3 px-4">Account Name</th>
@@ -436,8 +436,8 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                   {filteredAccounts.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="py-12 text-center text-slate-500 font-sans">
-                        <BookOpen className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
-                        <p className="font-medium text-slate-400">No accounts found</p>
+                        <BookOpen className="w-8 h-8 mx-auto text-slate-500 mb-2 opacity-50" />
+                        <p className="font-medium text-slate-500">No accounts found</p>
                         <p className="text-xs text-slate-500 mt-1">
                           {accounts.length === 0
                             ? 'Create an account manually or seed standard USALI accounts to get started.'
@@ -451,35 +451,35 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                       return (
                         <tr
                           key={acc.account_code}
-                          className={`hover:bg-slate-800/40 transition-colors ${
-                            !isActive ? 'opacity-50 bg-slate-950/30' : ''
+                          className={`hover:bg-white/40 transition-colors ${
+                            !isActive ? 'opacity-50 bg-white/30' : ''
                           }`}
                         >
-                          <td className="py-3 px-4 font-semibold text-slate-200">{acc.account_code}</td>
-                          <td className="py-3 px-4 font-sans font-medium text-slate-100">{acc.account_name}</td>
+                          <td className="py-3 px-4 font-semibold text-slate-700">{acc.account_code}</td>
+                          <td className="py-3 px-4 font-sans font-medium text-slate-900">{acc.account_name}</td>
                           <td className="py-3 px-4">
                             <span
                               className={`px-2 py-0.5 rounded text-[11px] font-sans font-medium ${
                                 acc.account_type === 'Asset'
                                   ? 'bg-blue-950/60 text-blue-300 border border-blue-800/40'
                                   : acc.account_type === 'Liability'
-                                  ? 'bg-amber-950/60 text-amber-300 border border-amber-800/40'
+                                  ? 'bg-slate-900/10/60 text-amber-300 border border-amber-800/40'
                                   : acc.account_type === 'Equity'
                                   ? 'bg-purple-950/60 text-purple-300 border border-purple-800/40'
                                   : acc.account_type === 'Revenue'
-                                  ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/40'
-                                  : 'bg-rose-950/60 text-rose-300 border border-rose-800/40'
+                                  ? 'bg-slate-900/10/60 text-emerald-700 border border-emerald-800/40'
+                                  : 'bg-red-600/10/60 text-rose-300 border border-rose-800/40'
                               }`}
                             >
                               {acc.account_type}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-slate-300">{acc.normal_balance}</td>
-                          <td className="py-3 px-4 font-sans text-slate-300">{acc.usali_line || '—'}</td>
-                          <td className="py-3 px-4 font-sans text-slate-400">{acc.statutory_line || '—'}</td>
+                          <td className="py-3 px-4 text-slate-700">{acc.normal_balance}</td>
+                          <td className="py-3 px-4 font-sans text-slate-700">{acc.usali_line || '—'}</td>
+                          <td className="py-3 px-4 font-sans text-slate-500">{acc.statutory_line || '—'}</td>
                           <td className="py-3 px-4 text-center">
                             {isActive ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-sans text-emerald-400 font-medium">
+                              <span className="inline-flex items-center gap-1 text-[11px] font-sans text-emerald-700 font-medium">
                                 <CheckCircle2 className="w-3 h-3" /> Active
                               </span>
                             ) : (
@@ -492,7 +492,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                             <div className="flex items-center justify-end gap-1.5 font-sans">
                               <button
                                 onClick={() => handleOpenEditAccount(acc)}
-                                className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded"
+                                className="p-1 text-slate-500 hover:text-slate-700 hover:bg-white rounded"
                                 title="Edit Account"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -500,7 +500,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                               {isActive ? (
                                 <button
                                   onClick={() => handleDeactivate(acc.account_code)}
-                                  className="p-1 text-amber-400 hover:text-amber-300 hover:bg-slate-800 rounded"
+                                  className="p-1 text-amber-700 hover:text-amber-300 hover:bg-white rounded"
                                   title="Deactivate Account"
                                 >
                                   <PowerOff className="w-3.5 h-3.5" />
@@ -508,7 +508,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                               ) : null}
                               <button
                                 onClick={() => handleDelete(acc.account_code)}
-                                className="p-1 text-red-400 hover:text-red-300 hover:bg-slate-800 rounded"
+                                className="p-1 text-red-400 hover:text-red-300 hover:bg-white rounded"
                                 title="Delete (Only allowed if no posted history)"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -529,10 +529,10 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
       {/* DEPARTMENTS VIEW */}
       {activeTab === 'departments' && (
         <div className="space-y-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider font-mono">
+                <thead className="bg-white/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider font-mono">
                   <tr>
                     <th className="py-3 px-4">Department Code</th>
                     <th className="py-3 px-4">Department Name</th>
@@ -543,8 +543,8 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                   {departments.length === 0 ? (
                     <tr>
                       <td colSpan={3} className="py-12 text-center text-slate-500 font-sans">
-                        <Building2 className="w-8 h-8 mx-auto text-slate-600 mb-2 opacity-50" />
-                        <p className="font-medium text-slate-400">No departments configured</p>
+                        <Building2 className="w-8 h-8 mx-auto text-slate-500 mb-2 opacity-50" />
+                        <p className="font-medium text-slate-500">No departments configured</p>
                         <p className="text-xs text-slate-500 mt-1">
                           Add hotel departments (Rooms, Food &amp; Beverage, Administrative, etc.).
                         </p>
@@ -552,12 +552,12 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                     </tr>
                   ) : (
                     departments.map((dept) => (
-                      <tr key={dept.department_code} className="hover:bg-slate-800/40">
-                        <td className="py-3 px-4 font-semibold text-slate-200">{dept.department_code}</td>
-                        <td className="py-3 px-4 font-sans text-slate-100 font-medium">{dept.department_name}</td>
+                      <tr key={dept.department_code} className="hover:bg-white/40">
+                        <td className="py-3 px-4 font-semibold text-slate-700">{dept.department_code}</td>
+                        <td className="py-3 px-4 font-sans text-slate-900 font-medium">{dept.department_name}</td>
                         <td className="py-3 px-4 text-center font-sans">
                           {dept.active === 'Y' ? (
-                            <span className="text-emerald-400 font-medium inline-flex items-center gap-1">
+                            <span className="text-emerald-700 font-medium inline-flex items-center gap-1">
                               <CheckCircle2 className="w-3 h-3" /> Active
                             </span>
                           ) : (
@@ -581,14 +581,14 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
       {/* CREATE / EDIT ACCOUNT MODAL */}
       {isAccountModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-100">
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-lg overflow-hidden shadow-xs">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-slate-900">
                 {editingAccount ? `Edit Account: ${editingAccount.account_code}` : 'New Ledger Account'}
               </h3>
               <button
                 onClick={() => setIsAccountModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+                className="text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-white"
               >
                 &times;
               </button>
@@ -597,7 +597,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
             <form onSubmit={handleSaveAccount} className="p-6 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Account Code *</label>
+                  <label className="block text-slate-700 font-medium mb-1">Account Code *</label>
                   <input
                     type="text"
                     required
@@ -605,11 +605,11 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                     value={accountForm.account_code}
                     onChange={(e) => setAccountForm({ ...accountForm, account_code: e.target.value })}
                     placeholder="e.g. 1010, 4010"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono disabled:opacity-50"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-mono disabled:opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Account Type *</label>
+                  <label className="block text-slate-700 font-medium mb-1">Account Type *</label>
                   <select
                     value={accountForm.account_type}
                     onChange={(e) => {
@@ -617,7 +617,7 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
                       const normal = type === 'Liability' || type === 'Equity' || type === 'Revenue' ? 'Credit' : 'Debit';
                       setAccountForm({ ...accountForm, account_type: type, normal_balance: normal });
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-sans"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-sans"
                   >
                     <option value="Asset">Asset</option>
                     <option value="Liability">Liability</option>
@@ -629,35 +629,35 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Account Name *</label>
+                <label className="block text-slate-700 font-medium mb-1">Account Name *</label>
                 <input
                   type="text"
                   required
                   value={accountForm.account_name}
                   onChange={(e) => setAccountForm({ ...accountForm, account_name: e.target.value })}
                   placeholder="e.g. Cash - Operating Bank, Rooms Revenue - Transient"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-sans"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-sans"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Normal Balance *</label>
+                  <label className="block text-slate-700 font-medium mb-1">Normal Balance *</label>
                   <select
                     value={accountForm.normal_balance}
                     onChange={(e) => setAccountForm({ ...accountForm, normal_balance: e.target.value as NormalBalance })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700"
                   >
                     <option value="Debit">Debit</option>
                     <option value="Credit">Credit</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Active Status</label>
+                  <label className="block text-slate-700 font-medium mb-1">Active Status</label>
                   <select
                     value={accountForm.active}
                     onChange={(e) => setAccountForm({ ...accountForm, active: e.target.value as any })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700"
                   >
                     <option value="Y">Active (Y)</option>
                     <option value="N">Inactive (N)</option>
@@ -666,39 +666,39 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">USALI Line Classification</label>
+                <label className="block text-slate-700 font-medium mb-1">USALI Line Classification</label>
                 <input
                   type="text"
                   value={accountForm.usali_line}
                   onChange={(e) => setAccountForm({ ...accountForm, usali_line: e.target.value })}
                   placeholder="e.g. Rooms - Transient, Food - Outlets, A&G - Insurance"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-sans"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-sans"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Statutory Line Grouping</label>
+                <label className="block text-slate-700 font-medium mb-1">Statutory Line Grouping</label>
                 <input
                   type="text"
                   value={accountForm.statutory_line}
                   onChange={(e) => setAccountForm({ ...accountForm, statutory_line: e.target.value })}
                   placeholder="e.g. Current Assets, Operating Revenue, Personnel Expenses"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-sans"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-sans"
                 />
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAccountModalOpen(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 font-sans"
+                  className="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white font-sans"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg font-sans shadow-sm"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg font-sans shadow-xs"
                 >
                   {loading ? 'Saving...' : 'Save Account'}
                 </button>
@@ -711,51 +711,51 @@ export const ChartOfAccountsView: React.FC<ChartOfAccountsViewProps> = ({
       {/* CREATE DEPARTMENT MODAL */}
       {isDeptModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-100">Add Operating Department</h3>
+          <div className="bg-white border border-slate-200 rounded-xl w-full max-w-md overflow-hidden shadow-xs">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-slate-900">Add Operating Department</h3>
               <button
                 onClick={() => setIsDeptModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+                className="text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-white"
               >
                 &times;
               </button>
             </div>
             <form onSubmit={handleSaveDepartment} className="p-6 space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Department Code *</label>
+                <label className="block text-slate-700 font-medium mb-1">Department Code *</label>
                 <input
                   type="text"
                   required
                   value={deptForm.department_code}
                   onChange={(e) => setDeptForm({ ...deptForm, department_code: e.target.value })}
                   placeholder="e.g. 100, 200, 700"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-mono"
                 />
               </div>
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Department Name *</label>
+                <label className="block text-slate-700 font-medium mb-1">Department Name *</label>
                 <input
                   type="text"
                   required
                   value={deptForm.department_name}
                   onChange={(e) => setDeptForm({ ...deptForm, department_name: e.target.value })}
                   placeholder="e.g. Rooms Division, Food & Beverage"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-sans"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-sans"
                 />
               </div>
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsDeptModalOpen(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 font-sans"
+                  className="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white font-sans"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg font-sans shadow-sm"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg font-sans shadow-xs"
                 >
                   Save Department
                 </button>

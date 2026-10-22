@@ -138,7 +138,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex flex-col justify-start items-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-white/85 backdrop-blur-sm flex flex-col justify-start items-center p-2 sm:p-4 overflow-y-auto">
       {/* Inline Print Stylesheet */}
       <style>{`
         @media print {
@@ -175,9 +175,9 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
       `}</style>
 
       {/* Main Container */}
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col my-4 overflow-hidden">
+      <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col my-4 overflow-hidden">
         {/* Modal Action Header (Hidden in Print) */}
-        <div className="no-print bg-slate-950 px-5 py-3.5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="no-print bg-white px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="p-2 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/20">
               <FileText className="w-5 h-5" />
@@ -191,7 +191,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
                 <span
                   className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                     requisition.status === 'ISSUED'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      ? 'bg-slate-900/20 text-emerald-700 border border-emerald-500/30'
                       : requisition.status === 'APPROVED'
                       ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                       : requisition.status === 'ORDERED'
@@ -202,7 +202,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
                   {requisition.status}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 Official Department Stock &amp; Purchase Requisition Document (Formulir Permintaan Pembelian).
               </p>
             </div>
@@ -213,7 +213,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
               <button
                 type="button"
                 onClick={() => onApprove(requisition)}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Approve</span>
@@ -224,7 +224,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
               <button
                 type="button"
                 onClick={() => onCreatePo(requisition.requisition_id)}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-950 transition-colors"
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs shadow-blue-950 transition-colors"
               >
                 <ShoppingCart className="w-3.5 h-3.5" />
                 <span>Create PO</span>
@@ -235,7 +235,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
               <button
                 type="button"
                 onClick={() => onIssueStock(requisition)}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
               >
                 <PackageCheck className="w-3.5 h-3.5" />
                 <span>Issue Stock</span>
@@ -246,7 +246,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
               <button
                 type="button"
                 onClick={() => onViewJournal(requisition.journal_id!)}
-                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-lg text-xs font-semibold flex items-center gap-1 border border-slate-700 transition-colors"
+                className="px-2.5 py-1.5 bg-white hover:bg-slate-200 text-emerald-700 rounded-lg text-xs font-semibold flex items-center gap-1 border border-slate-200 transition-colors"
                 title="View Double-Entry Journal"
               >
                 <span>Journal</span>
@@ -259,7 +259,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
             <button
               type="button"
               onClick={handlePrint}
-              className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md shadow-purple-950 transition-colors"
+              className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs shadow-purple-950 transition-colors"
               title="Print Requisition Form (A4 / Letter)"
             >
               <Printer className="w-3.5 h-3.5" />
@@ -269,7 +269,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-1"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white transition-colors ml-1"
             >
               <X className="w-5 h-5" />
             </button>
@@ -277,10 +277,10 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
         </div>
 
         {/* Scrollable Printable Document Sheet (Pure White Paper for High-Fidelity Printing) */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-950/70">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-white/70">
           <div
             id="requisition-printable-document"
-            className="bg-white text-slate-900 rounded-xl p-6 sm:p-10 shadow-2xl border border-slate-200 max-w-4xl mx-auto transition-all"
+            className="bg-white text-slate-900 rounded-xl p-6 sm:p-10 shadow-xs border border-slate-200 max-w-4xl mx-auto transition-all"
           >
             {/* Header / Letterhead */}
             <div className="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-900 pb-5 mb-6 gap-4">
@@ -293,13 +293,13 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
                     <h1 className="text-xl font-black tracking-tight text-slate-900 leading-tight">
                       {hotelName}
                     </h1>
-                    <div className="text-[11px] text-slate-600 font-medium">
+                    <div className="text-[11px] text-slate-500 font-medium">
                       {hotelDivision}
                     </div>
                   </div>
                 </div>
 
-                <div className="text-[11px] text-slate-600 mt-2 space-y-0.5">
+                <div className="text-[11px] text-slate-500 mt-2 space-y-0.5">
                   <div>{hotelAddress}</div>
                   <div className="flex flex-wrap gap-x-4">
                     <span>Phone: {hotelPhone}</span>
@@ -353,7 +353,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
                 <div className="text-xs text-slate-700 font-medium mt-1">
                   Requester: <span className="font-bold text-slate-900">{requisition.requester_name}</span>
                 </div>
-                <div className="text-[11px] text-slate-600 mt-1">
+                <div className="text-[11px] text-slate-500 mt-1">
                   Target Storeroom:{' '}
                   <span className="font-mono font-bold text-slate-800">
                     {storeroom?.name || requisition.storeroom_name || requisition.storeroom_id} ({requisition.storeroom_id})
@@ -410,7 +410,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
 
                     return (
                       <tr key={idx} className="hover:bg-slate-50/50">
-                        <td className="py-2.5 px-3 font-mono text-center text-slate-400">
+                        <td className="py-2.5 px-3 font-mono text-center text-slate-500">
                           {idx + 1}
                         </td>
                         <td className="py-2.5 px-3">
@@ -419,7 +419,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
                             <div className="text-[10px] text-slate-500 font-medium">Category: {item.subcategory}</div>
                           )}
                         </td>
-                        <td className="py-2.5 px-3 font-mono text-slate-600">
+                        <td className="py-2.5 px-3 font-mono text-slate-500">
                           {line.item_code}
                         </td>
                         <td className="py-2.5 px-3 font-mono text-center text-slate-700">
@@ -449,7 +449,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
 
             {/* Financial Summary Box */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-slate-300 rounded-lg p-4 bg-slate-50 mb-8 page-break-inside-avoid">
-              <div className="text-xs text-slate-600 space-y-1">
+              <div className="text-xs text-slate-500 space-y-1">
                 <div>
                   Total SKUs: <span className="font-bold font-mono text-slate-900">{requisition.items.length}</span> items
                 </div>
@@ -483,7 +483,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 {/* 1. Requested By */}
                 <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 flex flex-col justify-between h-36">
-                  <div className="text-[10px] font-mono font-bold uppercase text-slate-600">
+                  <div className="text-[10px] font-mono font-bold uppercase text-slate-500">
                     1. REQUESTED BY
                   </div>
                   <div className="my-auto">
@@ -497,7 +497,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
 
                 {/* 2. Reviewed & Approved By (HOD) */}
                 <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 flex flex-col justify-between h-36">
-                  <div className="text-[10px] font-mono font-bold uppercase text-slate-600">
+                  <div className="text-[10px] font-mono font-bold uppercase text-slate-500">
                     2. DEPT HEAD APPROVAL
                   </div>
                   <div className="my-auto">
@@ -519,7 +519,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
 
                 {/* 3. Verified By Storekeeper */}
                 <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 flex flex-col justify-between h-36">
-                  <div className="text-[10px] font-mono font-bold uppercase text-slate-600">
+                  <div className="text-[10px] font-mono font-bold uppercase text-slate-500">
                     3. STOREKEEPER VERIFY
                   </div>
                   <div className="my-auto">
@@ -541,7 +541,7 @@ export const PurchaseRequisitionDocumentModal: React.FC<PurchaseRequisitionDocum
 
                 {/* 4. Authorized By Financial Controller */}
                 <div className="border border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 flex flex-col justify-between h-36">
-                  <div className="text-[10px] font-mono font-bold uppercase text-slate-600">
+                  <div className="text-[10px] font-mono font-bold uppercase text-slate-500">
                     4. PURCHASING / FC
                   </div>
                   <div className="my-auto">

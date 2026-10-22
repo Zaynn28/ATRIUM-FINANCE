@@ -363,7 +363,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
       {/* Header Banner */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-xs">
             <Wallet className="w-6 h-6" />
           </div>
           <div>
@@ -388,7 +388,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
           {/* Print PDF */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors shadow-xs"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-slate-200 text-white text-xs font-semibold transition-colors shadow-xs"
             title="Print Voucher Register"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -397,7 +397,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-900 text-white text-xs font-semibold shadow-xs transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Record Cash Voucher</span>
@@ -409,7 +409,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors shadow-xs ${
               pendingTotal > 0
                 ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-700'
-                : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                : 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed'
             }`}
           >
             <RefreshCw className="w-4 h-4" />
@@ -455,7 +455,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
             <span className="text-2xl font-bold font-mono text-slate-900">
               Rp {floatLimit.toLocaleString('id-ID')}
             </span>
-            <span className="text-xs text-slate-400 font-medium">BCA Account</span>
+            <span className="text-xs text-slate-500 font-medium">BCA Account</span>
           </div>
           <div className="mt-3 text-[11px] text-slate-500 flex items-center justify-between border-t border-slate-100 pt-2">
             <span>Petty Cash GL: 1010</span>
@@ -486,7 +486,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
           {/* Progress bar */}
           <div className="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-300 ${balance?.is_low_balance ? 'bg-rose-500' : 'bg-emerald-500'}`}
+              className={`h-full rounded-full transition-all duration-300 ${balance?.is_low_balance ? 'bg-rose-500' : 'bg-slate-900'}`}
               style={{ width: `${Math.max(0, Math.min(100, balancePct))}%` }}
             />
           </div>
@@ -522,7 +522,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
             <span className="text-2xl font-bold font-mono text-slate-900">
               Rp {(balance?.total_reimbursed_ytd || 0).toLocaleString('id-ID')}
             </span>
-            <span className="text-xs text-slate-400">Posted in GL</span>
+            <span className="text-xs text-slate-500">Posted in GL</span>
           </div>
           <div className="mt-3 text-[11px] text-slate-500 flex items-center justify-between border-t border-slate-100 pt-2">
             <span>Total Vouchers: {transactions.length}</span>
@@ -540,7 +540,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <button
                 onClick={() => setStatusFilter('ALL')}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  statusFilter === 'ALL' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
+                  statusFilter === 'ALL' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
                 All ({transactions.length})
@@ -548,7 +548,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <button
                 onClick={() => setStatusFilter('PENDING')}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  statusFilter === 'PENDING' ? 'bg-amber-600 text-white font-semibold' : 'text-slate-600 hover:text-slate-900'
+                  statusFilter === 'PENDING' ? 'bg-slate-900 text-white font-semibold' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
                 Pending Reimbursement ({transactions.filter((t) => t.status === 'PENDING_REIMBURSEMENT').length})
@@ -556,7 +556,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <button
                 onClick={() => setStatusFilter('REIMBURSED')}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  statusFilter === 'REIMBURSED' ? 'bg-emerald-600 text-white font-semibold' : 'text-slate-600 hover:text-slate-900'
+                  statusFilter === 'REIMBURSED' ? 'bg-slate-900 text-white font-semibold' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
                 Reimbursed ({transactions.filter((t) => t.status === 'REIMBURSED').length})
@@ -592,7 +592,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                 <option value="LAST_MONTH">Last Month</option>
                 <option value="CUSTOM">Custom Range</option>
               </select>
-              <span className="text-slate-300">|</span>
+              <span className="text-slate-700">|</span>
               <input
                 type="date"
                 value={dateFrom}
@@ -603,7 +603,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                 title="From Date"
                 className="bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
               />
-              <span className="text-slate-400 text-[11px]">to</span>
+              <span className="text-slate-500 text-[11px]">to</span>
               <input
                 type="date"
                 value={dateTo}
@@ -617,7 +617,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               {(dateFrom || dateTo) && (
                 <button
                   onClick={() => handleDatePresetChange('ALL')}
-                  className="text-slate-400 hover:text-slate-600 text-xs px-1 font-bold"
+                  className="text-slate-500 hover:text-slate-500 text-xs px-1 font-bold"
                   title="Clear dates"
                 >
                   ×
@@ -626,7 +626,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
             </div>
 
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-500" />
               <input
                 type="text"
                 placeholder="Search voucher, payee, or notes..."
@@ -638,7 +638,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
             <button
               onClick={loadData}
-              className="p-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-600"
+              className="p-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-500"
               title="Refresh Data"
             >
               <RefreshCw className="w-4 h-4" />
@@ -650,7 +650,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-600 font-mono text-[11px] uppercase tracking-wider">
+              <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-500 font-mono text-[11px] uppercase tracking-wider">
                 <th className="py-3 px-4">Voucher &amp; Date</th>
                 <th className="py-3 px-4">Category &amp; Department</th>
                 <th className="py-3 px-4">Paid To / Payee</th>
@@ -664,10 +664,10 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
             <tbody className="divide-y divide-slate-200">
               {filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
-                    <Receipt className="w-8 h-8 mx-auto mb-2 opacity-40 text-slate-400" />
+                  <td colSpan={8} className="py-12 text-center text-slate-500">
+                    <Receipt className="w-8 h-8 mx-auto mb-2 opacity-40 text-slate-500" />
                     <p className="font-medium">No petty cash vouchers matching filter criteria.</p>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <p className="text-[11px] text-slate-500 mt-1">
                       Click "Record Cash Voucher" to record an emergency disbursement.
                     </p>
                   </td>
@@ -678,7 +678,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                     <td className="py-3 px-4">
                       <div className="font-mono font-bold text-slate-900">{tx.voucher_number}</div>
                       <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
-                        <Calendar className="w-3 h-3 text-slate-400" />
+                        <Calendar className="w-3 h-3 text-slate-500" />
                         <span>{tx.date}</span>
                       </div>
                     </td>
@@ -693,7 +693,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                     <td className="py-3 px-4 font-semibold text-slate-800">
                       {tx.paid_to}
                     </td>
-                    <td className="py-3 px-4 text-slate-600 max-w-xs truncate" title={tx.description}>
+                    <td className="py-3 px-4 text-slate-500 max-w-xs truncate" title={tx.description}>
                       {tx.description}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -708,7 +708,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                           <span>View Photo</span>
                         </button>
                       ) : (
-                        <span className="text-[11px] text-slate-400 italic">No File</span>
+                        <span className="text-[11px] text-slate-500 italic">No File</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
@@ -731,13 +731,13 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                         <button
                           type="button"
                           onClick={() => handleDelete(tx.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
                           title="Delete / cancel voucher"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       ) : (
-                        <span className="text-slate-300 text-xs">-</span>
+                        <span className="text-slate-700 text-xs">-</span>
                       )}
                     </td>
                   </tr>
@@ -750,8 +750,8 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
       {/* MODAL 1: ADD EXPENSE VOUCHER */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/70 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-lg w-full shadow-xs border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Receipt className="w-5 h-5 text-emerald-600" />
@@ -762,7 +762,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-500 hover:text-slate-500 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -837,7 +837,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                   Disbursement Amount (IDR / Rp) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2 text-slate-400 font-semibold font-mono">
+                  <span className="absolute left-3 top-2 text-slate-500 font-semibold font-mono">
                     Rp
                   </span>
                   <input
@@ -930,11 +930,11 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                     onClick={() => fileInputRef.current?.click()}
                     className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-4 text-center cursor-pointer transition-colors bg-slate-50 hover:bg-emerald-50/20"
                   >
-                    <Upload className="w-6 h-6 mx-auto text-slate-400 mb-1" />
+                    <Upload className="w-6 h-6 mx-auto text-slate-500 mb-1" />
                     <p className="font-semibold text-slate-700">
                       Click to Upload Receipt Photo / Physical Bill
                     </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-slate-500 mt-0.5">
                       Supports JPG, PNG, WebP or use mock sample buttons above
                     </p>
                   </div>
@@ -945,14 +945,14 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 font-medium"
+                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-500 hover:bg-slate-100 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 shadow-xs"
+                  className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-900 text-white font-semibold flex items-center gap-1.5 shadow-xs"
                 >
                   {isSubmitting ? (
                     <>
@@ -974,8 +974,8 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
       {/* MODAL 2: REPLENISH / CLAIM TO GL */}
       {isReplenishModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/70 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-xs border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <RefreshCw className="w-5 h-5 text-indigo-600" />
@@ -986,7 +986,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsReplenishModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-500 hover:text-slate-500 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1022,7 +1022,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsReplenishModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 font-medium"
+                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-500 hover:bg-slate-100 font-medium"
                 >
                   Cancel
                 </button>
@@ -1052,8 +1052,8 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
 
       {/* MODAL 3: IMAGE PREVIEW */}
       {previewImageUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-lg w-full shadow-xs border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
             <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <span className="font-bold text-slate-900 text-xs truncate">
                 {previewImageUrl.title}
@@ -1061,7 +1061,7 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <button
                 type="button"
                 onClick={() => setPreviewImageUrl(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-500 hover:text-slate-500 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1070,14 +1070,14 @@ export const PettyCashView: React.FC<PettyCashViewProps> = ({
               <img
                 src={previewImageUrl.url}
                 alt={previewImageUrl.title}
-                className="max-w-full max-h-[60vh] object-contain rounded-lg shadow-md border border-slate-300 bg-white"
+                className="max-w-full max-h-[60vh] object-contain rounded-lg shadow-xs border border-slate-300 bg-white"
               />
             </div>
             <div className="p-3 bg-white border-t border-slate-200 flex justify-end">
               <button
                 type="button"
                 onClick={() => setPreviewImageUrl(null)}
-                className="px-4 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700"
+                className="px-4 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:bg-slate-200"
               >
                 Close
               </button>

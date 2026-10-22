@@ -21,26 +21,26 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
   const formatIDR = (val: number) => `Rp ${Math.round(val).toLocaleString('id-ID')}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-2xl w-full overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-xs border border-slate-200 max-w-2xl w-full overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-slate-900/20 text-emerald-700 flex items-center justify-center">
               <Calculator className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-bold text-base text-white">
                 Step-by-Step Return Calculation Audit
               </h3>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-700">
                 Unit {line.unit_number} • {line.owner_name} • Period {batch.period}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-md transition-colors"
+            className="text-slate-500 hover:text-white p-1 rounded-md transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -122,7 +122,7 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
                 <span>Unit Distribution Share:</span>
                 <span>= {(line.allocation_pct * 100).toFixed(4)}%</span>
               </div>
-              <div className="flex justify-between pt-1 text-slate-600">
+              <div className="flex justify-between pt-1 text-slate-500">
                 <span>Pool-Based Return:</span>
                 <span>{formatIDR(batch.owner_pool_amount)} × {(line.allocation_pct * 100).toFixed(4)}% = <strong>{formatIDR(line.pool_allocation_amount)}</strong></span>
               </div>
@@ -136,7 +136,7 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
                 Formula 3: Contractual Guaranteed 10% Return
               </span>
               <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-                line.is_within_guarantee_period ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                line.is_within_guarantee_period ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'
               }`}>
                 {line.is_within_guarantee_period ? 'Active (Within 3 Years)' : 'Guarantee Period Expired'}
               </span>
@@ -158,7 +158,7 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
                 <span>Guaranteed Return Rate (Annual):</span>
                 <span>× {batch.applied_rule_config.guaranteed_return_rate_pct}%</span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-slate-500">
                 <span>Annual Guaranteed Return:</span>
                 <span>= {formatIDR(line.annual_guaranteed_return)} / year</span>
               </div>
@@ -195,7 +195,7 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
                 <span className="font-semibold text-amber-900">
                   Difference ({line.difference_flag}): {formatIDR(Math.abs(line.guarantee_pool_difference))}
                 </span>
-                <p className="text-slate-600 text-[11px] mt-0.5">
+                <p className="text-slate-500 text-[11px] mt-0.5">
                   {line.difference_note}
                 </p>
               </div>
@@ -212,11 +212,11 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
                 <span>Applicable Gross Return:</span>
                 <span className="font-bold text-slate-900">{formatIDR(line.gross_return_amount)}</span>
               </div>
-              <div className="flex justify-between items-center text-slate-600">
+              <div className="flex justify-between items-center text-slate-500">
                 <span>Tax Withholding ({line.tax_type_label}):</span>
                 <span className="text-rose-600 font-semibold">- {formatIDR(line.tax_withheld_amount)} ({line.tax_rate_pct}%)</span>
               </div>
-              <div className="border-t-2 border-slate-800 pt-1.5 flex justify-between font-bold text-slate-900 text-sm">
+              <div className="border-t-2 border-slate-200 pt-1.5 flex justify-between font-bold text-slate-900 text-sm">
                 <span>Net Owner Distribution (Payable):</span>
                 <span className="text-emerald-700">= {formatIDR(line.net_distribution_amount)}</span>
               </div>
@@ -232,7 +232,7 @@ export const CalculationDetailModal: React.FC<CalculationDetailModalProps> = ({
         <div className="px-6 py-3 bg-slate-100 border-t border-slate-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold transition-colors"
+            className="px-4 py-1.5 bg-white hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors"
           >
             Close Audit Breakdown
           </button>

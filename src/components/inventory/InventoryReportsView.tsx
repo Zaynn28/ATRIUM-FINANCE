@@ -192,13 +192,13 @@ export const InventoryReportsView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white/60 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-emerald-400" />
+            <BarChart3 className="w-5 h-5 text-emerald-700" />
             <span>Hotel Cost Control &amp; Inventory Financial Reports</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Valuation audits, reorder projections, and shrinkage write-off breakdowns for the Financial Controller.
           </p>
         </div>
@@ -212,7 +212,7 @@ export const InventoryReportsView: React.FC = () => {
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border shadow-xs ${
               previewMode
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
             }`}
             title="Toggle Paper Print/PDF Preview"
           >
@@ -223,7 +223,7 @@ export const InventoryReportsView: React.FC = () => {
           {/* Print Button */}
           <button
             onClick={handlePrint}
-            className="px-3.5 py-1.5 bg-amber-600/90 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+            className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
             title="Print Inventory Report"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -253,13 +253,13 @@ export const InventoryReportsView: React.FC = () => {
       >
         <div className="space-y-6">
           {/* Tabs */}
-          <div className="flex gap-2 border-b border-slate-800 pb-2 print:hidden">
+          <div className="flex gap-2 border-b border-slate-200 pb-2 print:hidden">
         <button
           onClick={() => setActiveTab('VALUATION')}
           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
             activeTab === 'VALUATION'
-              ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/40'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-slate-100 text-emerald-700 border border-emerald-500/40'
+              : 'text-slate-500 hover:text-white'
           }`}
         >
           <Coins className="w-3.5 h-3.5" />
@@ -270,8 +270,8 @@ export const InventoryReportsView: React.FC = () => {
           onClick={() => setActiveTab('REORDER')}
           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
             activeTab === 'REORDER'
-              ? 'bg-amber-600/30 text-amber-300 border border-amber-500/40'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-slate-100 text-amber-300 border border-amber-500/40'
+              : 'text-slate-500 hover:text-white'
           }`}
         >
           <AlertTriangle className="w-3.5 h-3.5" />
@@ -283,7 +283,7 @@ export const InventoryReportsView: React.FC = () => {
           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
             activeTab === 'SPOILAGE'
               ? 'bg-rose-600/30 text-rose-300 border border-rose-500/40'
-              : 'text-slate-400 hover:text-white'
+              : 'text-slate-500 hover:text-white'
           }`}
         >
           <PieChart className="w-3.5 h-3.5" />
@@ -296,9 +296,9 @@ export const InventoryReportsView: React.FC = () => {
         <div className="space-y-6">
           {/* Summary KPI */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-              <span className="text-[11px] font-mono uppercase text-slate-400 block">Total Inventory Asset</span>
-              <span className="text-xl font-bold font-mono text-emerald-400 mt-1 block">
+            <div className="p-4 bg-white border border-slate-200 rounded-xl">
+              <span className="text-[11px] font-mono uppercase text-slate-500 block">Total Inventory Asset</span>
+              <span className="text-xl font-bold font-mono text-emerald-700 mt-1 block">
                 Rp {(totalValuation ?? 0).toLocaleString('id-ID')}
               </span>
               <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
@@ -306,8 +306,8 @@ export const InventoryReportsView: React.FC = () => {
               </span>
             </div>
 
-            <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-              <span className="text-[11px] font-mono uppercase text-slate-400 block">Total Active SKUs</span>
+            <div className="p-4 bg-white border border-slate-200 rounded-xl">
+              <span className="text-[11px] font-mono uppercase text-slate-500 block">Total Active SKUs</span>
               <span className="text-xl font-bold font-mono text-white mt-1 block">
                 {items.length} SKUs
               </span>
@@ -316,9 +316,9 @@ export const InventoryReportsView: React.FC = () => {
               </span>
             </div>
 
-            <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-              <span className="text-[11px] font-mono uppercase text-slate-400 block">Active Storerooms</span>
-              <span className="text-xl font-bold font-mono text-blue-400 mt-1 block">
+            <div className="p-4 bg-white border border-slate-200 rounded-xl">
+              <span className="text-[11px] font-mono uppercase text-slate-500 block">Active Storerooms</span>
+              <span className="text-xl font-bold font-mono text-slate-500 mt-1 block">
                 {storerooms.length} Locations
               </span>
               <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
@@ -328,15 +328,15 @@ export const InventoryReportsView: React.FC = () => {
           </div>
 
           {/* Category Breakdown Table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl p-5 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs p-5 space-y-4">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-400" />
+              <Layers className="w-4 h-4 text-emerald-700" />
               <span>Inventory Asset Breakdown by Department Category</span>
             </h4>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+                <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
                   <tr>
                     <th className="px-4 py-2.5">Category Name</th>
                     <th className="px-4 py-2.5">Asset Account</th>
@@ -346,29 +346,29 @@ export const InventoryReportsView: React.FC = () => {
                     <th className="px-4 py-2.5 text-right w-44">% of Total Portfolio</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800 text-slate-300">
+                <tbody className="divide-y divide-slate-800 text-slate-700">
                   {categoryValuation.map((cv) => (
-                    <tr key={cv.category.category_id} className="hover:bg-slate-800/30 transition-colors">
+                    <tr key={cv.category.category_id} className="hover:bg-white/30 transition-colors">
                       <td className="px-4 py-2.5 font-bold text-white">{cv.category.name}</td>
-                      <td className="px-4 py-2.5 font-mono text-emerald-400">
+                      <td className="px-4 py-2.5 font-mono text-emerald-700">
                         {cv.category.inventory_asset_account}
                       </td>
-                      <td className="px-4 py-2.5 font-mono text-blue-400">
+                      <td className="px-4 py-2.5 font-mono text-slate-500">
                         {cv.category.expense_cost_account}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono">{cv.itemsCount}</td>
-                      <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-400">
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-700">
                         Rp {(cv.valuation ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <div className="w-20 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                          <div className="w-20 bg-white rounded-full h-1.5 overflow-hidden">
                             <div
-                              className="bg-emerald-500 h-full rounded-full"
+                              className="bg-slate-900 h-full rounded-full"
                               style={{ width: `${cv.percentage}%` }}
                             />
                           </div>
-                          <span className="font-mono text-[11px] text-slate-400 w-10 text-right">
+                          <span className="font-mono text-[11px] text-slate-500 w-10 text-right">
                             {cv.percentage.toFixed(1)}%
                           </span>
                         </div>
@@ -384,21 +384,21 @@ export const InventoryReportsView: React.FC = () => {
 
       {/* Content: Reorder */}
       {activeTab === 'REORDER' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl p-5 space-y-4">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <AlertTriangle className="w-4 h-4 text-amber-700" />
                 <span>Replenishment Reorder Recommendations</span>
               </h4>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Items currently at or below safety minimum stock. Calculate quantities required to restore par levels.
               </p>
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] font-mono text-slate-400 uppercase block">Total Reorder Budget</span>
-              <span className="text-base font-bold font-mono text-amber-400">
+              <span className="text-[10px] font-mono text-slate-500 uppercase block">Total Reorder Budget</span>
+              <span className="text-base font-bold font-mono text-amber-700">
                 Rp {(reorderItems.reduce((s, r) => s + (r.estCost || 0), 0) || 0).toLocaleString('id-ID')}
               </span>
             </div>
@@ -406,7 +406,7 @@ export const InventoryReportsView: React.FC = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+              <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-2.5">Item Code</th>
                   <th className="px-4 py-2.5">Item Name</th>
@@ -418,34 +418,34 @@ export const InventoryReportsView: React.FC = () => {
                   <th className="px-4 py-2.5 text-right">Estimated Procurement Cost (Rp)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-300">
+              <tbody className="divide-y divide-slate-800 text-slate-700">
                 {reorderItems.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-8 text-center text-emerald-400 font-mono">
+                    <td colSpan={8} className="py-8 text-center text-emerald-700 font-mono">
                       All inventory items are currently above safety stock thresholds.
                     </td>
                   </tr>
                 ) : (
                   reorderItems.map((r) => (
-                    <tr key={r.item.item_id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-4 py-2.5 font-mono font-bold text-amber-400">{r.item.item_code}</td>
+                    <tr key={r.item.item_id} className="hover:bg-white/30 transition-colors">
+                      <td className="px-4 py-2.5 font-mono font-bold text-amber-700">{r.item.item_code}</td>
                       <td className="px-4 py-2.5 font-medium text-white">{r.item.item_name}</td>
-                      <td className="px-4 py-2.5 text-right font-mono font-bold text-rose-400">
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-red-600">
                         {r.item.current_stock} {r.item.uom}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-slate-400">
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-500">
                         {r.item.min_stock} {r.item.uom}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-slate-400">
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-500">
                         {r.item.max_stock} {r.item.uom}
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-amber-300">
                         {r.orderQty} {r.item.uom}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-slate-400">
+                      <td className="px-4 py-2.5 text-right font-mono text-slate-500">
                         Rp {(r.item.average_cost ?? 0).toLocaleString('id-ID')}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-mono font-bold text-amber-400">
+                      <td className="px-4 py-2.5 text-right font-mono font-bold text-amber-700">
                         Rp {(r.estCost ?? 0).toLocaleString('id-ID')}
                       </td>
                     </tr>
@@ -461,9 +461,9 @@ export const InventoryReportsView: React.FC = () => {
       {activeTab === 'SPOILAGE' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-              <span className="text-[10px] font-mono uppercase text-slate-400 block">Total Spoilage Losses</span>
-              <span className="text-xl font-bold font-mono text-rose-400 mt-1 block">
+            <div className="p-4 bg-white border border-slate-200 rounded-xl">
+              <span className="text-[10px] font-mono uppercase text-slate-500 block">Total Spoilage Losses</span>
+              <span className="text-xl font-bold font-mono text-red-600 mt-1 block">
                 Rp {(totalSpoilageLoss ?? 0).toLocaleString('id-ID')}
               </span>
               <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
@@ -474,12 +474,12 @@ export const InventoryReportsView: React.FC = () => {
             {Object.entries(spoilageByReason).map(([reason, amount]) => {
               const amtNum = Number(amount) || 0;
               return (
-                <div key={reason} className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block">{reason}</span>
+                <div key={reason} className="p-4 bg-white border border-slate-200 rounded-xl">
+                  <span className="text-[10px] font-mono uppercase text-slate-500 block">{reason}</span>
                   <span className="text-base font-bold font-mono text-white mt-1 block">
                     Rp {(amtNum ?? 0).toLocaleString('id-ID')}
                   </span>
-                  <span className="text-[11px] text-slate-400 font-mono mt-0.5 block">
+                  <span className="text-[11px] text-slate-500 font-mono mt-0.5 block">
                     {totalSpoilageLoss > 0 ? ((amtNum / totalSpoilageLoss) * 100).toFixed(1) : 0}% of losses
                   </span>
                 </div>
@@ -488,15 +488,15 @@ export const InventoryReportsView: React.FC = () => {
           </div>
 
           {/* Adjustments table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl p-5 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs p-5 space-y-4">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-rose-400" />
+              <PieChart className="w-4 h-4 text-red-600" />
               <span>Recent Waste / Spoilage Incident Log</span>
             </h4>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+                <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
                   <tr>
                     <th className="px-4 py-2.5">Date</th>
                     <th className="px-4 py-2.5">Item Name</th>
@@ -507,22 +507,22 @@ export const InventoryReportsView: React.FC = () => {
                     <th className="px-4 py-2.5">Incident Description</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800 text-slate-300">
+                <tbody className="divide-y divide-slate-800 text-slate-700">
                   {adjustments
                     .filter((a) => a.type === 'ADJUSTMENT_OUT')
                     .map((a) => (
-                      <tr key={a.adjustment_id} className="hover:bg-slate-800/30 transition-colors">
-                        <td className="px-4 py-2.5 font-mono text-slate-400">{a.date}</td>
+                      <tr key={a.adjustment_id} className="hover:bg-white/30 transition-colors">
+                        <td className="px-4 py-2.5 font-mono text-slate-500">{a.date}</td>
                         <td className="px-4 py-2.5 font-semibold text-white">{a.item_name}</td>
-                        <td className="px-4 py-2.5 font-mono text-slate-400">{a.storeroom_id}</td>
-                        <td className="px-4 py-2.5 font-mono text-rose-400 font-bold">{a.reason_code}</td>
-                        <td className="px-4 py-2.5 text-right font-mono font-bold text-rose-400">
+                        <td className="px-4 py-2.5 font-mono text-slate-500">{a.storeroom_id}</td>
+                        <td className="px-4 py-2.5 font-mono text-red-600 font-bold">{a.reason_code}</td>
+                        <td className="px-4 py-2.5 text-right font-mono font-bold text-red-600">
                           -{a.quantity} {a.uom}
                         </td>
                         <td className="px-4 py-2.5 text-right font-mono font-bold text-white">
                           Rp {(a.total_cost ?? 0).toLocaleString('id-ID')}
                         </td>
-                        <td className="px-4 py-2.5 text-slate-400 text-[11px]">{a.reason_notes}</td>
+                        <td className="px-4 py-2.5 text-slate-500 text-[11px]">{a.reason_notes}</td>
                       </tr>
                     ))}
                 </tbody>

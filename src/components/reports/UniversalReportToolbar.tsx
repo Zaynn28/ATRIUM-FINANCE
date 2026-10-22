@@ -26,35 +26,35 @@ export const UniversalReportToolbar: React.FC<UniversalReportToolbarProps> = ({
   onExportExcel, onPrint, previewMode = false, onTogglePreview,
   loading = false, extraControls,
 }) => (
-  <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 shadow-sm backdrop-blur-sm print:hidden">
+  <div className="bg-white/80 border border-slate-200 rounded-xl p-4 shadow-xs backdrop-blur-sm print:hidden">
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div>
-        <h2 className="text-lg font-bold text-slate-100 tracking-tight">{reportTitle}</h2>
-        {reportSubtitle && <p className="text-xs text-slate-400 mt-0.5">{reportSubtitle}</p>}
+        <h2 className="text-lg font-bold text-slate-900 tracking-tight">{reportTitle}</h2>
+        {reportSubtitle && <p className="text-xs text-slate-500 mt-0.5">{reportSubtitle}</p>}
       </div>
       <div className="flex flex-wrap items-center gap-2.5">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/70 border border-slate-800 text-xs">
-          <Building2 className="w-3.5 h-3.5 text-slate-400" />
-          <select aria-label="Property" value={property} onChange={e => onPropertyChange?.(e.target.value)} className="bg-slate-900 text-slate-200 outline-none font-medium">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/70 border border-slate-200 text-xs">
+          <Building2 className="w-3.5 h-3.5 text-slate-500" />
+          <select aria-label="Property" value={property} onChange={e => onPropertyChange?.(e.target.value)} className="bg-white text-slate-700 outline-none font-medium">
             <option>PT Atrium Management Group</option>
             <option>Atrium Suites Lombok</option>
             <option value="GGV Properties">GGV (Multi-Property)</option>
           </select>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/70 border border-slate-800 text-xs">
-          <Calendar className="w-3.5 h-3.5 text-slate-400" />
-          <input aria-label="Accounting period" type="month" value={period} onChange={e => onPeriodChange(e.target.value)} className="bg-transparent text-slate-200 font-mono outline-none" />
-          {period && <button onClick={() => onPeriodChange('')} className="text-slate-400 hover:text-slate-200">All</button>}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/70 border border-slate-200 text-xs">
+          <Calendar className="w-3.5 h-3.5 text-slate-500" />
+          <input aria-label="Accounting period" type="month" value={period} onChange={e => onPeriodChange(e.target.value)} className="bg-transparent text-slate-700 font-mono outline-none" />
+          {period && <button onClick={() => onPeriodChange('')} className="text-slate-500 hover:text-slate-700">All</button>}
         </div>
         {extraControls}
-        <button onClick={onRefresh} disabled={loading} title="Refresh report" className="p-2 rounded-lg bg-slate-800 text-slate-200 disabled:opacity-50">
+        <button onClick={onRefresh} disabled={loading} title="Refresh report" className="p-2 rounded-lg bg-white text-slate-700 disabled:opacity-50">
           <RotateCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
         </button>
         <ReportExportButtons onExport={onExportExcel} disabled={loading} />
-        {onTogglePreview && <button onClick={onTogglePreview} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-slate-700 text-slate-300 hover:bg-slate-800">
+        {onTogglePreview && <button onClick={onTogglePreview} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-slate-200 text-slate-700 hover:bg-white">
           <Eye className="w-3.5 h-3.5" />{previewMode ? 'Screen View' : 'Print Preview'}
         </button>}
-        <button onClick={() => onPrint ? onPrint() : window.dispatchEvent(new CustomEvent('atrium-open-print-preview'))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-slate-700 text-slate-300 hover:bg-slate-800">
+        <button onClick={() => onPrint ? onPrint() : window.dispatchEvent(new CustomEvent('atrium-open-print-preview'))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-slate-200 text-slate-700 hover:bg-white">
           <Printer className="w-3.5 h-3.5" />Print
         </button>
       </div>

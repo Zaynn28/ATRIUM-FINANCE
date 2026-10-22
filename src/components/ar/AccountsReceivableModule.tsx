@@ -210,7 +210,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
     switch (bucket) {
       case 'CURRENT':
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">
+          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-900/10/80 text-emerald-700 border border-emerald-800/60">
             Current (0d)
           </span>
         );
@@ -222,7 +222,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         );
       case '31_60':
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950/80 text-amber-300 border border-amber-800/60">
+          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-900/10/80 text-amber-300 border border-amber-800/60">
             31-60 Days ({days}d)
           </span>
         );
@@ -234,7 +234,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         );
       case 'OVER_90':
         return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-950/80 text-rose-300 border border-rose-800/60 animate-pulse">
+          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-600/10/80 text-rose-300 border border-rose-800/60 animate-pulse">
             &gt;90 Days Overdue ({days}d)
           </span>
         );
@@ -318,20 +318,20 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
   return (
     <div className="space-y-6">
       {/* Module Banner & Quick Controls */}
-      <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border border-emerald-500/20 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/50 via-slate-900 to-slate-900 border border-emerald-500/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+            <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-slate-900/20 text-emerald-700 border border-emerald-500/30 font-semibold">
               Automatic Operational Subledger
             </span>
             <span className="text-slate-500 text-xs">•</span>
-            <span className="text-xs text-slate-400 font-mono">Synced from Revenue &amp; PMS Folios</span>
+            <span className="text-xs text-slate-500 font-mono">Synced from Revenue &amp; PMS Folios</span>
           </div>
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <ArrowDownLeft className="w-5 h-5 text-emerald-400" />
+            <ArrowDownLeft className="w-5 h-5 text-emerald-700" />
             Accounts Receivable (AR) Monitor &amp; Control
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl mt-1">
+          <p className="text-xs text-slate-500 max-w-2xl mt-1">
             Real-time aging analysis, City Ledger credit control, guest folio collection tracking, and automatic double-entry GL receipt posting.
           </p>
         </div>
@@ -347,7 +347,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
             className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border shadow-xs ${
               previewMode
                 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-200'
             }`}
             title="Toggle Paper Print/PDF Preview"
           >
@@ -358,7 +358,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           {/* Print Button */}
           <button
             onClick={handlePrint}
-            className="px-3 py-2 bg-amber-600/90 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+            className="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             title="Print AR Aging Report"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -368,7 +368,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           <button
             onClick={loadData}
             disabled={loading}
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+            className="px-3 py-2 bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Sync AR Data</span>
@@ -390,10 +390,10 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           {/* AR Aging Metric Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Total Outstanding */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 shadow-sm">
-          <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white/90 border border-slate-200 shadow-xs">
+          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>Total AR Ledger</span>
-            <Coins className="w-3.5 h-3.5 text-emerald-400" />
+            <Coins className="w-3.5 h-3.5 text-emerald-700" />
           </div>
           <div className="text-lg font-bold font-mono text-white">
             Rp {(dynamicSummary.total_outstanding / 1_000_000).toFixed(1)}M
@@ -404,15 +404,15 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         </div>
 
         {/* Current (Not Due) */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-emerald-900/30 shadow-sm">
-          <div className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white/90 border border-emerald-900/30 shadow-xs">
+          <div className="text-[11px] font-mono text-emerald-700 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>Current (Not Due)</span>
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
           </div>
-          <div className="text-lg font-bold font-mono text-emerald-300">
+          <div className="text-lg font-bold font-mono text-emerald-700">
             Rp {(dynamicSummary.current / 1_000_000).toFixed(1)}M
           </div>
-          <div className="text-[10px] text-emerald-500/70 mt-1 font-mono">
+          <div className="text-[10px] text-emerald-700/70 mt-1 font-mono">
             {dynamicSummary.total_outstanding > 0
               ? `${Math.round((dynamicSummary.current / dynamicSummary.total_outstanding) * 100)}% of total`
               : '0%'}
@@ -420,10 +420,10 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         </div>
 
         {/* 1 - 30 Days */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-blue-900/30 shadow-sm">
-          <div className="text-[11px] font-mono text-blue-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white/90 border border-blue-900/30 shadow-xs">
+          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>1 - 30 Days</span>
-            <Clock className="w-3.5 h-3.5 text-blue-400" />
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
           </div>
           <div className="text-lg font-bold font-mono text-blue-300">
             Rp {(dynamicSummary.bucket_1_30 / 1_000_000).toFixed(1)}M
@@ -432,19 +432,19 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         </div>
 
         {/* 31 - 60 Days */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-amber-900/30 shadow-sm">
-          <div className="text-[11px] font-mono text-amber-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white/90 border border-amber-900/30 shadow-xs">
+          <div className="text-[11px] font-mono text-amber-700 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>31 - 60 Days</span>
-            <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+            <AlertCircle className="w-3.5 h-3.5 text-amber-700" />
           </div>
           <div className="text-lg font-bold font-mono text-amber-300">
             Rp {(dynamicSummary.bucket_31_60 / 1_000_000).toFixed(1)}M
           </div>
-          <div className="text-[10px] text-amber-500/70 mt-1 font-mono">Follow-up required</div>
+          <div className="text-[10px] text-amber-700/70 mt-1 font-mono">Follow-up required</div>
         </div>
 
         {/* 61 - 90 Days */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-orange-900/30 shadow-sm">
+        <div className="p-4 rounded-xl bg-white/90 border border-orange-900/30 shadow-xs">
           <div className="text-[11px] font-mono text-orange-400 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>61 - 90 Days</span>
             <AlertCircle className="w-3.5 h-3.5 text-orange-400" />
@@ -456,10 +456,10 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         </div>
 
         {/* Over 90 Days */}
-        <div className="p-4 rounded-xl bg-slate-900/90 border border-rose-900/40 shadow-sm">
-          <div className="text-[11px] font-mono text-rose-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white/90 border border-rose-900/40 shadow-xs">
+          <div className="text-[11px] font-mono text-red-600 uppercase tracking-wider mb-1 flex items-center justify-between">
             <span>&gt;90 Days Overdue</span>
-            <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+            <TrendingDown className="w-3.5 h-3.5 text-red-600" />
           </div>
           <div className="text-lg font-bold font-mono text-rose-300">
             Rp {(dynamicSummary.bucket_over_90 / 1_000_000).toFixed(1)}M
@@ -469,7 +469,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <div className="p-3.5 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-1 min-w-[220px]">
           <Search className="w-4 h-4 text-slate-500 ml-1" />
           <input
@@ -477,18 +477,18 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
             placeholder="Search guest folio, corporate account, voucher #, notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent border-none text-xs text-slate-200 placeholder-slate-500 focus:outline-none"
+            className="w-full bg-transparent border-none text-xs text-slate-700 placeholder-slate-500 focus:outline-none"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Date / Period Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1">
-            <Calendar className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg px-2 py-1">
+            <Calendar className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
             <select
               value={datePreset}
               onChange={(e) => handleDatePresetChange(e.target.value)}
-              className="bg-transparent text-xs text-slate-300 focus:outline-none cursor-pointer pr-1"
+              className="bg-transparent text-xs text-slate-700 focus:outline-none cursor-pointer pr-1"
             >
               <option value="ALL">All Periods</option>
               <option value="THIS_MONTH">This Month</option>
@@ -497,7 +497,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
               <option value="CUSTOM">Custom Range</option>
             </select>
 
-            <span className="text-slate-600">|</span>
+            <span className="text-slate-500">|</span>
 
             <input
               type="date"
@@ -509,7 +509,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
               style={{ colorScheme: 'dark' }}
               title="From Date"
               placeholder="From"
-              className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+              className="bg-white border border-slate-200/80 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
             />
             <span className="text-slate-500 text-[11px]">to</span>
             <input
@@ -522,12 +522,12 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
               style={{ colorScheme: 'dark' }}
               title="To Date"
               placeholder="To"
-              className="bg-slate-900 border border-slate-700/80 rounded px-1.5 py-0.5 text-[11px] text-slate-200 font-mono outline-none cursor-pointer"
+              className="bg-white border border-slate-200/80 rounded px-1.5 py-0.5 text-[11px] text-slate-700 font-mono outline-none cursor-pointer"
             />
             {(dateFrom || dateTo) && (
               <button
                 onClick={() => handleDatePresetChange('ALL')}
-                className="text-slate-400 hover:text-slate-200 text-xs px-1 font-bold"
+                className="text-slate-500 hover:text-slate-700 text-xs px-1 font-bold"
                 title="Clear date filter"
               >
                 ×
@@ -539,7 +539,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           <select
             value={bucketFilter}
             onChange={(e) => setBucketFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           >
             <option value="ALL">All Aging Buckets</option>
             <option value="CURRENT">Current (Not Overdue)</option>
@@ -553,7 +553,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           >
             <option value="ALL">All Statuses</option>
             <option value="PENDING">Pending (Unpaid)</option>
@@ -565,7 +565,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
           <select
             value={customerTypeFilter}
             onChange={(e) => setCustomerTypeFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           >
             <option value="ALL">All Debtor Channels</option>
             <option value="CITY_LEDGER_CORPORATE">Corporate City Ledger</option>
@@ -577,18 +577,18 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
       </div>
 
       {/* AR Aging Table */}
-      <div className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <Building className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <Building className="w-4 h-4 text-emerald-700" />
               Accounts Receivable Aging Schedule
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-500 mt-0.5">
               Showing {filteredItems.length} active receivable items
             </p>
           </div>
-          <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-mono text-emerald-700 bg-slate-900/10/60 border border-emerald-800/50 px-2.5 py-1 rounded-lg">
             Auto-Linked to Chart of Accounts (1020)
           </span>
         </div>
@@ -596,7 +596,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800 uppercase tracking-wider">
+              <tr className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200 uppercase tracking-wider">
                 <th className="p-3.5 font-semibold">Debtor / Account</th>
                 <th className="p-3.5 font-semibold">Channel Type</th>
                 <th className="p-3.5 font-semibold">Invoice / Due Date</th>
@@ -609,7 +609,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                 <th className="p-3.5 font-semibold text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-slate-800/60 text-slate-700">
               {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="p-8 text-center text-slate-500">
@@ -622,14 +622,14 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                     key={item.id}
                     className="hover:bg-slate-850/60 transition-colors group"
                   >
-                    <td className="p-3.5 font-medium text-slate-100">
-                      <div className="font-semibold text-slate-200">{item.customer_name}</div>
-                      <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1 mt-0.5">
+                    <td className="p-3.5 font-medium text-slate-900">
+                      <div className="font-semibold text-slate-700">{item.customer_name}</div>
+                      <div className="text-[10px] font-mono text-slate-500 flex items-center gap-1 mt-0.5">
                         <span>{item.transaction_id}</span>
                         {item.journal_id && onViewJournal && (
                           <button
                             onClick={() => onViewJournal(item.journal_id)}
-                            className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-0.5 ml-1"
+                            className="text-emerald-700 hover:text-emerald-700 inline-flex items-center gap-0.5 ml-1"
                             title="Inspect GL Journal"
                           >
                             <span>GL</span>
@@ -639,19 +639,19 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                       </div>
                     </td>
                     <td className="p-3.5">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white text-slate-700 border border-slate-200">
                         {item.customer_type.replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="p-3.5 font-mono text-[11px]">
                       <div>{item.date}</div>
-                      <div className="text-slate-400 text-[10px]">Due: {item.due_date}</div>
+                      <div className="text-slate-500 text-[10px]">Due: {item.due_date}</div>
                     </td>
-                    <td className="p-3.5 text-slate-300">{item.department_name}</td>
-                    <td className="p-3.5 font-mono text-right text-slate-300">
+                    <td className="p-3.5 text-slate-700">{item.department_name}</td>
+                    <td className="p-3.5 font-mono text-right text-slate-700">
                       Rp {item.original_amount.toLocaleString()}
                     </td>
-                    <td className="p-3.5 font-mono text-right text-emerald-400">
+                    <td className="p-3.5 font-mono text-right text-emerald-700">
                       Rp {item.paid_amount.toLocaleString()}
                     </td>
                     <td className="p-3.5 font-mono text-right font-bold text-white">
@@ -664,10 +664,10 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-semibold font-mono ${
                           item.status === 'SETTLED'
-                            ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/60'
+                            ? 'bg-slate-900/10/70 text-emerald-700 border border-emerald-800/60'
                             : item.status === 'PARTIALLY_PAID'
                             ? 'bg-blue-950/70 text-blue-300 border border-blue-800/60'
-                            : 'bg-amber-950/70 text-amber-300 border border-amber-800/60'
+                            : 'bg-slate-900/10/70 text-amber-300 border border-amber-800/60'
                         }`}
                       >
                         {item.status}
@@ -677,13 +677,13 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                       {item.outstanding_balance > 0 ? (
                         <button
                           onClick={() => handleOpenSettleModal(item)}
-                          className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 mx-auto shadow-sm"
+                          className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 mx-auto shadow-xs"
                         >
                           <CreditCard className="w-3 h-3" />
                           <span>Receive</span>
                         </button>
                       ) : (
-                        <span className="text-[11px] font-mono text-emerald-500 flex items-center justify-center gap-1">
+                        <span className="text-[11px] font-mono text-emerald-700 flex items-center justify-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Settled</span>
                         </span>
@@ -702,20 +702,20 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
       {/* Collect / Receive Payment Modal */}
       {settlementModalItem && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-emerald-400" />
+                  <CreditCard className="w-5 h-5 text-emerald-700" />
                   Record Accounts Receivable Settlement
                 </h3>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                <p className="text-xs text-slate-500 font-mono mt-0.5">
                   Debtor: {settlementModalItem.customer_name} ({settlementModalItem.transaction_id})
                 </p>
               </div>
               <button
                 onClick={() => setSettlementModalItem(null)}
-                className="text-slate-400 hover:text-white text-lg font-bold px-2 py-1 rounded"
+                className="text-slate-500 hover:text-white text-lg font-bold px-2 py-1 rounded"
               >
                 ✕
               </button>
@@ -725,30 +725,30 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
               <div
                 className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
                   feedback.type === 'success'
-                    ? 'bg-emerald-950/70 border border-emerald-800 text-emerald-300'
-                    : 'bg-rose-950/70 border border-rose-800 text-rose-300'
+                    ? 'bg-slate-900/10/70 border border-emerald-800 text-emerald-700'
+                    : 'bg-red-600/10/70 border border-rose-800 text-rose-300'
                 }`}
               >
                 {feedback.type === 'success' ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
                 ) : (
-                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
                 )}
                 <span>{feedback.message}</span>
               </div>
             )}
 
             <form onSubmit={handleProcessSettlement} className="space-y-4 text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between font-mono">
+              <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between font-mono">
                 <div>
                   <span className="text-slate-500 block text-[10px] uppercase">Outstanding AR Due</span>
-                  <span className="text-base font-bold text-emerald-400">
+                  <span className="text-base font-bold text-emerald-700">
                     Rp {settlementModalItem.outstanding_balance.toLocaleString()}
                   </span>
                 </div>
                 <div className="text-right">
                   <span className="text-slate-500 block text-[10px] uppercase">Aging Bucket</span>
-                  <span className="text-xs font-semibold text-slate-300">
+                  <span className="text-xs font-semibold text-slate-700">
                     {settlementModalItem.aging_bucket} ({settlementModalItem.days_overdue} days)
                   </span>
                 </div>
@@ -756,7 +756,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-slate-700 font-semibold mb-1">
                     Receipt Date *
                   </label>
                   <input
@@ -764,12 +764,12 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                     required
                     value={settleDate}
                     onChange={(e) => setSettleDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-mono text-xs focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-slate-700 font-semibold mb-1">
                     Settlement Amount (IDR) *
                   </label>
                   <input
@@ -779,19 +779,19 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                     max={settlementModalItem.outstanding_balance}
                     value={settleAmount}
                     onChange={(e) => setSettleAmount(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-emerald-400 font-mono text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-emerald-700 font-mono text-xs font-bold focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">
+                <label className="block text-slate-700 font-semibold mb-1">
                   Receiving Bank / Cash Account (Debit) *
                 </label>
                 <select
                   value={settleBankAcc}
                   onChange={(e) => setSettleBankAcc(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 text-xs focus:outline-none focus:border-emerald-500"
                 >
                   {bankAccounts.map((acc) => (
                     <option key={acc.account_code} value={acc.account_code}>
@@ -806,13 +806,13 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-slate-700 font-semibold mb-1">
                     Payment Method
                   </label>
                   <select
                     value={settleMethod}
                     onChange={(e) => setSettleMethod(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 text-xs focus:outline-none focus:border-emerald-500"
                   >
                     <option value="Bank Transfer (BCA / Mandiri)">Bank Transfer (BCA / Mandiri)</option>
                     <option value="Corporate Virtual Account (VA)">Corporate Virtual Account (VA)</option>
@@ -823,7 +823,7 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">
+                  <label className="block text-slate-700 font-semibold mb-1">
                     Payment Reference / Bank Slip #
                   </label>
                   <input
@@ -831,23 +831,23 @@ export const AccountsReceivableModule: React.FC<AccountsReceivableModuleProps> =
                     value={settleRef}
                     onChange={(e) => setSettleRef(e.target.value)}
                     placeholder="e.g. TRF-BCA-9812938"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100 font-mono text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-900 font-mono text-xs focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-800">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setSettlementModalItem(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition-colors"
+                  className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold transition-colors flex items-center gap-1.5 shadow-lg shadow-emerald-950 disabled:opacity-50"
+                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold transition-colors flex items-center gap-1.5 shadow-xs shadow-emerald-950 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />

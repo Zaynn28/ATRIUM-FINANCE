@@ -162,7 +162,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
     <div className="space-y-5">
       {/* Integrity Notice */}
       <div className="p-3.5 bg-blue-950/30 border border-blue-800/40 rounded-xl flex items-start gap-3 text-xs text-blue-200">
-        <Package className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+        <Package className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
         <div>
           <span className="font-semibold text-white">Perpetual Stock Integrity:</span> Current stock
           quantities cannot be manually keyed in on this screen. Stock levels adjust strictly via Goods
@@ -172,17 +172,17 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
       </div>
 
       {/* Action and Filter Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white/60 p-4 rounded-xl border border-slate-200">
         <div className="flex flex-wrap items-center gap-3 flex-1">
           {/* Search bar */}
           <div className="relative min-w-[240px] flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by code, SKU, name, barcode, supplier..."
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
             />
           </div>
 
@@ -190,7 +190,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+            className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-emerald-500"
           >
             <option value="ALL">All Categories</option>
             {categories.map((c) => (
@@ -201,11 +201,11 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
           </select>
 
           {/* Stock Level Filter */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-700">
+          <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200">
             <button
               onClick={() => setStockFilter('ALL')}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                stockFilter === 'ALL' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'
+                stockFilter === 'ALL' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               All ({items.length})
@@ -213,7 +213,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
             <button
               onClick={() => setStockFilter('LOW')}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                stockFilter === 'LOW' ? 'bg-amber-600 text-white' : 'text-amber-400 hover:text-amber-300'
+                stockFilter === 'LOW' ? 'bg-slate-900 text-white' : 'text-amber-700 hover:text-amber-300'
               }`}
             >
               Low Stock ({items.filter((i) => i.current_stock > 0 && i.current_stock <= i.reorder_point).length})
@@ -221,7 +221,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
             <button
               onClick={() => setStockFilter('OUT')}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                stockFilter === 'OUT' ? 'bg-rose-600 text-white' : 'text-rose-400 hover:text-rose-300'
+                stockFilter === 'OUT' ? 'bg-rose-600 text-white' : 'text-red-600 hover:text-rose-300'
               }`}
             >
               Out of Stock ({items.filter((i) => i.current_stock === 0).length})
@@ -246,15 +246,15 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
           />
           <button
             onClick={onOpenScanner}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors"
+            className="px-3 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-200 transition-colors"
           >
-            <Scan className="w-3.5 h-3.5 text-emerald-400" />
+            <Scan className="w-3.5 h-3.5 text-emerald-700" />
             <span>Scan Barcode</span>
           </button>
 
           <button
             onClick={handleOpenCreate}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-950 transition-colors"
+            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs shadow-emerald-950 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Item Master</span>
@@ -263,10 +263,10 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
       </div>
 
       {/* Items Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-mono text-[11px] border-b border-slate-800">
+            <thead className="bg-white/80 text-slate-500 font-mono text-[11px] border-b border-slate-200">
               <tr>
                 <th className="px-4 py-3">Code / Barcode</th>
                 <th className="px-4 py-3">Item Description</th>
@@ -280,7 +280,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 text-slate-300">
+            <tbody className="divide-y divide-slate-800 text-slate-700">
               {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-12 text-center text-slate-500 font-mono">
@@ -294,15 +294,15 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                   const totalValuation = item.current_stock * item.average_cost;
 
                   return (
-                    <tr key={item.item_id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={item.item_id} className="hover:bg-white/40 transition-colors">
                       <td className="px-4 py-3">
-                        <div className="font-mono font-bold text-emerald-400 flex items-center gap-1.5">
+                        <div className="font-mono font-bold text-emerald-700 flex items-center gap-1.5">
                           <span>{item.item_code}</span>
                         </div>
                         {item.barcode && (
                           <div
                             onClick={() => setBarcodePreviewItem(item)}
-                            className="text-[10px] font-mono text-slate-400 hover:text-emerald-400 cursor-pointer flex items-center gap-1 mt-0.5"
+                            className="text-[10px] font-mono text-slate-500 hover:text-emerald-700 cursor-pointer flex items-center gap-1 mt-0.5"
                           >
                             <QrCode className="w-3 h-3" />
                             <span>{item.barcode}</span>
@@ -311,33 +311,33 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                       </td>
                       <td className="px-4 py-3">
                         <div className="font-semibold text-white">{item.item_name}</div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="text-[11px] text-slate-500">
                           Supplier: {item.supplier || 'Direct'}
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium block w-fit mb-0.5">
+                        <span className="px-2 py-0.5 rounded bg-white text-slate-700 text-[11px] font-medium block w-fit mb-0.5">
                           {(categories || []).find((c) => c.category_id === item.category_id)?.name || item.category_id}
                         </span>
-                        <span className="text-[10px] text-slate-400">{item.subcategory}</span>
+                        <span className="text-[10px] text-slate-500">{item.subcategory}</span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-slate-300">{item.uom}</td>
+                      <td className="px-4 py-3 font-mono text-slate-700">{item.uom}</td>
                       <td className="px-4 py-3 text-right">
                         <span
                           className={`font-mono font-bold text-sm ${
-                            isOut ? 'text-rose-500' : isLow ? 'text-amber-400' : 'text-emerald-400'
+                            isOut ? 'text-rose-500' : isLow ? 'text-amber-700' : 'text-emerald-700'
                           }`}
                         >
                           {(item.current_stock ?? 0).toLocaleString()}
                         </span>
-                        <span className="text-[10px] text-slate-400 block font-mono">
+                        <span className="text-[10px] text-slate-500 block font-mono">
                           Min: {item.min_stock} / Max: {item.max_stock}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-slate-400">
+                      <td className="px-4 py-3 text-right font-mono text-slate-500">
                         {item.reorder_point} {item.uom}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-slate-300">
+                      <td className="px-4 py-3 text-right font-mono text-slate-700">
                         Rp {(item.average_cost ?? 0).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-semibold text-white">
@@ -350,7 +350,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                               ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                               : isLow
                               ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : 'bg-slate-900/20 text-emerald-700 border border-emerald-500/30'
                           }`}
                         >
                           {isOut ? 'OUT OF STOCK' : isLow ? 'LOW STOCK' : 'IN STOCK'}
@@ -361,7 +361,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                           <button
                             onClick={() => onOpenStockCard(item.item_id)}
                             title="View Perpetual Stock Card"
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+                            className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 hover:text-emerald-700 transition-colors"
                           >
                             <FileSpreadsheet className="w-3.5 h-3.5" />
                           </button>
@@ -369,7 +369,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                           <button
                             onClick={() => handleOpenEdit(item)}
                             title="Edit Item Master"
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 hover:text-white transition-colors"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
@@ -386,16 +386,16 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
 
       {/* Add / Edit Item Modal */}
       {isModalOpen && editingItem && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl shadow-xs overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Package className="w-5 h-5 text-emerald-400" />
+                <Package className="w-5 h-5 text-emerald-700" />
                 <span>{editingItem.item_id ? 'Edit Item Master Record' : 'Create New Hotel Inventory Item'}</span>
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -403,7 +403,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
 
             <form onSubmit={handleSaveItem} className="p-5 overflow-y-auto space-y-4">
               {modalError && (
-                <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-lg text-rose-300 text-xs flex items-center gap-2">
+                <div className="p-3 bg-red-600/10/40 border border-rose-800/60 rounded-lg text-rose-300 text-xs flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>{modalError}</span>
                 </div>
@@ -411,42 +411,42 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Item Code (SKU) *</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Item Code (SKU) *</label>
                   <input
                     type="text"
                     required
                     value={editingItem.item_code || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, item_code: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono"
                     placeholder="e.g. ITM-FB-RICE01"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Barcode / EAN-13</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Barcode / EAN-13</label>
                   <input
                     type="text"
                     value={editingItem.barcode || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, barcode: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono"
                     placeholder="e.g. 8992753110201"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Item Description / Name *</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Item Description / Name *</label>
                   <input
                     type="text"
                     required
                     value={editingItem.item_name || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, item_name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900"
                     placeholder="e.g. Premium Jasmine Rice 20kg Sack"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Category</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Category</label>
                   <select
                     value={editingItem.category_id || ''}
                     onChange={(e) => {
@@ -460,7 +460,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                         expense_gl_account: catObj?.default_expense_account || editingItem.expense_gl_account,
                       });
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900"
                   >
                     {categories.map((c) => (
                       <option key={c.category_id} value={c.category_id}>
@@ -471,22 +471,22 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Subcategory</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Subcategory</label>
                   <input
                     type="text"
                     value={editingItem.subcategory || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, subcategory: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900"
                     placeholder="e.g. Dry Groceries"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Unit of Measure (UOM)</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Unit of Measure (UOM)</label>
                   <select
                     value={editingItem.uom || 'PCS'}
                     onChange={(e) => setEditingItem({ ...editingItem, uom: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono"
                   >
                     <option value="PCS">PCS (Pieces)</option>
                     <option value="KG">KG (Kilograms)</option>
@@ -502,52 +502,52 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Supplier / Preferred Vendor</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Supplier / Preferred Vendor</label>
                   <input
                     type="text"
                     value={editingItem.supplier || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, supplier: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900"
                     placeholder="e.g. PT Sukses Jaya Pangan"
                   />
                 </div>
 
                 {/* Stock Thresholds */}
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Min Stock Level</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Min Stock Level</label>
                   <input
                     type="number"
                     min="0"
                     value={editingItem.min_stock || 0}
                     onChange={(e) => setEditingItem({ ...editingItem, min_stock: Number(e.target.value) })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Reorder Point</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Reorder Point</label>
                   <input
                     type="number"
                     min="0"
                     value={editingItem.reorder_point || 0}
                     onChange={(e) => setEditingItem({ ...editingItem, reorder_point: Number(e.target.value) })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">Max Stock Level</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">Max Stock Level</label>
                   <input
                     type="number"
                     min="0"
                     value={editingItem.max_stock || 0}
                     onChange={(e) => setEditingItem({ ...editingItem, max_stock: Number(e.target.value) })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">
+                  <label className="text-xs font-mono text-slate-500 block mb-1">
                     Moving Avg Cost (Rp) {editingItem.item_id ? '(Auto Calculated)' : ''}
                   </label>
                   <input
@@ -556,17 +556,17 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                     disabled={Boolean(editingItem.item_id)}
                     value={editingItem.average_cost || 0}
                     onChange={(e) => setEditingItem({ ...editingItem, average_cost: Number(e.target.value) })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono disabled:opacity-60"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono disabled:opacity-60"
                   />
                 </div>
 
                 {/* GL Mappings */}
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">GL Inventory Asset Account</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">GL Inventory Asset Account</label>
                   <select
                     value={editingItem.inventory_gl_account || '1080'}
                     onChange={(e) => setEditingItem({ ...editingItem, inventory_gl_account: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono"
                   >
                     {accounts
                       .filter((a) => a.account_type === 'Asset')
@@ -579,11 +579,11 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-slate-400 block mb-1">GL Default Expense Account</label>
+                  <label className="text-xs font-mono text-slate-500 block mb-1">GL Default Expense Account</label>
                   <select
                     value={editingItem.expense_gl_account || '5110'}
                     onChange={(e) => setEditingItem({ ...editingItem, expense_gl_account: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono"
                   >
                     {accounts
                       .filter((a) => a.account_type === 'Expense')
@@ -596,18 +596,18 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-950 transition-colors"
+                  className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs shadow-emerald-950 transition-colors"
                 >
                   {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Save Item Master'}
                 </button>
@@ -619,13 +619,13 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
 
       {/* Barcode Tag Preview Modal */}
       {barcodePreviewItem && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl text-center">
+        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-xs text-center">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-bold text-white">Barcode Tag</h4>
               <button
                 onClick={() => setBarcodePreviewItem(null)}
-                className="p-1 rounded text-slate-400 hover:text-white"
+                className="p-1 rounded text-slate-500 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -636,7 +636,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
                 ATRIUM HOTEL & RESORT
               </div>
               <div className="text-sm font-black text-slate-900">{barcodePreviewItem.item_name}</div>
-              <div className="text-xs font-mono text-slate-600">SKU: {barcodePreviewItem.item_code}</div>
+              <div className="text-xs font-mono text-slate-500">SKU: {barcodePreviewItem.item_code}</div>
 
               {/* Barcode Graphic Simulation */}
               <div className="py-2 flex flex-col items-center">
@@ -665,7 +665,7 @@ export const ItemMasterView: React.FC<ItemMasterViewProps> = ({
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setBarcodePreviewItem(null)}
-                className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold"
+                className="w-full py-2 bg-white hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold"
               >
                 Close Tag
               </button>

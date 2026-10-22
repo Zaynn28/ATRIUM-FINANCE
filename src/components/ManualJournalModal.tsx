@@ -199,25 +199,25 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-white border border-slate-200 rounded-xl w-full max-w-4xl overflow-hidden shadow-xs flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-slate-800 rounded-lg text-emerald-400 border border-slate-700">
+            <div className="p-2 bg-white rounded-lg text-emerald-700 border border-slate-200">
               <Scale className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-100">
+              <h2 className="text-base font-semibold text-slate-900">
                 New General Journal Voucher (Manual Entry)
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Create adjusting entries, accruals, or reclassifications into the DRAFT workflow
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800"
+            className="text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -233,34 +233,34 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Header Metadata */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-4 border-b border-slate-800 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-4 border-b border-slate-200 text-xs">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Journal Date *</label>
+              <label className="block text-slate-700 font-medium mb-1">Journal Date *</label>
               <input
                 type="date"
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono focus:border-emerald-500 outline-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 font-mono focus:border-emerald-500 outline-none"
               />
             </div>
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Source Reference / Voucher #</label>
+              <label className="block text-slate-700 font-medium mb-1">Source Reference / Voucher #</label>
               <input
                 type="text"
                 placeholder="e.g. ADJ-2026-09-01, Depreciation Accrual"
                 value={sourceReference}
                 onChange={(e) => setSourceReference(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none"
               />
             </div>
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Controller / Auditor Signature</label>
+              <label className="block text-slate-700 font-medium mb-1">Controller / Auditor Signature</label>
               <input
                 type="text"
                 value={createdBy}
                 onChange={(e) => setCreatedBy(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:border-emerald-500 outline-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-700 focus:border-emerald-500 outline-none"
               />
             </div>
           </div>
@@ -269,10 +269,10 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
           <div className="space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700">
                   Journal Lines ({lines.length})
                 </h3>
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-[10px] text-slate-500 font-mono">
                   (Compound Split Debit / Split Credit)
                 </span>
               </div>
@@ -283,10 +283,10 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                   <button
                     type="button"
                     onClick={handleAutoBalance}
-                    className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-medium transition-colors"
+                    className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-slate-800/30 font-medium transition-colors"
                     title="Buat baris penyeimbang otomatis sesuai selisih"
                   >
-                    <Scale className="w-3 h-3 text-amber-400" />
+                    <Scale className="w-3 h-3 text-amber-700" />
                     <span>Auto-Balance (+Rp {variance.toLocaleString('id-ID')})</span>
                   </button>
                 )}
@@ -300,7 +300,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                     }
                   }}
                   defaultValue=""
-                  className="text-[11px] px-2 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded hover:border-slate-600 focus:outline-hidden"
+                  className="text-[11px] px-2 py-1 bg-white text-slate-700 border border-slate-200 rounded hover:border-slate-200 focus:outline-hidden"
                 >
                   <option value="" disabled>-- Preset Transaksi Majemuk --</option>
                   <option value="PETTY_CASH">Kas Kecil Multi-Beban (3 Dr Biaya / 1 Cr Kas)</option>
@@ -311,7 +311,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAddLine}
-                  className="flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-600/40 font-medium"
+                  className="flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-slate-100 text-emerald-700 border border-emerald-500/40 hover:bg-slate-900/10 font-medium"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Line</span>
@@ -319,9 +319,9 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
               </div>
             </div>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-slate-900 border-b border-slate-800 text-slate-400">
+                <thead className="bg-white border-b border-slate-200 text-slate-500">
                   <tr>
                     <th className="py-2.5 px-3 w-10 text-center">#</th>
                     <th className="py-2.5 px-3 min-w-[200px]">Account</th>
@@ -341,7 +341,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                           required
                           value={line.account_code}
                           onChange={(e) => handleLineChange(idx, 'account_code', e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 outline-none focus:border-emerald-500"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 outline-none focus:border-emerald-500"
                         >
                           <option value="">-- Select Account --</option>
                           {activeAccounts.map((acc) => (
@@ -355,7 +355,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                         <select
                           value={line.department_code}
                           onChange={(e) => handleLineChange(idx, 'department_code', e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 outline-none focus:border-emerald-500"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 outline-none focus:border-emerald-500"
                         >
                           <option value="">-- None / General --</option>
                           {activeDepartments.map((dept) => (
@@ -373,7 +373,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                           placeholder="0.00"
                           value={line.debit}
                           onChange={(e) => handleLineChange(idx, 'debit', e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-right text-emerald-400 font-semibold outline-none focus:border-emerald-500"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-right text-emerald-700 font-semibold outline-none focus:border-emerald-500"
                         />
                       </td>
                       <td className="py-2 px-2 text-right">
@@ -384,7 +384,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                           placeholder="0.00"
                           value={line.credit}
                           onChange={(e) => handleLineChange(idx, 'credit', e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-right text-blue-400 font-semibold outline-none focus:border-emerald-500"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-right text-slate-500 font-semibold outline-none focus:border-emerald-500"
                         />
                       </td>
                       <td className="py-2 px-2">
@@ -393,7 +393,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                           placeholder="Line note..."
                           value={line.description}
                           onChange={(e) => handleLineChange(idx, 'description', e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 outline-none focus:border-emerald-500 font-sans"
+                          className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-xs text-slate-700 outline-none focus:border-emerald-500 font-sans"
                         />
                       </td>
                       <td className="py-2 px-2 text-center">
@@ -409,24 +409,24 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
                   ))}
                 </tbody>
                 {/* Balancing Footer */}
-                <tfoot className="bg-slate-900/90 border-t border-slate-800 font-semibold">
+                <tfoot className="bg-white/90 border-t border-slate-200 font-semibold">
                   <tr>
-                    <td colSpan={3} className="py-3 px-4 text-right text-slate-400 font-sans text-xs">
+                    <td colSpan={3} className="py-3 px-4 text-right text-slate-500 font-sans text-xs">
                       Totals &amp; Double-Entry Balance Check:
                     </td>
-                    <td className="py-3 px-3 text-right text-emerald-400">
+                    <td className="py-3 px-3 text-right text-emerald-700">
                       Rp {totalDebit.toLocaleString('id-ID')}
                     </td>
-                    <td className="py-3 px-3 text-right text-blue-400">
+                    <td className="py-3 px-3 text-right text-slate-500">
                       Rp {totalCredit.toLocaleString('id-ID')}
                     </td>
                     <td colSpan={2} className="py-3 px-3 font-sans text-xs">
                       {isBalanced ? (
-                        <span className="text-emerald-400 flex items-center gap-1 font-medium">
+                        <span className="text-emerald-700 flex items-center gap-1 font-medium">
                           <CheckCircle2 className="w-3.5 h-3.5" /> In Balance
                         </span>
                       ) : (
-                        <span className="text-amber-400 flex items-center gap-1 font-medium font-mono text-[11px]">
+                        <span className="text-amber-700 flex items-center gap-1 font-medium font-mono text-[11px]">
                           <AlertTriangle className="w-3.5 h-3.5" /> Diff: Rp {variance.toLocaleString('id-ID')}
                         </span>
                       )}
@@ -438,7 +438,7 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
           </div>
 
           {/* Footer Controls */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
             <span className="text-xs text-slate-500 font-mono">
               Status upon creation: DRAFT (Subject to validation &amp; approval)
             </span>
@@ -446,14 +446,14 @@ export const ManualJournalModal: React.FC<ManualJournalModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800"
+                className="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 rounded-lg hover:bg-white"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading || !isBalanced}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-medium text-xs rounded-lg shadow-sm transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-medium text-xs rounded-lg shadow-xs transition-colors"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>{loading ? 'Creating Voucher...' : 'Save Draft Journal'}</span>
